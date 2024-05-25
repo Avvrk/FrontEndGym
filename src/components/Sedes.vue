@@ -51,8 +51,6 @@ onMounted(() => {
     </div>
 </template>
 
-
-
 <style scoped>
 .q-pa-md {
   padding: 40px;
