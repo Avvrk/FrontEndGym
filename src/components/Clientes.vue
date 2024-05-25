@@ -2,10 +2,14 @@
 import { ref, onMounted, computed } from "vue";
 import { useStoreClientes } from "../stores/clientes.js";
 import { useStorePlanes } from "../stores/planes.js";
+import { useQuasar } from "quasar";
+
+const $q = useQuasar();
 
 const useCliente = useStoreClientes();
 const usePlan = useStorePlanes();
 
+// Variables para el funcionamiento de la tabla
 let rows = ref([]);
 let columns = ref([
     { name: "nombre", sortable: true, label: "Nombre Usuario", field: "nombre", align: "center" },
@@ -24,12 +28,8 @@ let columns = ref([
 
 let planesTodo = ref([]);
 
-// async function agregarCliente() {
-//     const res = await useCliente.postClientes();
-//     console.log(res.data);
-
-//     rows.value = res.data.clientes
-// }
+// Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
+const idCliente = ref("");
 
 //Variables que contiene los datos ingresados en el formulario
 let nombreCliente = ref("");
@@ -43,6 +43,7 @@ let planCliente = ref("");
 
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
+const actualizarBoton = ref(false);
 
 // Variables que se usan en el formulario
 // CC = Cedula de Ciudadania, TI = Tarjeta de Identidad, CE = Cedula Extranjera, PS = Pasaporte, TE = Tarjeta Estudiantil, Otro = Documento que no este en la lista
@@ -90,7 +91,9 @@ async function editarEstado(elemento) {
 
 //Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-    if (validarDatos()) {
+    const resultado = await validarDatos()
+    console.log(resultado);
+    if (resultado != false) {
         const info = {
             nombre: nombreCliente.value,
             documento: documentoCliente.value,
@@ -101,6 +104,24 @@ async function registrar() {
             plan: planCliente.value,
         };
         const res = await useCliente.postClientes(info);
+        console.log(res.data);
+    }
+}
+
+async function actualizar(id) {
+    actualizarBoton.value = true
+    const resultado = await validarDatos()
+    if (resultado) {
+        const info = {
+            nombre: nombreCliente.value,
+            documento: documentoCliente.value,
+            edad: edadCliente.value,
+            direccion: residenciaCliente.value,
+            telefono: telefonoCliente.value,
+            objetivo: objetivoCliente.value,
+            plan: planCliente.value,
+        };
+        const res = await useCliente.putClientes(id, info);
         console.log(res.data);
     }
 }
@@ -137,7 +158,7 @@ async function validarDatos() {
         });
         verificado = false;
     }
-    if (documentoCliente == "") {
+    if (documentoCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "El documento está vacío",
@@ -145,7 +166,7 @@ async function validarDatos() {
         });
         verificado = false;
     } else {
-        if (!isNaN(documentoCliente) || documentoCliente < 0) {
+        if (!isNaN(documentoCliente.value) || documentoCliente.value < 0) {
             $q.notify({
                 type: "negative",
                 message: "El documento debe ser un numero valido",
@@ -154,7 +175,7 @@ async function validarDatos() {
             verificado = false;
         }
     }
-    if (edadCliente == "") {
+    if (edadCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "La edad está vacía",
@@ -162,7 +183,7 @@ async function validarDatos() {
         });
         verificado = false;
     } else {
-        if (!isNaN(edadCliente) || edadCliente < 0) {
+        if (!isNaN(edadCliente.value) || edadCliente.value < 0) {
             $q.notify({
                 type: "negative",
                 message: "La edad debe ser un numero valido",
@@ -171,7 +192,7 @@ async function validarDatos() {
             verificado = false;
         }
     }
-    if (residenciaCliente == "") {
+    if (residenciaCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "La residencia está vacía",
@@ -179,7 +200,7 @@ async function validarDatos() {
         });
         verificado = false;
     }
-    if (telefonoCliente == "") {
+    if (telefonoCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "El telefono está vacía",
@@ -187,7 +208,7 @@ async function validarDatos() {
         });
         verificado = false;
     } else {
-        if (!isNaN(telefonoCliente) || telefonoCliente < 0) {
+        if (!isNaN(telefonoCliente.value) || telefonoCliente.value < 0) {
             $q.notify({
                 type: "negative",
                 message: "El telefono debe ser un numero valido",
@@ -195,7 +216,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (telefonoCliente < 10) {
+        if (telefonoCliente.value < 10) {
             $q.notify({
                 type: "negative",
                 message: "El telefono debe tener minimo 10 caracteres",
@@ -204,7 +225,7 @@ async function validarDatos() {
             verificado = false;
         }
     }
-    if (objetivoCliente == "") {
+    if (objetivoCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "El objetivo está vacío",
@@ -212,28 +233,34 @@ async function validarDatos() {
         });
         verificado = false;
     }
-    if (planCliente == "") {
+    if (planCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "El plan está vacío",
             position: "bottom-right",
         });
         verificado = false;
-    } else {
-        const res = await usePlan.getSedesId(sedeUsuario.value.valor);
+    } /* else {
+        console.log(planCliente.value.valor);
+        const res = await usePlan.getPlanesId(planCliente.value.valor);
         if (res.status != 200) {
             $q.notify({
                 type: "negative",
-                message: `Hubo un error con la sede ${sedeUsuario.value.label}`,
+                message: `Hubo un error con el plan con codigo ${planCliente.value.codigo}`,
                 position: "bottom-right",
             });
         }
-    }
+    } */
     return verificado;
 }
 
-function editarVistaFondo(boolean) {
+function editarVistaFondo(boolean, booleanA, id) {
     mostrarFormularioCliente.value = boolean;
+    actualizarBoton.value == booleanA;
+    if (booleanA) {
+        idCliente.value = id
+        console.log("hola");
+    }
 }
 
 onMounted(() => {
@@ -245,12 +272,12 @@ onMounted(() => {
     <div>
         <div class="q-pa-md">
             <div>
-                <q-btn @click="editarVistaFondo(true)"> agregar </q-btn>
+                <q-btn @click="editarVistaFondo(true, false, null)"> agregar </q-btn>
             </div>
             <q-table flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
-                        <q-btn @click="editar(props.row)"> ✏️ </q-btn>
+                        <q-btn @click="editarVistaFondo(true, true, props.row._id)"> ✏️ </q-btn>
                         <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"> ❌ </q-btn>
                         <q-btn v-else @click="editarEstado(props.row)"> ✅ </q-btn>
                     </q-td>
@@ -264,7 +291,7 @@ onMounted(() => {
             </q-table>
         </div>
         <div id="formularioCliente" v-if="mostrarFormularioCliente == true">
-            <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
+            <q-form @submit="registrar()" @button="actualizar()" @reset="resetear()" class="q-gutter-md">
                 <q-input standout="bg-green text-white" type="text" label="Nombre" v-model="nombreCliente" />
                 <q-select standout="bg-green text-white" :options="tipoD" label="Tipo de Documento" v-model="tipoDocumento" />
                 <q-input standout="bg-green text-white" type="text" label="Documento" v-model="documentoCliente" />
@@ -274,7 +301,8 @@ onMounted(() => {
                 <q-input standout="bg-green text-white" type="text" label="Objetivo" v-model="objetivoCliente" />
                 <q-select standout="bg-green text-white" :options="organizarPlanes" label="Plan" v-model="planCliente" />
                 <div>
-                    <q-btn label="Enviar" type="submit" color="primary" />
+                    <q-btn v-if="actualizarBoton == false" label="Enviar" type="submit" color="primary" />
+                    <q-btn v-else label="Actualizar" type="button" color="primary" />
                     <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>

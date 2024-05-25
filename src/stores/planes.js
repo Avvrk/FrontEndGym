@@ -21,6 +21,21 @@ export const useStorePlanes = defineStore("Planes", () => {
         }
     };
 
+    const getPlanesId = async (id) => {
+        try {
+            const res = await axios.get(`${url}/planes/id/${id}`, {
+                headers: {
+                    token: useUsuario.token
+                }
+            })
+            console.log(res.data);
+            return res;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+
     const postPlanes = async () => {
         try {
             const res = await axios.post(`${url}/planes`, {
@@ -37,6 +52,6 @@ export const useStorePlanes = defineStore("Planes", () => {
     }
 
     return {
-        getPlanes,
+        getPlanes, getPlanesId
     };
 });
