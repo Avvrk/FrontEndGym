@@ -80,7 +80,6 @@ function resetear() {
     telefonoSede.value = "";
 }
 
-
 async function validarDatos() {
   let verificado = true;
 
@@ -126,7 +125,6 @@ onMounted(() => {
                 </template>
             </q-table>
         </div>
-
         <div id="formularioSede" v-if="mostrarFormularioSede == true">
             <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
                 <q-input standout="bg-green text-white" v-model="nombreSede" label="Nombre" />
@@ -142,7 +140,6 @@ onMounted(() => {
             </q-form>
             <button id="botonF"  @click="editarVistaFondo(false)"></button>
         </div>
-
     </div>
 </template>
 

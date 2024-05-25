@@ -118,7 +118,6 @@ onMounted(() => {
                 </template>
             </q-table>
         </div>
-
         <div id="formularioInventario" v-if="mostrarFormularioInventario == true">
             <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
                 <q-input standout="bg-green text-white" v-model="codigoP" label="Código" />
@@ -132,7 +131,6 @@ onMounted(() => {
             </q-form>
             <button id="botonF"  @click="editarVistaFondo(false)"></button>
         </div>
-
     </div>
 </template>
 
