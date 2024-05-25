@@ -1,6 +1,7 @@
 import { createWebHashHistory, createRouter } from 'vue-router'
 
 import Iniciar from '../components/Login.vue'
+import Home from '../components/Home.vue'
 import Cliente from '../components/Clientes.vue'
 import Sedes from '../components/Sedes.vue'
 import Ingresos from '../components/Ingresos.vue'
@@ -37,6 +38,7 @@ const checkAuth = () => {
 
 const routes = [
     {path: '/', component: Iniciar },
+    {path: '/home', component: Home},
     {path: '/clientes', component: Cliente },
     {path: '/sedes', component: Sedes,beforeEnter: auth, meta: { rol: ['administrador', 'recepcionista'] }},
     {path: '/ingresos', component: Ingresos},

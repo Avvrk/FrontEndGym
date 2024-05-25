@@ -20,6 +20,8 @@
             <br />
             <router-link to="/clientes">Clientes</router-link>
             <br />
+            <router-link to="/home">Home</router-link>
+            <br />
             <router-link to="/ingresos">Ingresos</router-link>
             <br />
             <router-link to="/inventario">Inventario</router-link>

@@ -205,7 +205,7 @@ onMounted(() => {
             <q-table flat bordered title="Lista de usuarios" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
-                        <q-btn> ✏️ </q-btn>
+                        <q-btn @click="editar(props.row)"> ✏️ </q-btn>
                         <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"> ❌ </q-btn>
                         <q-btn v-else @click="editarEstado(props.row)"> ✅ </q-btn>
                     </q-td>
