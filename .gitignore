@@ -5,6 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 <<<<<<< HEAD
+<<<<<<< HEAD
 pnpm-debug.log*
 lerna-debug.log*
 
@@ -25,6 +26,8 @@ dist-ssr
 *.sw?
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 2512542ab2c3b5ec6ce4accbe73fef0cf59ef53c
 lerna-debug.log*
 .pnpm-debug.log*
 
@@ -158,4 +161,7 @@ dist
 .svelte-kit
 
 # End of https://www.toptal.com/developers/gitignore/api/node,dotenv
+<<<<<<< HEAD
+>>>>>>> 2512542ab2c3b5ec6ce4accbe73fef0cf59ef53c
+=======
 >>>>>>> 2512542ab2c3b5ec6ce4accbe73fef0cf59ef53c
