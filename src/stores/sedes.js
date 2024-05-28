@@ -25,11 +25,41 @@ export const useStoreSedes = defineStore("Sedes", () => {
 
     const getSedesId = async (id) => {
         try {
-            const res = await axios.get(`${url}/sedes/sede/${id}`, {
+            const res = await axios.get(`${url}/sedes/id/${id}`, {
                 headers: {
                     token: useUsuarios.token
                 }
-            })
+            });
+            console.log(res);
+            return res;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+
+    const postSedes = async (info) => {
+        try {
+            const res = await axios.post(`${url}/sedes`, info, {
+                headers: {
+                    token: useUsuarios.token
+                }
+            });
+            console.log(res);
+            return res;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+
+    const putSedes = async (id, info) => {
+        try {
+            const res = await axios.put(`${url}/sedes/${id}`, info, {
+                headers: {
+                    token: useUsuarios.token
+                }
+            });
             console.log(res);
             return res;
         } catch (error) {
@@ -43,7 +73,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
             token.value = useUsuarios.token;
             const res = await axios.put(`${url}/sedes/inactivar/${id}`, null, {
                 headers: {
-                    token: token.value
+                    token: useUsuarios.token
                 }
             });
             console.log(res);
@@ -59,7 +89,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
             token.value = useUsuarios.token;
             const res = await axios.put(`${url}/sedes/activar/${id}`, null, {
                 headers: {
-                    token: token.value
+                    token: useUsuarios.token
                 }
             });
             console.log(res);
@@ -70,16 +100,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
         }
     }
 
-    const postSedes = async () => {
-        try {
-            const r = await axios.post("http://localhost:4000/api/sedes")
-        } catch (error) {
-            console.log(r);
-            return error;
-        }
-    }
-
     return {
-        getSedes, getSedesId, putSedeInactivar, putSedesActivar
+        getSedes, getSedesId, postSedes, putSedes, putSedeInactivar, putSedesActivar
     };
 });

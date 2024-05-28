@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStoreSedes } from "../stores/sedes.js";
+import { useQuasar } from "quasar";
 
-
+const $q = useQuasar();
 
 const useSede = useStoreSedes();
 
 let rows = ref([]);
-
 let columns = ref([
     { name: "nombre", sortable: true, label: "Nombre", field: "nombre", align: "center" },
     { name: "direccion", label: "Direccion", field: "direccion", align: "center" },
@@ -19,12 +19,6 @@ let columns = ref([
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 ]);
 
-async function listarSedes() {
-    const res = await useSede.getSedes();
-    console.log(res.data);
-    rows.value = res.data.sedes;
-}
-
 // Variables que contienen los datos ingresados en el formulario
 let ciudadSede = ref("");
 let codigoSede = ref("");
@@ -34,41 +28,105 @@ let horarioSede = ref("");
 let nombreSede = ref("");
 let telefonoSede = ref("");
 
+// Variable que contiene los datos de la sede a editar
+const datos = ref("");
+
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioSede = ref(false);
+const mostrarBotonEnviar = ref(true);
 
+// Funcion que se encarga de traer todas las sedes
+async function listarSedes() {
+    try {
+        const res = await useSede.getSedes();
+        console.log(res.data);
+        rows.value = res.data.sedes;
+    } catch (error) {
+        console.log("Error al listar sedes:", error);
+    }
+}
 
 // Funcion que se encarga de cambiar el estado de una sede
 async function editarEstado(elemento) {
-    if (elemento.estado == "1") {
-        const res = await useSede.putSedeInactivar(elemento._id);
-        console.log(res.data, elemento._id);
+    try {
+        if (elemento.estado === "1") {
+            const res = await useSede.putSedeInactivar(elemento._id);
+        } else if (elemento.estado === "0") {
+            const res = await useSede.putSedesActivar(elemento._id);
+        }
         listarSedes();
-    } else if (elemento.estado == "0") {
-        const res = await useSede.putSedesActivar(elemento._id);
-        console.log(res.data);
-        listarSedes();
+    } catch (error) {
+        console.log("Error al editar estado de la sede:", error);
     }
 }
 
 // Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-    if (validarDatos()) {
-        const info = {
-            ciudad: ciudadSede.value,
-            codigo: codigoSede.value,
-            direccion: direccionSede.value,
-            estado: estadoSede.value,
-            horario: horarioSede.value,
-            nombre: nombreSede.value,
-            telefono: telefonoSede.value,
-        };
-        const res = await useSede.log(info);
-        console.log(res);
+    console.log('hola');
+    if (await validarDatos()) {
+        try {
+            const info = {
+                ciudad: ciudadSede.value,
+                codigo: codigoSede.value,
+                direccion: direccionSede.value,
+                estado: estadoSede.value,
+                horario: horarioSede.value,
+                nombre: nombreSede.value,
+                telefono: telefonoSede.value,
+            };
+            const res = await useSede.log(info);
+            if (res.status !== 200) {
+                $q.notify({
+                    type: "negative",
+                    message: "Parece que hubo un error en el registro",
+                    position: "bottom-right",
+                });
+            } else {
+                $q.notify({
+                    type: "positive",
+                    message: "El registro se ha realizado correctamente",
+                    position: "bottom-right",
+                });
+                listarUsuarios();
+            }
+        } catch (error) {
+            console.error("Error al registrar usuario:", error);
+        }
     }
-} // falta terminar
+}
 
-
+async function editar() {
+    if (await validarDatos()) {
+        try {
+            const info = {
+                ciudad: ciudadSede.value,
+                codigo: codigoSede.value,
+                direccion: direccionSede.value,
+                estado: estadoSede.value,
+                horario: horarioSede.value,
+                nombre: nombreSede.value,
+                telefono: telefonoSede.value,
+            };
+            const res = await useSede.put(info);
+            if (res.status !== 200) {
+                $q.notify({
+                    type: "negative",
+                    message: "Parece que hubo un error al editar el usuario",
+                    position: "bottom-right",
+                });
+            } else {
+                $q.notify({
+                    type: "positive",
+                    message: "El usuario se ha editado correctamente",
+                    position: "bottom-right",
+                });
+                listarUsuarios();
+            }
+        } catch (error) {
+            console.error("Error al editar usuario:", error);
+        }
+    }
+}
 
 function resetear() {
     ciudadSede.value = "";
@@ -80,22 +138,91 @@ function resetear() {
     telefonoSede.value = "";
 }
 
-async function validarDatos() {
-  let verificado = true;
+async function validarDatos() {console.log("hola");
+    let verificado = true;
 
-    if (ciudadSede.value == "" || codigoSede.value == "" || direccionSede.value == "" || estadoSede.value == "" || horarioSede.value == "" || nombreSede.value == "" || telefonoSede.value == "") {
+    if (!ciudadSede.value && !codigoSede.value && !direccionSede.value && !estadoSede.value && !horarioSede.value && !nombreSede.value && !telefonoSede.value) {
         $q.notify({
             type: "negative",
-            message: "Llenar todos los campos",
+            message: "Llena todos los campos",
             position: "bottom-right",
         });
         verificado = false;
+    } else {
+        if (!nombreSede.value) {
+            $q.notify({
+                type: "negative",
+                message: "El nombre está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!ciudadSede.value) {
+            $q.notify({
+                type: "negative",
+                message: "La ciudad está vacía",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!direccionSede.value) {
+            $q.notify({
+                type: "negative",
+                message: "La direccion está vacía",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!horarioSede.value) {
+            $q.notify({
+                type: "negative",
+                message: "El horario está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!telefonoSede.value) {
+            $q.notify({
+                type: "negative",
+                message: "El telefono está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!codigoSede.value) {
+            $q.notify({
+                type: "negative",
+                message: "El codigo está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
     }
+
     return verificado;
 }
 
-function editarVistaFondo(boolean) {
+function editarVistaFondo(boolean, extra, boton) {
     mostrarFormularioSede.value = boolean;
+    datos.value = extra;
+    console.log(datos.value);
+    mostrarBotonEnviar.value = boton;
+    if (boton == false && datos.value != null) {
+        nombreSede.value = datos.value.nombre;
+        ciudadSede.value = datos.value.ciudad;
+        direccionSede.value = datos.value.direccion;
+        horarioSede.value = datos.value.horario;
+        telefonoSede.value = datos.value.telefono;
+        codigoSede.value = datos.value.codigo;
+    } else {
+        ciudadSede.value = "";
+        codigoSede.value = "";
+        direccionSede.value = "";
+        estadoSede.value = "";
+        horarioSede.value = "";
+        nombreSede.value = "";
+        telefonoSede.value = "";
+    }
 }
 
 onMounted(() => {
@@ -106,13 +233,13 @@ onMounted(() => {
 <template>
     <div>
         <div class="q-pa-md">
-          <div>
-            <q-btn @click="editarVistaFondo(true)"> agregar </q-btn>
-          </div>
-          <q-table flat bordered title="Lista de Sedes" :rows="rows" :columns="columns" row-key="id">
+            <div>
+                <q-btn @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
+            </div>
+            <q-table flat bordered title="Lista de Sedes" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
-                        <q-btn> ✏️ </q-btn>
+                        <q-btn @click="editarVistaFondo(true, props.row, false)"> ✏️ </q-btn>
                         <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"> ❌ </q-btn>
                         <q-btn v-else @click="editarEstado(props.row)"> ✅ </q-btn>
                     </q-td>
@@ -125,8 +252,8 @@ onMounted(() => {
                 </template>
             </q-table>
         </div>
-        <div id="formularioSede" v-if="mostrarFormularioSede == true">
-            <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
+        <div id="formularioSede" v-if="mostrarFormularioSede">
+            <q-form @submit="mostrarBotonEnviar == true ? registrar : editar" @reset="resetear" class="q-gutter-md">
                 <q-input standout="bg-green text-white" v-model="nombreSede" label="Nombre" />
                 <q-input standout="bg-green text-white" v-model="ciudadSede" label="Ciudad" color="black" />
                 <q-input standout="bg-green text-white" v-model="direccionSede" label="Dirección" color="black" />
@@ -134,16 +261,15 @@ onMounted(() => {
                 <q-input standout="bg-green text-white" v-model="telefonoSede" type="tel" label="Teléfono" color="black" />
                 <q-input standout="bg-green text-white" v-model="codigoSede" label="Código" color="black" />
                 <div>
-                    <q-btn label="Enviar" type="submit" color="primary" />
+                    <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" />
+                    <q-btn v-else label="Actualizar" type="submit" color="primary" />
                     <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
-            <button id="botonF"  @click="editarVistaFondo(false)"></button>
+            <button id="botonF" @click="editarVistaFondo(false, null, false)"></button>
         </div>
     </div>
 </template>
-
-
 
 <style scoped>
 .q-pa-md {
