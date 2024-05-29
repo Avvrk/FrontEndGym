@@ -71,7 +71,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
     const putSedeInactivar = async (id) => {
         try {
             token.value = useUsuarios.token;
-            const res = await axios.put(`${url}/sedes/inactivar/${id}`, null, {
+            const res = await axios.put(`${url}/sedes/inactivar/${id}`, {}, {
                 headers: {
                     token: useUsuarios.token
                 }
@@ -87,7 +87,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
     const putSedesActivar = async (id) => {
         try {
             token.value = useUsuarios.token;
-            const res = await axios.put(`${url}/sedes/activar/${id}`, null, {
+            const res = await axios.put(`${url}/sedes/activar/${id}`, {}, {
                 headers: {
                     token: useUsuarios.token
                 }
