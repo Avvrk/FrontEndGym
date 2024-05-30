@@ -10,6 +10,7 @@ import Mantenimiento from '../components/Mantenimiento.vue'
 import Usuario from '../components/Usuarios.vue'
 import Maquina from '../components/Maquinas.vue'
 import Plan from '../components/Planes.vue'
+import Venta from '../components/Ventas.vue'
 import { useStoreUsuarios } from "../stores/usuarios.js";
 
 
@@ -46,7 +47,8 @@ const routes = [
     {path: '/mantenimiento', component: Mantenimiento},
     {path: '/usuarios', component: Usuario},
     {path: '/maquinas', component: Maquina},
-    {path: '/planes', component: Plan}
+    {path: '/planes', component: Plan},
+    {path: '/ventas', component: Venta}
 ]
 
 export const router = createRouter({

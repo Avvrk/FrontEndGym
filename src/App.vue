@@ -35,6 +35,8 @@
             <router-link to="/maquinas">Maquinas</router-link>
             <br />
             <router-link to="/planes">Planes</router-link>
+            <br />
+            <router-link to="/ventas">Ventas</router-link>
         </q-drawer>
 
         <q-drawer v-model="rightDrawerOpen" side="right" overlay>

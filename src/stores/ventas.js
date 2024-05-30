@@ -3,16 +3,16 @@ import { ref } from "vue";
 import { useStoreUsuarios } from "./usuarios";
 import axios from "axios";
 
-export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
-    const useUsuario = useStoreUsuarios()
+export const useStoreVenta = defineStore("Venta", () => {
+    const useUsuarios = useStoreUsuarios()
     let token = ref("");
     const url = "https://avvrk-vyktor23-backendgym.onrender.com"
 
-    const getMantenimientos = async () => {
+    const getVentas = async () => {
         try {
-            const res = await axios.get(`${url}/mantenimientos`, {
+            const res = await axios.get(`${url}/ventas`, {
                 headers: {
-                    token: useUsuario.token
+                    token: useUsuarios.token
                 }
             });
             console.log(res.data);
@@ -23,9 +23,9 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         }
     };
 
-    const postMantenimientos = async () => {
+    const postVentas = async () => {
         try {
-            const res = await axios.post(`${url}/mantenimientos`,{
+            const res = await axios.post(`${url}/ventas`,{
                 headers:{
                     token: useUsuario.token
                 }
@@ -38,9 +38,9 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         }
     }
 
-    const putMantenimientosActivar = async (codigo) => {
+    const putVentasActivar = async (codigo) => {
         try {
-            const res = await axios.put(`${url}/mantenimientos/activar/${codigo}`, null, {
+            const res = await axios.put(`${url}/ventas/activar/${codigo}`, null, {
                 headers: {
                     token: token.value
                 }
@@ -53,9 +53,9 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         }
     }
     
-    const putMantenimientosInactivar = async (codigo) => {
+    const putVentasInactivar = async (codigo) => {
         try {
-            const res = await axios.put(`${url}/mantenimientos/inactivar/${codigo}`, null, {
+            const res = await axios.put(`${url}/ventas/inactivar/${codigo}`, null, {
                 headers: {
                     token: token.value
                 }
@@ -69,6 +69,6 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
     }    
 
     return {
-        getMantenimientos, putMantenimientosInactivar, putMantenimientosActivar, postMantenimientos
+        getVentas, putVentasInactivar, putVentasActivar
     };
 });

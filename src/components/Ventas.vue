@@ -1,79 +1,63 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useStoreMantenimiento } from "../stores/mantenimiento.js";
+import { useStoreVenta } from "../stores/ventas.js";
 
-const useMantenimiento = useStoreMantenimiento();
+const useVentas = useStoreVenta();
 
 let rows = ref([]);
 
 let columns = ref([
-    { name: "fecha", sortable: true, label: "Fecha", field: "fecha", align: "center" },
-    { name: "descripcion", label: "Descripción", field: "descripcion", align: "center" },
-    { name: "responsable", label: "Responsable", field: "responsable", align: "center" },
-    { name: "precio", label: "Precio", field: "precio", align: "center" },
-    { name: "estado", label: "Estado", field: "estado", align: "center" },
-    { name: "opciones", label: "Opciones", field: "opciones", align: "center" }
+    { name: "codigo", sortable: true, label: "Código Producto", field: "codigo", align: "center" },
+    { name: "valorUnitario", label: "Valor Unitario", field: "valorUnitario", align: "center" },
+    { name: "fecha", label: "Fecha", field: "fecha", align: "center" },
+    { name: "valorTotal", label: "Valor Total", field: "valorTotal", align: "center" },
 ]);
 
-async function listarMantenimientos() {
-    const res = await useMantenimiento.getMantenimientos();
+async function listarVentas() {
+    const res = await useVentas.getVentas();
     console.log(res.data);
-    rows.value = res.data.mantenimientos;
+    rows.value = res.data.ventas;
 }
 
 // Variables que contienen los datos ingresados en el formulario
-let idMaquinaM = ref("");
-let fechaM = ref("");
-let descripcionM = ref("");
-let responsableM = ref("");
-let precioM = ref("");
+let codigo = ref("");
+let valorUnitario = ref("");
+let fecha = ref("");
+let valorTotal = ref("");
 
 // Variables para administrar lo que se ve en la pantalla
-const mostrarFormularioMantenimiento = ref(false);
+const mostrarFormularioVenta = ref(false);
 
-// Funcion que se encarga de cambiar el estado de una sede
-async function editarEstado(elemento) {
-    if (elemento.estado == "1") {
-        const res = await useMantenimiento.putMantenimientosInactivar(elemento.id);
-        console.log(res.data, elemento.id);
-        listarMantenimientos();
-    } else if (elemento.estado == "0") {
-        const res = await useMantenimiento.putMantenimientosActivar(elemento.id);
-        console.log(res.data);
-        listarMantenimientos();
-    }
-}
+
 
 
 // Funcion que se encarga de enviar los datos del registro
 async function registrar() {
     if (validarDatos()) {
         const info = {
-            idMaquina: idMaquinaM.value,
-            fecha: fechaM.value,
-            descripcion: descripcionM.value,
-            responsable: responsableM.value,
-            precio: precioM.value,
+            codigoProducto: codigo.value,
+            valorUnitario: valorUnitario.value,
+            fecha: fecha.value,
+            valorTotal: valorTotal.value,
         };
-        const res = await useMantenimiento.log(info);
+        const res = await useVentas.log(info);
         console.log(res);
     }
 } // falta terminar
 
 
 function resetear() {
-    idMaquinaM.value = "";
-    fechaM.value = "";
-    descripcionM.value = "";
-    responsableM.value = "";
-    precioM.value = "";
+    codigo.value = "";
+    valorUnitario.value = "";
+    fecha.value = "";
+    valorTotal.value = "";
 }
 
 
 async function validarDatos() {
   let verificado = true;
 
-    if (idMaquinaM.value == "" || fechaM.value == "" || descripcionM.value == "" || responsableM.value == "" || precioM.value == "") {
+    if (codigo.value == "" || valorUnitario.value == "" || fecha.value == "" || valorTotal.value == "") {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -86,11 +70,11 @@ async function validarDatos() {
 
 
 function editarVistaFondo(boolean) {
-    mostrarFormularioMantenimiento.value = boolean;
+    mostrarFormularioVenta.value = boolean;
 }
 
 onMounted(() => {
-    listarMantenimientos();
+    listarVentas();
 });
 </script>
 
@@ -102,7 +86,7 @@ onMounted(() => {
           <div>
             <q-btn @click="editarVistaFondo(true)"> agregar </q-btn>
           </div>
-          <q-table flat bordered title="Lista de Mantenimientos" :rows="rows" :columns="columns" row-key="id">
+          <q-table flat bordered title="Lista de Ventas" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
                         <q-btn> ✏️ </q-btn>
@@ -118,14 +102,12 @@ onMounted(() => {
                 </template>
             </q-table>
         </div>
-        <div id="formularioMantenimiento" v-if="mostrarFormularioMantenimiento == true">
+        <div id="formularioVentas" v-if="mostrarFormularioVenta == true">
             <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
-                <q-input standout="bg-green text-white" v-model="idMaquinaM" label="Id Máquina" />
-                <q-input standout="bg-green text-white" v-model="fechaM" label="Fecha Mantenimiento" color="black" />
-                <q-input standout="bg-green text-white" v-model="descripcionM" label="Descripción" color="black" />
-                <q-input standout="bg-green text-white" v-model="responsableM" label="Responsable" color="black" />
-                <q-input standout="bg-green text-white" v-model="precioM" label="Precio" color="black" />
-
+                <q-input standout="bg-green text-white" v-model="codigo" label="Código" />
+                <q-input standout="bg-green text-white" v-model="valorUnitario" label="Valor Unitario" color="black" />
+                <q-input standout="bg-green text-white" v-model="fecha" label="Fecha" color="black" />
+                <q-input standout="bg-green text-white" v-model="valorTotal" label="Valor Total" color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
                     <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
@@ -192,7 +174,7 @@ onMounted(() => {
     background-color: #f0f0f0;
 }
 
-#formularioMantenimiento {
+#formularioVentas {
     position: absolute;
     top: 0;
     width: 100%;
