@@ -21,8 +21,8 @@ let columns = ref([
     { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
     { name: "objetivo", label: "Objetivo", field: "objetivo", align: "center" },
     { name: "observaciones", label: "Observaciones", field: "observaciones", align: "center" },
-    { name: "estado", sortable: true, label: "Estado", field: "estado", align: "center" },
     { name: "plan", label: "Plan", field: "plan", align: "center" },
+    { name: "estado", sortable: true, label: "Estado", field: "estado", align: "center" },
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 ]);
 
@@ -277,6 +277,7 @@ onMounted(() => {
             <q-table flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
+                        <q-btn @click="verSeguimiento(true, true, props.row._id)"> 📋 </q-btn>
                         <q-btn @click="editarVistaFondo(true, true, props.row._id)"> ✏️ </q-btn>
                         <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"> ❌ </q-btn>
                         <q-btn v-else @click="editarEstado(props.row)"> ✅ </q-btn>
