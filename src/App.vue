@@ -34,6 +34,8 @@
             <br />
             <router-link to="/maquinas">Maquinas</router-link>
             <br />
+            <router-link to="/pagos">Pagos</router-link>
+            <br />
             <router-link to="/planes">Planes</router-link>
             <br />
             <router-link to="/ventas">Ventas</router-link>
