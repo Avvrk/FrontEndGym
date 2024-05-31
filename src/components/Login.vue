@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const useUsuario = useStoreUsuarios();
-
+const router = useRouter();
 let email = ref("");
 let password = ref("");
 
