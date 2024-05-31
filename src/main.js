@@ -1,22 +1,23 @@
 import { createApp } from "vue";
 import { Quasar, Notify } from "quasar";
-import { router } from "./router/router.js";
 import { createPinia } from "pinia";
-import "./style.css";
+import piniaPluginPersist from "pinia-plugin-persist";
+import { router } from "./router/router.js";
 import App from "./App.vue";
+import "./style.css";
 
 import "@quasar/extras/material-icons/material-icons.css";
-
-// Import Quasar css
 import "quasar/src/css/index.sass";
 
 const pinia = createPinia();
+pinia.use(piniaPluginPersist);
+
 const app = createApp(App);
 
 app.use(Quasar, {
-    plugins: {
-        Notify,
-    }, // import Quasar plugins and add here
+  plugins: {
+    Notify,
+  },
 });
 
 app.use(pinia);

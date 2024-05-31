@@ -1,85 +1,171 @@
-<template>
-    <q-layout view="hHh lpR fFf">
-        <q-header class="bg-primary text-white">
-            <q-toolbar>
-                <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-
-                <q-toolbar-title>
-                    <q-avatar>
-                        <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-                    </q-avatar>
-                    Forza Gym
-                </q-toolbar-title>
-
-                <!-- <q-btn dense flat round icon="menu" @click="toggleRightDrawer" /> -->
-            </q-toolbar>
-        </q-header>
-
-        <q-drawer v-model="leftDrawerOpen" side="left" overlay>
-            <router-link to="/">Login</router-link>
-            <br />
-            <router-link to="/clientes">Clientes</router-link>
-            <br />
-            <router-link to="/home">Home</router-link>
-            <br />
-            <router-link to="/ingresos">Ingresos</router-link>
-            <br />
-            <router-link to="/inventario">Inventario</router-link>
-            <br />
-            <router-link to="/mantenimiento">Mantenimiento</router-link>
-            <br />
-            <router-link to="/sedes">Sedes</router-link>
-            <br />
-            <router-link to="/usuarios">Usuarios</router-link>
-            <br />
-            <router-link to="/maquinas">Maquinas</router-link>
-            <br />
-            <router-link to="/planes">Planes</router-link>
-        </q-drawer>
-
-        <q-drawer v-model="rightDrawerOpen" side="right" overlay>
-            <!-- drawer content -->
-        </q-drawer>
-
-        <q-page-container>
-            <router-view />
-        </q-page-container>
-    </q-layout>
-</template>
-
 <script setup>
 import { ref } from "vue";
-const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false);
+import { useStoreUsuarios } from "./stores/usuarios";
+import { useRouter } from "vue-router";
 
-function toggleLeftDrawer() {
-    leftDrawerOpen.value = !leftDrawerOpen.value;
-}
+const router = useRouter();
+const useUsuario = useStoreUsuarios();
 
-function toggleRightDrawer() {
-    rightDrawerOpen.value = !rightDrawerOpen.value;
+let email = ref("");
+let password = ref("");
+
+async function login() {
+	try {
+		const res = await useUsuario.login(email.value, password.value);
+		// Redirige a la ruta correcta después de un login exitoso
+		router.push("/main/hogar");
+	} catch (error) {
+		console.log(error);
+	}
 }
 </script>
 
+<template>
+	<div class="login-container">
+		<div class="login-card">
+			<div class="login-header">
+				<h2>Iniciar Sesión</h2>
+				<p>Bienvenido</p>
+			</div>
+			<form @submit.prevent="login">
+				<div class="input-field">
+					<input
+						type="email"
+						class="input"
+						placeholder="Correo electrónico"
+						v-model="email" />
+					<i class="fas fa-envelope"></i>
+				</div>
+				<div class="input-field">
+					<input
+						type="password"
+						class="input"
+						placeholder="Contraseña"
+						v-model="password" />
+					<i class="fas fa-lock"></i>
+				</div>
+				<button class="submit" type="submit">Iniciar</button>
+				<div class="remember-me">
+					<input type="checkbox" id="remember" />
+					<label for="remember">Recordarme</label>
+				</div>
+				<div class="forgot-password">
+					<a href="#">¿Olvidaste la contraseña?</a>
+				</div>
+			</form>
+            <div>
+			<router-view />
+            </di
+            >
+		</div>
+	</div>
+</template>
+
 <style scoped>
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+.login-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	background-image: url("../img/gym.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-attachment: fixed;
 }
 
-.logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+.login-card {
+	width: 400px;
+	background-color: rgba(255, 255, 255, 0.8);
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.logo.vue:hover {
-    filter: drop-shadow(0 0 2em #42b883aa);
+.login-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 20px;
 }
 
-.q-page-container {
-    position: absolute;
+.login-header h2 {
+	font-size: 24px;
+	color: #333;
+	margin-top: 10px;
+}
+
+.login-header p {
+	font-size: 16px;
+	color: #666;
+	margin-top: 10px;
+}
+
+.input-field {
+	display: flex;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.input-field input {
 	width: 100%;
-    height: 100vh;
+	height: 45px;
+	padding: 10px;
+	border: none;
+	border-radius: 10px;
+	font-size: 16px;
+	color: #333;
+}
+
+.input-field i {
+	position: absolute;
+	top: 12px;
+	left: 15px;
+	font-size: 18px;
+	color: #666;
+}
+
+.submit {
+	width: 100%;
+	height: 45px;
+	padding: 10px;
+	border: none;
+	border-radius: 10px;
+	font-size: 16px;
+	color: #fff;
+	background-color: #4caf50;
+	cursor: pointer;
+}
+
+.submit:hover {
+	background-color: #3e8e41;
+}
+
+.remember-me {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.remember-me input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+}
+
+.remember-me label {
+	font-size: 16px;
+	color: #666;
+}
+
+.forgot-password {
+	margin-top: 10px;
+	text-align: right;
+}
+
+.forgot-password a {
+	font-size: 16px;
+	color: #666;
+	text-decoration: none;
 }
 </style>
