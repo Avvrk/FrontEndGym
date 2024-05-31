@@ -1,15 +1,38 @@
 <script setup>
 import { ref } from "vue";
 import { useStoreUsuarios } from "../stores/usuarios";
+import {useRouter} from "vue-router"
+import { createRouter, createWebHashHistory } from "vue-router"
 
+
+const leftDrawerOpen = ref(false);
+const rightDrawerOpen = ref(false);
+
+function toggleLeftDrawer() {
+    leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+function toggleRightDrawer() {
+    rightDrawerOpen.value = !rightDrawerOpen.value;
+}
 const useUsuario = useStoreUsuarios();
-
+const router = useRouter();
 let email = ref("");
 let password = ref("");
 
 async function login() {
+    try {
     const res = await useUsuario.login(email.value, password.value);
     console.log(res);
+    // useUsuario.token = res.data.token;
+    // useUsuario.user = res.data.usuario;
+    console.log(res);
+
+    router.push("/home");
+    } catch{
+        console.log("Error");
+    }
+    
 }
 </script>
 
@@ -39,6 +62,7 @@ async function login() {
                 </div>
             </form>
         </div>
+
     </div>
 </template>
 

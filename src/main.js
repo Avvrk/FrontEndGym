@@ -6,6 +6,7 @@ import "./style.css";
 import App from "./App.vue";
 
 import "@quasar/extras/material-icons/material-icons.css";
+import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
 
 // Import Quasar css
 import "quasar/src/css/index.sass";

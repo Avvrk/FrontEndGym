@@ -1,6 +1,6 @@
 import { createWebHashHistory, createRouter } from 'vue-router'
 
-import Iniciar from '../components/Login.vue'
+import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Cliente from '../components/Clientes.vue'
 import Sedes from '../components/Sedes.vue'
@@ -18,7 +18,6 @@ import { useStoreUsuarios } from "../stores/usuarios.js";
 const auth = (to, from, next) => {
     const userUsuario = useStoreUsuarios()
     if (checkAuth()) {
-        
         const rol = userUsuario.user.rol
         console.log(rol);
         if (!to.meta.rol.includes(rol)) {
@@ -39,7 +38,7 @@ const checkAuth = () => {
 };
 
 const routes = [
-    {path: '/', component: Iniciar },
+    {path: '/', component: Login },
     {path: '/home', component: Home},
     {path: '/clientes', component: Cliente },
     {path: '/sedes', component: Sedes,beforeEnter: auth, meta: { rol: ['administrador', 'recepcionista'] }},

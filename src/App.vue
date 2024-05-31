@@ -16,33 +16,118 @@
         </q-header>
 
         <q-drawer v-model="leftDrawerOpen" side="left" overlay>
-            <router-link to="/">Login</router-link>
-            <br />
-            <router-link to="/clientes">Clientes</router-link>
-            <br />
-            <router-link to="/home">Home</router-link>
-            <br />
-            <router-link to="/ingresos">Ingresos</router-link>
-            <br />
-            <router-link to="/inventario">Inventario</router-link>
-            <br />
-            <router-link to="/mantenimiento">Mantenimiento</router-link>
-            <br />
-            <router-link to="/sedes">Sedes</router-link>
-            <br />
-            <router-link to="/usuarios">Usuarios</router-link>
-            <br />
-            <router-link to="/maquinas">Maquinas</router-link>
-            <br />
-            <router-link to="/pagos">Pagos</router-link>
-            <br />
-            <router-link to="/planes">Planes</router-link>
-            <br />
-            <router-link to="/ventas">Ventas</router-link>
+            <q-list>
+                <q-item clickable tag="router-link" to="/clientes">
+                    <q-item-section>
+                        <q-item-label>Clientes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="groups" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/home">
+                    <q-item-section>
+                        <q-item-label>Home</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="home" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/ingresos">
+                    <q-item-section>
+                        <q-item-label>Ingresos</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="how_to_reg" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/inventario">
+                    <q-item-section>
+                        <q-item-label>Inventario</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="inventory_2" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/">
+                    <q-item-section>
+                        <q-item-label>Login</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="login" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/maquinas">
+                    <q-item-section>
+                        <q-item-label>Máquinas</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="fitness_center" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/mantenimiento">
+                    <q-item-section>
+                        <q-item-label>Mantenimiento</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="build" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/pagos">
+                    <q-item-section>
+                        <q-item-label>Pagos</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="credit_card" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/planes">
+                    <q-item-section>
+                        <q-item-label>Planes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="assignment" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/sedes">
+                    <q-item-section>
+                        <q-item-label>Sedes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="apartment" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/usuarios">
+                    <q-item-section>
+                        <q-item-label>Usuarios</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="assignment_ind" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/ventas">
+                    <q-item-section>
+                        <q-item-label>Ventas</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="attach_money" />
+                    </q-item-section>
+                </q-item>
+            </q-list>
         </q-drawer>
 
         <q-drawer v-model="rightDrawerOpen" side="right" overlay>
-            <!-- drawer content -->
         </q-drawer>
 
         <q-page-container>
@@ -66,6 +151,45 @@ function toggleRightDrawer() {
 </script>
 
 <style scoped>
+.q-header {
+    height: 75px;
+    text-align: center;
+    padding: 15px;
+}
+
+/* Estilos para el avatar */
+.q-avatar img {
+    /* Hacer el avatar redondo */
+    width: 6px;
+    /* Aumento del tamaño del avatar */
+    height: 6px;
+}
+
+.q-toolbar-title {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    /* Color del texto del título */
+    font-weight: bold;
+    /* Fuente en negrita */
+}
+
+.q-item {
+    cursor: pointer;
+}
+
+.q-item:hover {
+    background-color: #cfcfcf;
+    /* Color de fondo al pasar el cursor */
+}
+
+.q-item-label {
+    font-size: 18px;
+    /* Tamaño del texto */
+    margin-left: 10px;
+    /* Espacio entre el icono y el texto */
+}
+
 .logo {
     height: 6em;
     padding: 1.5em;
@@ -83,7 +207,7 @@ function toggleRightDrawer() {
 
 .q-page-container {
     position: absolute;
-	width: 100%;
+    width: 100%;
     height: 100vh;
 }
 </style>
