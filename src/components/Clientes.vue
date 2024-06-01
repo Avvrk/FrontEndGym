@@ -2,7 +2,8 @@
 import { ref, onMounted, computed } from "vue";
 import { useStoreClientes } from "../stores/clientes.js";
 import { useStorePlanes } from "../stores/planes.js";
-import { useQuasar } from "quasar";
+import { useQuasar } from "quasar"
+import { format } from "date-fns";
 
 const $q = useQuasar();
 
@@ -31,7 +32,7 @@ let planesTodo = ref([]);
 // Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
 const idCliente = ref("");
 
-//Variables que contiene los datos ingresados en el formulario
+// Variables que contiene los datos ingresados en el formulario
 let nombreCliente = ref("");
 let tipoDocumento = ref("");
 let documentoCliente = ref("");
@@ -40,6 +41,10 @@ let residenciaCliente = ref("");
 let telefonoCliente = ref("");
 let objetivoCliente = ref("");
 let planCliente = ref("");
+
+
+// Variable para controlar el dato que se mostrara en la tabla
+const opcionBusqueda = ref("");
 
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
@@ -69,6 +74,34 @@ async function listarClientes() {
     rows.value = res.data.clientes;
 }
 
+//Funcion que se encarga de traer todos los clientes activos
+async function listarClientesActivos() {
+    const res = await useCliente.getClientesActivos();
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes inactivos
+async function listarClientesInactivos() {
+    const res = await useCliente.getClientesInactivos();
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes por su fecha de cumpleaños
+async function listarClientesCumpleanios() {
+    const res = await useCliente.getClientesCumpleanios();;
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes por su fecha de ingreso
+async function listarClientesIngresaron() {
+    const res = await useCliente.getClientesIngresaron();
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
 //Funcion que se encarga de traer todos los clientes
 async function listarPlanes() {
     const res = await usePlan.getPlanes();
@@ -91,7 +124,7 @@ async function editarEstado(elemento) {
 
 //Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-    const resultado = await validarDatos()
+    const resultado = await validarDatos();
     console.log(resultado);
     if (resultado != false) {
         const info = {
@@ -109,8 +142,8 @@ async function registrar() {
 }
 
 async function actualizar(id) {
-    actualizarBoton.value = true
-    const resultado = await validarDatos()
+    actualizarBoton.value = true;
+    const resultado = await validarDatos();
     if (resultado) {
         const info = {
             nombre: nombreCliente.value,
@@ -240,7 +273,7 @@ async function validarDatos() {
             position: "bottom-right",
         });
         verificado = false;
-    } /* else {
+    } else {
         console.log(planCliente.value.valor);
         const res = await usePlan.getPlanesId(planCliente.value.valor);
         if (res.status != 200) {
@@ -250,7 +283,7 @@ async function validarDatos() {
                 position: "bottom-right",
             });
         }
-    } */
+    }
     return verificado;
 }
 
@@ -258,10 +291,18 @@ function editarVistaFondo(boolean, booleanA, id) {
     mostrarFormularioCliente.value = boolean;
     actualizarBoton.value == booleanA;
     if (booleanA) {
-        idCliente.value = id
+        idCliente.value = id;
         console.log("hola");
     }
 }
+
+const fechaBonita = (info) => {
+    console.log(info);
+    const nuevoFormato = format(new Date(info), 'dd/MM/yyyy');
+    return nuevoFormato
+};
+
+const configuracionTabla = 
 
 onMounted(() => {
     listarClientes(), listarPlanes();
@@ -274,7 +315,26 @@ onMounted(() => {
             <div>
                 <q-btn @click="editarVistaFondo(true, false, null)"> agregar </q-btn>
             </div>
+            <q-option-group v-model="opcionBusqueda" inline class="q-mb-md"
+                :options="[
+                    { label: 'Todos (predeterminado)', value: 'activas' },
+                    { label: 'Activos', value: 'activas' },
+                    { label: 'Inactivos', value: 'inactivos' },
+                    { label: 'Por plan', value: 'plan' },
+                    { label: 'Por cumpleaños', value: 'cumpleanios' },
+                    { label: 'Por ingreso', value: 'ingresos' },
+                ]" />
             <q-table flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
+                <template v-slot:body-cell-fechaIngreso="props">
+                    <q-td :props="props">
+                        <p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
+                    </q-td>
+                </template>
+                <template v-slot:body-cell-fechaNacimiento="props">
+                    <q-td :props="props">
+                        <p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
+                    </q-td>
+                </template>
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
                         <q-btn @click="verSeguimiento(true, true, props.row._id)"> 📋 </q-btn>

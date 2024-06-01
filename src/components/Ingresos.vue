@@ -1,60 +1,169 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreIngresos } from "../stores/ingresos.js";
+import { useStoreSedes } from "../stores/sedes";
+import { useStoreClientes } from "../stores/clientes.js";
 
 const useIngreso = useStoreIngresos();
+const useSede = useStoreSedes();
+const useCliente = useStoreClientes();
 
 let rows = ref([]);
-
 let columns = ref([
     { name: "fecha", sortable: true, label: "Fecha", field: "fecha", align: "center" },
     { name: "sede", label: "Sede", field: "sede", align: "center" },
     { name: "cliente ", label: "Cliente", field: "cliente ", align: "center" },
 ]);
 
-async function listarIngresos() {
-    const res = await useIngreso.getIngresos();
-    console.log(res.data);
-    rows.value = res.data.ingresos;
-}
+const sedesTodo = ref([]);
+const clientesTodo = ref([]);
 
 // Variables que contienen los datos ingresados en el formulario
-let fechaI = ref("");
-let sedeI = ref("");
-let clienteI = ref("");
+let fechaIngreso = ref("");
+let sedeIngreso = ref("");
+let clienteIngreso = ref("");
+
+// Variables que se usan en el formulario
+const nombreCodigo = ref([]);
+const documentoNombre = ref([]);
 
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioIngreso = ref(false);
 
+const organizarSedes = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.ciudad} / ${element.nombre}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+const organizarClientes = computed(() => {
+    documentoNombre.value = clientesTodo.value.map((element) => ({
+        label: `${element.documento} / ${element.nombre}`,
+        valor: `${element._id}`,
+        nombre: `${element.documento}`,
+    }));
+    console.log(documentoNombre.value);
+    return documentoNombre.value;
+});
+
+// Funcion que se encarga de traer todos los datos de ingreso
+async function listarIngresos() {
+    try {
+        const res = await useIngreso.getIngresos();
+        console.log(res.data);
+        rows.value = res.data.ingresos;
+    } catch (error) {
+        console.error("Error al listar los ingresos:", error);
+    }
+}
+
+async function listarSedes() {
+    try {
+        const res = await useSede.getSedes();
+        console.log(res.data);
+        sedesTodo.value = res.data.sedes;
+    } catch (error) {
+        console.error("Error al listar las sedes:", error);
+    }
+}
+
+async function listarClientes() {
+    try {
+        const res = await useCliente.getClientes();
+        console.log(res.data);
+        clientesTodo.value = res.data.clientes;
+    } catch (error) {
+        console.error("Error al listar los clientes:", error);
+    }
+}
+
 // Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-    if (validarDatos()) {
-        const info = {
-            fecha: fechaI.value,
-            sede: sedeI.value,
-            cliente: clienteI.value,
-        };
-        const res = await useIngreso.log(info);
-        console.log(res);
+    if (await validarDatos()) {
+        try {
+            const info = {
+                fecha: fechaI.value,
+                sede: sedeI.value,
+                cliente: clienteI.value,
+            };
+            const res = await useIngreso.log(info);
+            if (res.status !== 200) {
+                $q.notify({
+                    type: "negative",
+                    message: "Parece que hubo un error en el registro",
+                    position: "bottom-right",
+                });
+            } else {
+                $q.notify({
+                    type: "positive",
+                    message: "El registro se ha realizado correctamente",
+                    position: "bottom-right",
+                });
+                listarUsuarios();
+            }
+        } catch (error) {
+            console.error("Error al registrar el ingreso:", error);
+        }
     }
 } // falta terminar
 
 function resetear() {
-    fechaI.value = "";
-    sedeI.value = "";
-    clienteI.value = "";
+    fechaIngreso.value = "";
+    sedeIngreso.value = "";
+    clienteIngreso.value = "";
 }
+
+let fsDate;
+
+let hoy = new Date();
+hoy.setHours(0, 0, 0, 0);
 
 async function validarDatos() {
     let verificado = true;
+    fsDate = new Date(fechaIngreso.value + "T00:00:00");
 
-    if (fechaI.value == "" || sedeI.value == "" || clienteI.value == "") {
+    if (fechaIngreso.value == "" || sedeIngreso.value == "" || clienteIngreso.value == "") {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
-            position: "bottom-right"
+            position: "bottom-right",
         });
         verificado = false;
+    } else {
+        if (fechaIngreso.value == "") {
+            $q.notify({
+                type: "negative",
+                message: "La fecha de ingreso no puede estar vacia",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (fsDate < hoy) {
+            $q.notify({
+                type: "negative",
+                message: "Ingrese una fecha valida",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (sedeIngreso.value == "") {
+            $q.notify({
+                type: "negative",
+                message: "La sede no puede estar vacia",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (clienteIngreso.value == "") {
+            $q.notify({
+                type: "negative",
+                message: "El cliente no puede estar vacio",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
     }
     return verificado;
 }
@@ -65,6 +174,8 @@ function editarVistaFondo(boolean) {
 
 onMounted(() => {
     listarIngresos();
+    listarClientes();
+    listarSedes();
 });
 </script>
 
@@ -93,15 +204,15 @@ onMounted(() => {
 
         <div id="formularioIngreso" v-if="mostrarFormularioIngreso == true">
             <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
-                <q-input standout="bg-green text-white" v-model="fechaI" label="Fecha" />
-                <q-input standout="bg-green text-white" v-model="sedeI" label="Sede" color="black" />
-                <q-input standout="bg-green text-white" v-model="clienteI" label="Cliente" color="black" />
+                <q-input standout="bg-green text-white" v-model="fechaIngreso" type="date" label="Fecha" />
+                <q-select standout="bg-green text-white" v-model="sedeIngreso" :options="organizarSedes" label="Sedes" color="black" />
+                <q-select standout="bg-green text-white" v-model="clienteIngreso" :options="organizarClientes" label="Clientes" color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
                     <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
-            <button id="botonF"  @click="editarVistaFondo(false)"></button>
+            <button id="botonF" @click="editarVistaFondo(false)"></button>
         </div>
     </div>
 </template>

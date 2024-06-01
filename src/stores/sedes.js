@@ -5,7 +5,6 @@ import axios from "axios";
 
 export const useStoreSedes = defineStore("Sedes", () => {
     const useUsuarios = useStoreUsuarios()
-    let token = ref("");
     const url = "https://avvrk-vyktor23-backendgym.onrender.com"
 
     const getSedes = async () => {

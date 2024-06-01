@@ -105,7 +105,6 @@ async function sedes() {
 
 // Función que se encarga de cambiar el estado de un usuario
 async function editarEstado(elemento) {
-	
 	try {
 		if (elemento.estado === 1) {
 			const res = await useUsuario.putUsuariosInactivar(elemento._id);

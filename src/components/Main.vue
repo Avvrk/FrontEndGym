@@ -17,30 +17,116 @@
 		</q-header>
 
 		<q-drawer v-model="leftDrawerOpen" side="left" overlay>
-			<router-link to="/">Login</router-link>
-			<br />
-			<router-link to="/main/clientes">Clientes</router-link>
-			<br />
-			<router-link to="/main/home">Hogar</router-link>
-			<br />
-			<router-link to="/main/ingresos">Ingresos</router-link>
-			<br />
-			<router-link to="/main/inventario">Inventario</router-link>
-			<br />
-			<router-link to="/main/mantenimiento">Mantenimiento</router-link>
-			<br />
-			<router-link to="/main/sedes">Sedes</router-link>
-			<br />
-			<router-link to="/main/usuarios">Usuarios</router-link>
-			<br />
-			<router-link to="/main/maquinas">Maquinas</router-link>
-			<br />
-			<router-link to="/main/pagos">Pagos</router-link>
-			<br />
-			<router-link to="/main/planes">Planes</router-link>
-			<br />
-			<router-link to="/main/ventas">Ventas</router-link>
-		</q-drawer>
+            <q-list>
+                <q-item clickable tag="router-link" to="/main/clientes">
+                    <q-item-section>
+                        <q-item-label>Clientes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="groups" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/hogar">
+                    <q-item-section>
+                        <q-item-label>Home</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="home" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/ingresos">
+                    <q-item-section>
+                        <q-item-label>Ingresos</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="how_to_reg" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/inventario">
+                    <q-item-section>
+                        <q-item-label>Inventario</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="inventory_2" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/">
+                    <q-item-section>
+                        <q-item-label>Login</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="login" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/maquinas">
+                    <q-item-section>
+                        <q-item-label>Máquinas</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="fitness_center" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/mantenimiento">
+                    <q-item-section>
+                        <q-item-label>Mantenimiento</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="build" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/pagos">
+                    <q-item-section>
+                        <q-item-label>Pagos</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="credit_card" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/planes">
+                    <q-item-section>
+                        <q-item-label>Planes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="assignment" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/sedes">
+                    <q-item-section>
+                        <q-item-label>Sedes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="apartment" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/usuarios">
+                    <q-item-section>
+                        <q-item-label>Usuarios</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="assignment_ind" />
+                    </q-item-section>
+                </q-item>
+
+                <q-item clickable tag="router-link" to="/main/ventas">
+                    <q-item-section>
+                        <q-item-label>Ventas</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="attach_money" />
+                    </q-item-section>
+                </q-item>
+            </q-list>
+        </q-drawer>
 
 		<q-drawer v-model="rightDrawerOpen" side="right" overlay>
 			<!-- drawer content -->

@@ -112,139 +112,140 @@
 <style scoped>
 /* Estilos para el header y la navegación */
 header {
-	background-color: #333;
-	color: #fff;
-	padding: 20px;
-	text-align: center;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
 }
 
 nav ul {
-	list-style-type: none;
-	padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 nav ul li {
-	display: inline;
-	margin-right: 10px;
+  display: inline;
+  margin-right: 10px;
 }
 
 nav ul li a {
-	text-decoration: none;
-	color: #fff;
+  text-decoration: none;
+  color: #fff;
 }
 
 /* Estilos para las secciones y las sedes */
 section {
-	padding: 20px;
+  padding: 20px;
 }
 
 .sede {
-	margin-bottom: 40px;
+  margin-bottom: 40px;
 }
 
 .sede img {
-	display: block;
-	margin: 0 auto;
-	max-width: 100%;
-	height: auto;
-	border-radius: 10px;
-	box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilos para el formulario de contacto */
 .formulario {
-	max-width: 600px;
-	margin: 0 auto;
-	padding: 20px;
-	background-color: #f9f9f9;
-	border-radius: 10px;
-	box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .formulario h3 {
-	text-align: center;
-	margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .campo {
-	margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .campo label {
-	display: block;
-	font-weight: bold;
-	margin-bottom: 5px;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 .campo input[type="text"],
 .campo input[type="email"],
 .campo textarea {
-	width: 100%;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .campo textarea {
-	height: 100px;
+  height: 100px;
 }
 
 button[type="submit"] {
-	background-color: #333;
-	color: #fff;
-	padding: 10px 20px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button[type="submit"]:hover {
-	background-color: #555;
+  background-color: #555;
 }
 
 /* Estilos para el footer */
 footer {
-	background-color: #333;
-	color: #fff;
-	padding: 20px;
-	text-align: center;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
 }
 
-.q-header {
-	height: 75px;
-	text-align: center;
-	padding: 10px;
+
+.q-header{
+  height: 75px;
+  text-align: center;
+  padding: 10px;
 }
 /* Estilos para el avatar */
 .q-avatar img {
-	/* Hacer el avatar redondo */
-	width: 60px; /* Aumento del tamaño del avatar */
-	height: 60px;
+/* Hacer el avatar redondo */
+  width: 60px; /* Aumento del tamaño del avatar */
+  height: 60px;
 }
 
 /* Estilos para la barra de herramientas */
 .q-toolbar-title {
-	display: flex;
-	align-items: center;
-	color: #fff; /* Color del texto del título */
-	font-weight: bold; /* Fuente en negrita */
+  display: flex;
+  align-items: center;
+  color: #fff; /* Color del texto del título */
+  font-weight: bold; /* Fuente en negrita */
 }
 /* Estilos para los enlaces en la barra lateral */
 .q-list {
-	padding: 25px;
+  padding: 25px;
 }
 
 .q-item {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .q-item:hover {
-	background-color: #cfcfcf; /* Color de fondo al pasar el cursor */
+  background-color: #cfcfcf; /* Color de fondo al pasar el cursor */
 }
 
 .q-item-label {
-	font-size: 18px; /* Tamaño del texto */
-	margin-left: 10px; /* Espacio entre el icono y el texto */
+  font-size: 18px; /* Tamaño del texto */
+  margin-left: 10px; /* Espacio entre el icono y el texto */
 }
 </style>

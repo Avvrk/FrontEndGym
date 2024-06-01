@@ -7,10 +7,14 @@ import App from "./App.vue";
 import "./style.css";
 
 import "@quasar/extras/material-icons/material-icons.css";
+import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
 import "quasar/src/css/index.sass";
 
 const pinia = createPinia();
-pinia.use(piniaPluginPersist);
+pinia.use(piniaPluginPersist, {
+  store: sessionStorage, // Esto es opcional, usa localStorage como almacenamiento subyacente
+  paths: ["Usuario"], 
+});
 
 const app = createApp(App);
 
