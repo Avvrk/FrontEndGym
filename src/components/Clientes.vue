@@ -67,6 +67,12 @@ const organizarPlanes = computed(() => {
     return codigoValor.value;
 });
 
+const fechaBonita = (info) => {
+    console.log(info);
+    const nuevoFormato = format(new Date(info), 'dd/MM/yyyy');
+    return nuevoFormato
+};
+
 //Funcion que se encarga de traer todos los clientes
 async function listarClientes() {
     const res = await useCliente.getClientes();
@@ -296,13 +302,7 @@ function editarVistaFondo(boolean, booleanA, id) {
     }
 }
 
-const fechaBonita = (info) => {
-    console.log(info);
-    const nuevoFormato = format(new Date(info), 'dd/MM/yyyy');
-    return nuevoFormato
-};
-
-const configuracionTabla = 
+// const configuracionTabla = 
 
 onMounted(() => {
     listarClientes(), listarPlanes();
