@@ -12,7 +12,6 @@ let password = ref("");
 async function login() {
     try {
         const res = await useUsuario.login(email.value, password.value);
-        // Redirige a la ruta correcta después de un login exitoso
         router.push("/main/hogar");
     } catch (error) {
         console.log(error);
@@ -46,9 +45,6 @@ async function login() {
                         <a href="#">¿Olvidaste la contraseña?</a>
                     </div>
                 </form>
-            </div>
-            <div>
-                <router-view />
             </div>
         </div>
     </div>

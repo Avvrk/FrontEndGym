@@ -6,4 +6,8 @@
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+div {
+    height: 100vh;
+}
+</style>

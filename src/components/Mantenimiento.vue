@@ -5,7 +5,6 @@ import { useStoreMantenimiento } from "../stores/mantenimiento.js";
 const useMantenimiento = useStoreMantenimiento();
 
 let rows = ref([]);
-
 let columns = ref([
     { name: "fecha", sortable: true, label: "Fecha", field: "fecha", align: "center" },
     { name: "descripcion", label: "Descripción", field: "descripcion", align: "center" },
@@ -15,21 +14,21 @@ let columns = ref([
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" }
 ]);
 
+// Variables que contienen los datos ingresados en el formulario
+let idMaquinaMantenimiento = ref("");
+let fechaMantenimiento = ref("");
+let descripcionMantenimiento = ref("");
+let responsableMantenimiento = ref("");
+let precioMantenimiento = ref("");
+
+// Variables para administrar lo que se ve en la pantalla
+const mostrarFormularioMantenimiento = ref(false);
+
 async function listarMantenimientos() {
     const res = await useMantenimiento.getMantenimientos();
     console.log(res.data);
     rows.value = res.data.mantenimientos;
 }
-
-// Variables que contienen los datos ingresados en el formulario
-let idMaquinaM = ref("");
-let fechaM = ref("");
-let descripcionM = ref("");
-let responsableM = ref("");
-let precioM = ref("");
-
-// Variables para administrar lo que se ve en la pantalla
-const mostrarFormularioMantenimiento = ref(false);
 
 // Funcion que se encarga de cambiar el estado de una sede
 async function editarEstado(elemento) {
@@ -44,16 +43,15 @@ async function editarEstado(elemento) {
     }
 }
 
-
 // Funcion que se encarga de enviar los datos del registro
 async function registrar() {
     if (validarDatos()) {
         const info = {
-            idMaquina: idMaquinaM.value,
-            fecha: fechaM.value,
-            descripcion: descripcionM.value,
-            responsable: responsableM.value,
-            precio: precioM.value,
+            idMaquinaantenimiento: idMaquinaM.value,
+            fechaMantenimiento: fechaM.value,
+            descripcionMantenimiento: descripcionM.value,
+            responsableMantenimiento: responsableM.value,
+            precioMantenimiento: precioM.value,
         };
         const res = await useMantenimiento.log(info);
         console.log(res);
@@ -62,11 +60,11 @@ async function registrar() {
 
 
 function resetear() {
-    idMaquinaM.value = "";
-    fechaM.value = "";
-    descripcionM.value = "";
-    responsableM.value = "";
-    precioM.value = "";
+    idMaquinaMantenimiento.value = "";
+    fechaMantenimiento.value = "";
+    descripcionMantenimiento.value = "";
+    responsableMantenimiento.value = "";
+    precioMantenimiento.value = "";
 }
 
 
@@ -120,11 +118,11 @@ onMounted(() => {
         </div>
         <div id="formularioMantenimiento" v-if="mostrarFormularioMantenimiento == true">
             <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
-                <q-input standout="bg-green text-white" v-model="idMaquinaM" label="Id Máquina" />
-                <q-input standout="bg-green text-white" v-model="fechaM" label="Fecha Mantenimiento" color="black" />
-                <q-input standout="bg-green text-white" v-model="descripcionM" label="Descripción" color="black" />
-                <q-input standout="bg-green text-white" v-model="responsableM" label="Responsable" color="black" />
-                <q-input standout="bg-green text-white" v-model="precioM" label="Precio" color="black" />
+                <q-input standout="bg-green text-white" v-model="idMaquinaMantenimiento" label="Id Máquina" />
+                <q-input standout="bg-green text-white" v-model="fechaMantenimiento" label="Fecha Mantenimiento" color="black" />
+                <q-input standout="bg-green text-white" v-model="descripcionMantenimiento" label="Descripción" color="black" />
+                <q-input standout="bg-green text-white" v-model="responsableMantenimiento" label="Responsable" color="black" />
+                <q-input standout="bg-green text-white" v-model="precioMantenimiento" label="Precio" color="black" />
 
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
