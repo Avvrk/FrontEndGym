@@ -54,7 +54,7 @@ let descripcionProducto = ref("");
 let valorProducto = ref("");
 let cantidadProducto = ref("");
 
-const datos = fer("");
+const datos = ref("");
 
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioInventario = ref(false);
