@@ -1,61 +1,48 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { useStoreMaquinas } from "../stores/maquinas.js";
-import { useStoreSedes } from "../stores/sedes.js";
+import { ref, onMounted } from "vue";
+import { useStorePagos } from "../stores/pagos.js";
 import { useQuasar } from "quasar";
-import { format } from "date-fns";
 
 const $q = useQuasar();
 
 // Variables que contienen la store
-const useMaquina = useStoreMaquinas();
-const useSede = useStoreSedes();
+const usePago = useStorePagos();
 
 // Variables para el funcionamiento de la tabla
 let rows = ref([]);
 let columns = ref([
 	{
-		name: "codigo",
+		name: "cliente",
 		sortable: true,
-		label: "Código",
-		field: "codigo",
+		label: "Cliente",
+		field: "cliente",
 		align: "center",
 	},
 	{
-		name: "sede",
-		sortable: true,
-		label: "Sede",
-		field: "sede",
+		name: "plan",
+		label: "Plan",
+		field: "plan",
 		align: "center",
 	},
 	{
-		name: "descripcion",
-		label: "Descripción",
-		field: "descripcion",
+		name: "fecha",
+		label: "Fecha",
+		field: "fecha",
 		align: "center",
 	},
 	{
-		name: "fechaIngreso",
-		sortable: true,
-		label: "Fecha de Ingreso",
-		field: "fechaIngreso",
+		name: "valor",
+		label: "Valor",
+		field: "valor",
 		align: "center",
 	},
-	{
-		name: "fechaUltMan",
-		sortable: true,
-		label: "Fecha de Último Mantenimiento",
-		field: "fechaUltMan",
-		align: "center",
-	},
-	{
+    {
 		name: "estado",
-		sortable: true,
 		label: "Estado",
 		field: "estado",
 		align: "center",
 	},
-	{
+    {
 		name: "opciones",
 		label: "Opciones",
 		field: "opciones",
@@ -63,54 +50,41 @@ let columns = ref([
 	},
 ]);
 
-const nombreCodigo = ref([]);
-
 // Variables que contienen los datos ingresados en el formulario
-let codigoMaquinas = ref("");
-let sedeMaquinas = ref("");
-let descripcionMaquinas = ref("");
-let fechaIngresoMaquinas = ref("");
-let fechaUltMantMaquinas = ref("");
-
-const sedesTodo = ref([]);
+let clientePago = ref("");
+let planPago = ref("");
+let fechaPago = ref("");
+let valorPago = ref("");
 
 // Variable que contiene los datos de la sede a editar
 const datos = ref("");
 
 // Variables para administrar lo que se ve en la pantalla
-const mostrarFormularioMaquina = ref(false);
+const mostrarFormularioPago = ref(false);
 const mostrarBotonEnviar = ref(true);
 
-async function listarMaquinas() {
+// Funcion que se encarga de traer todas las sedes
+async function listarPagos() {
 	try {
-		const res = await useMaquina.getMaquinas();
+		const res = await usePago.getPagos();
 		console.log(res.data);
-		rows.value = res.data.maquinas;
+		rows.value = res.data.pagos;
 	} catch (error) {
-		console.error("Error al listar maquinas:", error);
+		console.log("Error al listar pagos:", error);
 	}
 }
 
-async function sedes() {
-	try {
-		const res = await useSede.getSedes();
-		sedesTodo.value = res.data.sedes;
-	} catch (error) {
-		console.error("Error al listar sedes:", error);
-	}
-}
-
-// Funcion que se encarga de cambiar el estado de una Maquina
+// Funcion que se encarga de cambiar el estado de una sede
 async function editarEstado(elemento) {
 	try {
 		if (elemento.estado === 1) {
-			const res = await useMaquina.putMaquinasInactivar(elemento._id);
+			const res = await usePago.putPagosInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
-			const res = await useMaquina.putMaquinasActivar(elemento._id);
+			const res = await usePago.putPagosActivar(elemento._id);
 		}
-		listarMaquinas();
+		listarPagos();
 	} catch (error) {
-		console.error("Error al editar estado de la maquina:", error);
+		console.log("Error al editar estado del pago:", error);
 	}
 }
 
@@ -119,13 +93,12 @@ async function registrar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				codigo: codigoMaquinas.value,
-				sede: sedeMaquinas.value,
-				descripcion: descripcionMaquinas.value,
-				fechaIngreso: fechaIngresoMaquinas.value,
-				fechaUltMan: fechaUltMantMaquinas.value,
+				cliente: clientePago.value,
+				plan: planPago.value,
+				fecha: fechaPago.value,
+				valor: valorPago.value,
 			};
-			const res = await useMaquina.postMaquinas(info);
+			const res = await usePago.log(info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -138,160 +111,129 @@ async function registrar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarPagos();
 			}
 		} catch (error) {
-			console.error("Error al registrar la maquina:", error);
+			console.error("Error al registrar el pago:", error);
 		}
 	}
 }
 
+// Funcion que se encarga de enviar los datos para la edicion
 async function editar() {
+	console.log("holaaaaaaaaa");
 	if (await validarDatos()) {
 		try {
 			const info = {
-				codigo: codigoMaquinas.value,
-				sede: sedeMaquinas.value,
-				descripcion: descripcionMaquinas.value,
-				fechaIngreso: fechaIngresoMaquinas.value,
-				fechaUltMan: fechaUltMantMaquinas.value,
+				cliente: clientePago.value,
+				plan: planPago.value,
+				fecha: fechaPago.value,
+				valor: valorPago.value,
 			};
-			const res = await useMaquina.putMaquinas(datos.value._id, info);
+			const res = await usePago.putPagos(datos.value._id, info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
-					message: "Parece que hubo un error al editar la maquina",
+					message: "Parece que hubo un error al editar el pago",
 					position: "bottom-right",
 				});
 			} else {
 				$q.notify({
 					type: "positive",
-					message: "La maquina se ah actualizado correctamente",
+					message: "El pago se ha editado correctamente",
 					position: "bottom-right",
 				});
 				listarUsuarios();
 			}
 		} catch (error) {
-			console.error("Error al editar la maquina:", error);
+			console.error("Error al editar el pago:", error);
 		}
 	}
 }
 
+// Funcion que se encarga de resetear los datos en el formulario
 function resetear() {
-	codigoMaquinas.value = "";
-	sedeMaquinas.value = "";
-	descripcionMaquinas.value = "";
-	fechaIngresoMaquinas.value = "";
-	fechaUltMantMaquinas.value = "";
+	clientePago.value = "";
+	planPago.value = "";
+	fechaPago.value = "";
+	valorPago.value = "";
 }
 
+// Función que se encarga de validar los datos que se registrarán o editaran
 async function validarDatos() {
 	let verificado = true;
 
 	if (
-		codigoMaquinas.value == "" ||
-		sedeMaquinas.value == "" ||
-		descripcionMaquinas.value == "" ||
-		fechaIngresoMaquinas.value == "" ||
-		fechaUltMantMaquinas.value == ""
+		!clientePago.value &&
+		!planPago.value &&
+		!fechaPago.value &&
+		!valorPago.value
 	) {
 		$q.notify({
 			type: "negative",
-			message: "Llenar todos los campos",
+			message: "Llena todos los campos",
 			position: "bottom-right",
 		});
 		verificado = false;
 	} else {
-		if (codigoMaquinas.value == "") {
+		if (!clientePago.value) {
 			$q.notify({
 				type: "negative",
-				message: "El codigo no puede estar vacio",
+				message: "El cliente está vacío",
 				position: "bottom-right",
 			});
 			verificado = false;
 		}
-		if (sedeMaquinas.value == "") {
+		if (!planPago.value) {
 			$q.notify({
 				type: "negative",
-				message: "La sede no puede estar vacio",
+				message: "El plan está vacío",
 				position: "bottom-right",
 			});
 			verificado = false;
 		}
-		if (descripcionMaquinas.value == "") {
+		if (!fechaPago.value) {
 			$q.notify({
 				type: "negative",
-				message: "la descripcion no puede estar vacio",
+				message: "La fecha está vacía",
 				position: "bottom-right",
 			});
 			verificado = false;
 		}
-		if (fechaIngresoMaquinas.value == "") {
+		if (!valorPago.value) {
 			$q.notify({
 				type: "negative",
-				message: "La fecha de ingreso no puede estar vacio",
-				position: "bottom-right",
-			});
-			verificado = false;
-		}
-		if (fechaUltMantMaquinas.value == "") {
-			$q.notify({
-				type: "negative",
-				message:
-					"La fecha de ultimo mantenimiento no puede estar vacio",
+				message: "El valor del pago está vacío",
 				position: "bottom-right",
 			});
 			verificado = false;
 		}
 	}
+
 	return verificado;
 }
 
-// hay que separa lo de ultima fecha
+// Funcion que se encarga de mostrar el formulario y configurar datos extras para el
+// boolean: para saber si se muestra o no el formulario, extra: contiene los datos de la persona que se editara, boton: contiene un dato booleano para saber si aparece el boton de registar o actualizar
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioMaquina.value = boolean;
+	mostrarFormularioPago.value = boolean;
 	datos.value = extra;
 	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
-		const sede = nombreCodigo.value.find(
-			(element) => element.valor === datos.value.idSede
-		);
-		const formatoISO = datos.value.fechaIngreso;
-		const formatoDate = formatoISO.substring(0, 10);
-
-		// codigoMaq
-		uinas.value = datos.value.codigo;
-		sedeMaquinas.value = sede;
-		descripcionMaquinas.value = datos.value.descripcion;
-		fechaIngresoMaquinas.value = formatoDate;
-		fechaUltMantMaquinas.value = datos.value.fechaUltMan;
+		clientePago.value = datos.value.cliente;
+		planPago.value = datos.value.plan;
+		fechaPago.value = datos.value.fechaPago;
+		valorPago.value = datos.value.valorPago;
 	} else {
-		codigoMaquinas.value = "";
-		sedeMaquinas.value = "";
-		descripcionMaquinas.value = "";
-		fechaIngresoMaquinas.value = "";
-		fechaUltMantMaquinas.value = "";
+		clientePago.value = "";
+		planPago.value = "";
+		fechaPago.value = "";
+		valorPago.value = "";
 	}
 }
 
-const fechaBonita = (info) => {
-	console.log(info);
-	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-	return nuevoFormato;
-};
-
-const organizarSedes = computed(() => {
-	nombreCodigo.value = sedesTodo.value.map((element) => ({
-		label: `${element.ciudad} / ${element.nombre}`,
-		valor: `${element._id}`,
-		nombre: `${element.nombre}`,
-	}));
-	return nombreCodigo.value;
-});
-
 onMounted(() => {
-	listarMaquinas();
-	sedes();
+	listarPagos();
 });
 </script>
 
@@ -306,7 +248,7 @@ onMounted(() => {
 			<q-table
 				flat
 				bordered
-				title="Lista de Maquinas"
+				title="Lista de Pagos"
 				:rows="rows"
 				:columns="columns"
 				row-key="id">
@@ -334,58 +276,31 @@ onMounted(() => {
 						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
-				<template v-slot:body-cell-fechaIngreso="props">
-					<q-td :props="props">
-						<p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
-					</q-td>
-				</template>
-				<template v-slot:body-cell-fechaUltMan="props">
-					<q-td :props="props">
-						<p>
-							{{
-								props.row.fechaUltMant
-									? fechaBonita(props.row.fechaUltMant)
-									: "N/A"
-							}}
-						</p>
-					</q-td>
-				</template>
 			</q-table>
 		</div>
-
-		<div id="formularioMaquina" v-if="mostrarFormularioMaquina == true">
+		<div id="formularioPago" v-if="mostrarFormularioPago">
 			<q-form
-				@submit="mostrarBotonEnviar ? registrar() : editar()"
-				@reset="resetear()"
+				@submit="mostrarBotonEnviar == true ? registrar() : editar()"
+				@reset="resetear"
 				class="q-gutter-md">
 				<q-input
 					standout="bg-green text-white"
-					v-model="codigoMaquinas"
-					label="Código" />
-				<q-select
+					v-model="clientePago"
+					label="Cliente" />
+				<q-input
 					standout="bg-green text-white"
-					v-model="sedeMaquinas"
-					:options="organizarSedes"
-					option-value="valor"
-					option-label="label"
-					label="Sede"
+					v-model="planPago"
+					label="Plan"
 					color="black" />
 				<q-input
 					standout="bg-green text-white"
-					v-model="descripcionMaquinas"
-					label="Descripción"
+					v-model="fechaPago"
+					label="Fecha"
 					color="black" />
 				<q-input
 					standout="bg-green text-white"
-					v-model="fechaIngresoMaquinas"
-					type="date"
-					label="Fecha de Ingreso Máquina"
-					color="black" />
-				<q-input
-					standout="bg-green text-white"
-					v-model="fechaUltMantMaquinas"
-					type="date"
-					label="Fecha Último Mantenimiento"
+					v-model="valorPago"
+					label="Valor"
 					color="black" />
 				<div>
 					<q-btn
@@ -469,7 +384,7 @@ onMounted(() => {
 	background-color: #f0f0f0;
 }
 
-#formularioMaquina {
+#formularioPago {
 	position: absolute;
 	top: 0;
 	width: 100%;

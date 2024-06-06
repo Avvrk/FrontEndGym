@@ -1,9 +1,16 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreClientes } from "../stores/clientes.js";
+import { useStorePlanes } from "../stores/planes.js";
+import { useQuasar } from "quasar"
+import { format } from "date-fns";
+
+const $q = useQuasar();
 
 const useCliente = useStoreClientes();
+const usePlan = useStorePlanes();
 
+// Variables para el funcionamiento de la tabla
 let rows = ref([]);
 let columns = ref([
     { name: "nombre", sortable: true, label: "Nombre Usuario", field: "nombre", align: "center" },
@@ -14,38 +21,98 @@ let columns = ref([
     { name: "direccion", label: "Direccion", field: "direccion", align: "center" },
     { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
     { name: "objetivo", label: "Objetivo", field: "objetivo", align: "center" },
-    { name: "observaciones", label: "Observaciones", field: "Observaciones", align: "center" },
-    { name: "estado", sortable: true, label: "Estado", field: "estado", align: "center" },
+    { name: "observaciones", label: "Observaciones", field: "observaciones", align: "center" },
     { name: "plan", label: "Plan", field: "plan", align: "center" },
-    { name: "seguimiento", label: "Seguimiento", field: "seguimiento", align: "center" },
+    { name: "estado", sortable: true, label: "Estado", field: "estado", align: "center" },
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 ]);
 
-// async function agregarCliente() {
-//     const res = await useCliente.postClientes();
-//     console.log(res.data);
+let planesTodo = ref([]);
 
-//     rows.value = res.data.clientes
-// }
+// Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
+const idCliente = ref("");
 
-//Variables que contiene los datos ingresados en el formulario
-
+// Variables que contiene los datos ingresados en el formulario
 let nombreCliente = ref("");
+let tipoDocumento = ref("");
 let documentoCliente = ref("");
 let edadCliente = ref("");
-let resi = ref("");
-let nTelefono = ref("");
-let objective = ref("");
-let plan = ref("");
+let residenciaCliente = ref("");
+let telefonoCliente = ref("");
+let objetivoCliente = ref("");
+let planCliente = ref("");
+
+
+// Variable para controlar el dato que se mostrara en la tabla
+const opcionBusqueda = ref("");
 
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
+const actualizarBoton = ref(false);
+
+// Variables que se usan en el formulario
+// CC = Cedula de Ciudadania, TI = Tarjeta de Identidad, CE = Cedula Extranjera, PS = Pasaporte, TE = Tarjeta Estudiantil, Otro = Documento que no este en la lista
+const tipoD = ["CC", "TI", "CE", "PS", "TE", "Otro"];
+const codigoValor = ref([]);
+
+const organizarPlanes = computed(() => {
+    planesTodo.value.forEach((element) => {
+        codigoValor.value.push({
+            label: `${element.codigo} / ${element.valor}`,
+            valor: `${element._id}`,
+            nombre: `${element.codigo}`,
+        });
+    });
+    console.log(codigoValor.value);
+    return codigoValor.value;
+});
+
+const fechaBonita = (info) => {
+    console.log(info);
+    const nuevoFormato = format(new Date(info), 'dd/MM/yyyy');
+    return nuevoFormato
+};
 
 //Funcion que se encarga de traer todos los clientes
 async function listarClientes() {
     const res = await useCliente.getClientes();
     console.log(res.data);
     rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes activos
+async function listarClientesActivos() {
+    const res = await useCliente.getClientesActivos();
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes inactivos
+async function listarClientesInactivos() {
+    const res = await useCliente.getClientesInactivos();
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes por su fecha de cumpleaños
+async function listarClientesCumpleanios() {
+    const res = await useCliente.getClientesCumpleanios();;
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes por su fecha de ingreso
+async function listarClientesIngresaron() {
+    const res = await useCliente.getClientesIngresaron();
+    console.log(res.data);
+    rows.value = res.data.clientes;
+}
+
+//Funcion que se encarga de traer todos los clientes
+async function listarPlanes() {
+    const res = await usePlan.getPlanes();
+    console.log(res.data);
+    planesTodo.value = res.data.planes;
 }
 
 //Funcion que se encarga de cambiar el estado de un cliente
@@ -63,36 +130,58 @@ async function editarEstado(elemento) {
 
 //Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-    if (validarDatos()) {
+    const resultado = await validarDatos();
+    console.log(resultado);
+    if (resultado != false) {
         const info = {
-            nombre: nombreU.value,
-            documento: nDocumento.value,
-            edad: age.value,
-            direccion: residencia.value,
-            telefono: nTelefono.value,
-            objetivo: objective.value,
-            plan: plan.value,
+            nombre: nombreCliente.value,
+            documento: documentoCliente.value,
+            edad: edadCliente.value,
+            direccion: residenciaCliente.value,
+            telefono: telefonoCliente.value,
+            objetivo: objetivoCliente.value,
+            plan: planCliente.value,
         };
+        const res = await useCliente.postClientes(info);
+        console.log(res.data);
+    }
+}
+
+async function actualizar(id) {
+    actualizarBoton.value = true;
+    const resultado = await validarDatos();
+    if (resultado) {
+        const info = {
+            nombre: nombreCliente.value,
+            documento: documentoCliente.value,
+            edad: edadCliente.value,
+            direccion: residenciaCliente.value,
+            telefono: telefonoCliente.value,
+            objetivo: objetivoCliente.value,
+            plan: planCliente.value,
+        };
+        const res = await useCliente.putClientes(id, info);
+        console.log(res.data);
     }
 }
 
 //Funcion que se encarga de resetear
 function resetear() {
-    console.log("Hola");
-    nombreU = ref("");
-    nDocumento = ref("");
-    age = ref("");
-    residencia = ref("");
-    nTelefono = ref("");
-    objective = ref("");
-    plan = ref("");
+    nombreCliente = ref("");
+    tipoDocumento = ref("");
+    documentoCliente = ref("");
+    edadCliente = ref("");
+    residenciaCliente = ref("");
+    telefonoCliente = ref("");
+    objetivoCliente = ref("");
+    planCliente = ref("");
 }
 
 //Funcion que se encarga de validar los datos que se resgistrarán.
 async function validarDatos() {
     let verificado = true;
 
-    if (nombreU.value == "") {
+    if (nombreCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "El nombre está vacío",
@@ -100,7 +189,15 @@ async function validarDatos() {
         });
         verificado = false;
     }
-    if (nDocumento == "") {
+    if (tipoDocumento.value == "") {
+        $q.notify({
+            type: "negative",
+            message: "El tipo de documento está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    if (documentoCliente.value == "") {
         $q.notify({
             type: "negative",
             message: "El documento está vacío",
@@ -108,7 +205,7 @@ async function validarDatos() {
         });
         verificado = false;
     } else {
-        if (!isNaN(nDocumento) || nDocumento < 0) {
+        if (!isNaN(documentoCliente.value) || documentoCliente.value < 0) {
             $q.notify({
                 type: "negative",
                 message: "El documento debe ser un numero valido",
@@ -117,15 +214,15 @@ async function validarDatos() {
             verificado = false;
         }
     }
-    if (age == "") {
+    if (edadCliente.value == "") {
         $q.notify({
             type: "negative",
-            message: "La edad está vacío",
+            message: "La edad está vacía",
             position: "bottom-right",
         });
         verificado = false;
     } else {
-        if (!isNaN(age) || age < 0) {
+        if (!isNaN(edadCliente.value) || edadCliente.value < 0) {
             $q.notify({
                 type: "negative",
                 message: "La edad debe ser un numero valido",
@@ -134,38 +231,116 @@ async function validarDatos() {
             verificado = false;
         }
     }
-    if (residencia == "") {
+    if (residenciaCliente.value == "") {
         $q.notify({
             type: "negative",
-            message: "La dirección está vacía",
+            message: "La residencia está vacía",
             position: "bottom-right",
         });
         verificado = false;
     }
+    if (telefonoCliente.value == "") {
+        $q.notify({
+            type: "negative",
+            message: "El telefono está vacía",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else {
+        if (!isNaN(telefonoCliente.value) || telefonoCliente.value < 0) {
+            $q.notify({
+                type: "negative",
+                message: "El telefono debe ser un numero valido",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (telefonoCliente.value < 10) {
+            $q.notify({
+                type: "negative",
+                message: "El telefono debe tener minimo 10 caracteres",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+    }
+    if (objetivoCliente.value == "") {
+        $q.notify({
+            type: "negative",
+            message: "El objetivo está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    if (planCliente.value == "") {
+        $q.notify({
+            type: "negative",
+            message: "El plan está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else {
+        console.log(planCliente.value.valor);
+        const res = await usePlan.getPlanesId(planCliente.value.valor);
+        if (res.status != 200) {
+            $q.notify({
+                type: "negative",
+                message: `Hubo un error con el plan con codigo ${planCliente.value.codigo}`,
+                position: "bottom-right",
+            });
+        }
+    }
     return verificado;
 }
 
-function editarVistaFondo(boolean) {
+function editarVistaFondo(boolean, booleanA, id) {
     mostrarFormularioCliente.value = boolean;
+    actualizarBoton.value == booleanA;
+    if (booleanA) {
+        idCliente.value = id;
+        console.log("hola");
+    }
 }
 
+// const configuracionTabla = 
+
 onMounted(() => {
-    listarClientes();
+    listarClientes(), listarPlanes();
 });
 </script>
 
 <template>
     <div>
         <div class="q-pa-md">
-          <div>
-            <q-btn @click="editarVistaFondo(true)"> agregar </q-btn>
-        </div>
+            <div>
+                <q-btn @click="editarVistaFondo(true, false, null)"> agregar </q-btn>
+            </div>
+            <q-option-group v-model="opcionBusqueda" inline class="q-mb-md"
+                :options="[
+                    { label: 'Todos (predeterminado)', value: 'activas' },
+                    { label: 'Activos', value: 'activas' },
+                    { label: 'Inactivos', value: 'inactivos' },
+                    { label: 'Por plan', value: 'plan' },
+                    { label: 'Por cumpleaños', value: 'cumpleanios' },
+                    { label: 'Por ingreso', value: 'ingresos' },
+                ]" />
             <q-table flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
+                <template v-slot:body-cell-fechaIngreso="props">
+                    <q-td :props="props">
+                        <p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
+                    </q-td>
+                </template>
+                <template v-slot:body-cell-fechaNacimiento="props">
+                    <q-td :props="props">
+                        <p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
+                    </q-td>
+                </template>
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
-                        <q-btn @click="editar(props.row)"> ✏️ </q-btn>
-                        <q-btn v-if="props.row.estado == 1"> ❌ </q-btn>
-                        <q-btn v-else> ✅ </q-btn>
+                        <q-btn @click="verSeguimiento(true, true, props.row._id)"> 📋 </q-btn>
+                        <q-btn @click="editarVistaFondo(true, true, props.row._id)"> ✏️ </q-btn>
+                        <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"> ❌ </q-btn>
+                        <q-btn v-else @click="editarEstado(props.row)"> ✅ </q-btn>
                     </q-td>
                 </template>
                 <template v-slot:body-cell-estado="props">
@@ -176,17 +351,19 @@ onMounted(() => {
                 </template>
             </q-table>
         </div>
-        <div id="formularioCliente" v-if="mostrarFormularioCliente == true" >
-            <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
-                <q-input standout="bg-green text-white" type="text" placeholder="Nombre" v-model="nombreCliente" />
-                <q-input standout="bg-green text-white" type="text" placeholder="Documento" v-model="documentoCliente" />
-                <q-input standout="bg-green text-white" type="text" placeholder="Edad" v-model="edadCliente" />
-                <q-input standout="bg-green text-white" type="text" placeholder="Direccion" v-model="direccionCliente" />
-                <q-input standout="bg-green text-white" type="text" placeholder="Telefono" v-model="telefonoCliente" />
-                <q-input standout="bg-green text-white" type="text" placeholder="Objetivo" v-model="objetivoCliente" />
-                <q-input standout="bg-green text-white" type="text" placeholder="Plan" v-model="planCliente" />
+        <div id="formularioCliente" v-if="mostrarFormularioCliente == true">
+            <q-form @submit="registrar()" @button="actualizar()" @reset="resetear()" class="q-gutter-md">
+                <q-input standout="bg-green text-white" type="text" label="Nombre" v-model="nombreCliente" />
+                <q-select standout="bg-green text-white" :options="tipoD" label="Tipo de Documento" v-model="tipoDocumento" />
+                <q-input standout="bg-green text-white" type="text" label="Documento" v-model="documentoCliente" />
+                <q-input standout="bg-green text-white" type="text" label="Edad" v-model="edadCliente" />
+                <q-input standout="bg-green text-white" type="text" label="Direccion" v-model="residenciaCliente" />
+                <q-input standout="bg-green text-white" type="tel" label="Telefono" v-model="telefonoCliente" />
+                <q-input standout="bg-green text-white" type="text" label="Objetivo" v-model="objetivoCliente" />
+                <q-select standout="bg-green text-white" :options="organizarPlanes" label="Plan" v-model="planCliente" />
                 <div>
-                    <q-btn label="Enviar" type="submit" color="primary" />
+                    <q-btn v-if="actualizarBoton == false" label="Enviar" type="submit" color="primary" />
+                    <q-btn v-else label="Actualizar" type="button" color="primary" />
                     <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
@@ -197,36 +374,36 @@ onMounted(() => {
 
 <style scoped>
 .q-form {
-  background-color: rgb(255, 255, 255);
-  padding: 10px 25px 20px 10px;
-  border-radius: 1pc;
-  width: 30rem;
-  z-index: 3;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgb(255, 255, 255);
+    padding: 10px 25px 20px 10px;
+    border-radius: 1pc;
+    width: 30rem;
+    z-index: 3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #formularioCliente {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
 }
 
 #botonF {
-  position: absolute;
-  top: 0;
-  background-color: rgba(128, 128, 128, 0.205);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 0;
-  z-index: 1;
+    position: absolute;
+    top: 0;
+    background-color: rgba(128, 128, 128, 0.205);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    z-index: 1;
 }
 
 .q-pa-md {

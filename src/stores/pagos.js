@@ -2,13 +2,13 @@ import { defineStore } from "pinia";
 import { useStoreUsuarios } from "./usuarios.js";
 import axios from "axios";
 
-export const useStorePlanes = defineStore("Planes", () => {
+export const useStorePagos = defineStore("Pagos", () => {
 	const useUsuarios = useStoreUsuarios();
 	const url = "https://avvrk-vyktor23-backendgym.onrender.com";
 
-	const getPlanes = async () => {
+	const getPagos = async () => {
 		try {
-			const res = await axios.get(`${url}/planes`, {
+			const res = await axios.get(`${url}/pagos`, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -21,9 +21,9 @@ export const useStorePlanes = defineStore("Planes", () => {
 		}
 	};
 
-	const getPlanesId = async (id) => {
+	const getPagosId = async (id) => {
 		try {
-			const res = await axios.get(`${url}/planes/id/${id}`, {
+			const res = await axios.get(`${url}/pagos/id/${id}`, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -36,9 +36,9 @@ export const useStorePlanes = defineStore("Planes", () => {
 		}
 	};
 
-	const getPlanesActivos = async () => {
+	const getPagosActivos = async () => {
 		try {
-			const res = await axios.get(`${url}/planes/activos`, {
+			const res = await axios.get(`${url}/pagos/activos`, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -51,9 +51,9 @@ export const useStorePlanes = defineStore("Planes", () => {
 		}
 	};
 
-	const getPlanesInactivos = async () => {
+	const getPagosInactivos = async () => {
 		try {
-			const res = await axios.get(`${url}/planes/inactivos`, {
+			const res = await axios.get(`${url}/pagos/inactivos`, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -66,9 +66,9 @@ export const useStorePlanes = defineStore("Planes", () => {
 		}
 	};
 
-	const postPlanes = async (info) => {
+	const postPagos = async (info) => {
 		try {
-			const res = await axios.post(`${url}/planes`, info, {
+			const res = await axios.post(`${url}/pagos`, info, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -81,9 +81,9 @@ export const useStorePlanes = defineStore("Planes", () => {
 		}
 	};
 
-	const putPlanes = async (id, info) => {
+	const putPagos = async (id, info) => {
 		try {
-			const res = await axios.put(`${url}/planes/${id}`, info, {
+			const res = await axios.put(`${url}/pagos/${id}`, info, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -96,9 +96,9 @@ export const useStorePlanes = defineStore("Planes", () => {
 		}
 	};
 
-	const putPlanesActivar = async (id) => {
+	const putPagosActivar = async (id) => {
         try {
-            const res = await axios.put(`${url}/planes/activar/${id}`, {}, {
+            const res = await axios.put(`${url}/pagos/activar/${id}`, {}, {
                 headers: {
                     token: useUsuarios.token,
                 },
@@ -111,9 +111,9 @@ export const useStorePlanes = defineStore("Planes", () => {
         }
     };
 
-    const putPlanesInactivar = async (id) => {
+    const putPagosInactivar = async (id) => {
         try {
-            const res = await axios.put(`${url}/planes/inactivar/${id}`, {}, {
+            const res = await axios.put(`${url}/pagos/inactivar/${id}`, {}, {
                 headers: {
                     token: useUsuarios.token,
                 },
@@ -128,13 +128,13 @@ export const useStorePlanes = defineStore("Planes", () => {
 
 
 	return {
-		getPlanes,
-		getPlanesId,
-		getPlanesActivos,
-		getPlanesInactivos,
-		postPlanes,
-		putPlanes,
-		putPlanesActivar,
-		putPlanesInactivar,
+		getPagos,
+		getPagosId,
+		getPagosActivos,
+		getPagosInactivos,
+		postPagos,
+		putPagos,
+		putPagosActivar,
+		putPagosInactivar,
 	};
 });
