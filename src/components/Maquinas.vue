@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useStoreMaquinas } from "../stores/maquinas.js";
+import { useStoreSedes } from "../stores/sedes.js";
 import { useQuasar } from "quasar";
 import { format } from "date-fns";
 
@@ -8,6 +9,7 @@ const $q = useQuasar();
 
 // Variables que contienen la store
 const useMaquina = useStoreMaquinas();
+const useSede = useStoreSedes();
 
 // Variables para el funcionamiento de la tabla
 let rows = ref([]);
@@ -21,7 +23,7 @@ let columns = ref([
 	},
 	{
 		name: "sede",
-        sortable: true,
+		sortable: true,
 		label: "Sede",
 		field: "sede",
 		align: "center",
@@ -34,21 +36,21 @@ let columns = ref([
 	},
 	{
 		name: "fechaIngreso",
-        sortable: true,
+		sortable: true,
 		label: "Fecha de Ingreso",
 		field: "fechaIngreso",
 		align: "center",
 	},
 	{
 		name: "fechaUltMan",
-        sortable: true,
+		sortable: true,
 		label: "Fecha de Último Mantenimiento",
 		field: "fechaUltMan",
 		align: "center",
 	},
 	{
 		name: "estado",
-        sortable: true,
+		sortable: true,
 		label: "Estado",
 		field: "estado",
 		align: "center",
@@ -61,12 +63,16 @@ let columns = ref([
 	},
 ]);
 
+const nombreCodigo = ref([]);
+
 // Variables que contienen los datos ingresados en el formulario
 let codigoMaquinas = ref("");
 let sedeMaquinas = ref("");
 let descripcionMaquinas = ref("");
 let fechaIngresoMaquinas = ref("");
 let fechaUltMantMaquinas = ref("");
+
+const sedesTodo = ref([]);
 
 // Variable que contiene los datos de la sede a editar
 const datos = ref("");
@@ -82,6 +88,15 @@ async function listarMaquinas() {
 		rows.value = res.data.maquinas;
 	} catch (error) {
 		console.error("Error al listar maquinas:", error);
+	}
+}
+
+async function sedes() {
+	try {
+		const res = await useSede.getSedes();
+		sedesTodo.value = res.data.sedes;
+	} catch (error) {
+		console.error("Error al listar sedes:", error);
 	}
 }
 
@@ -101,25 +116,73 @@ async function editarEstado(elemento) {
 
 // Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-	if (validarDatos()) {
-		const info = {
-			codigo: codigoMaquinas.value,
-			sede: sedeMaquinas.value,
-			descripcion: descripcionMaquinas.value,
-			fechaIngreso: fechaIngresoMaquinas.value,
-			fechaUltMan: fechaUltMantMaquinas.value,
-		};
-		const res = await useMaquina.log(info);
-		console.log(res);
+	if (await validarDatos()) {
+		try {
+			const info = {
+				codigo: codigoMaquinas.value,
+				sede: sedeMaquinas.value,
+				descripcion: descripcionMaquinas.value,
+				fechaIngreso: fechaIngresoMaquinas.value,
+				fechaUltMan: fechaUltMantMaquinas.value,
+			};
+			const res = await useMaquina.postMaquinas(info);
+			if (res.status !== 200) {
+				$q.notify({
+					type: "negative",
+					message: "Parece que hubo un error en el registro",
+					position: "bottom-right",
+				});
+			} else {
+				$q.notify({
+					type: "positive",
+					message: "El registro se ha realizado correctamente",
+					position: "bottom-right",
+				});
+				listarUsuarios();
+			}
+		} catch (error) {
+			console.error("Error al registrar la maquina:", error);
+		}
 	}
-} // falta terminar
+}
+
+async function editar() {
+	if (await validarDatos()) {
+		try {
+			const info = {
+				codigo: codigoMaquinas.value,
+				sede: sedeMaquinas.value,
+				descripcion: descripcionMaquinas.value,
+				fechaIngreso: fechaIngresoMaquinas.value,
+				fechaUltMan: fechaUltMantMaquinas.value,
+			};
+			const res = await useMaquina.putMaquinas(datos.value._id, info);
+			if (res.status !== 200) {
+				$q.notify({
+					type: "negative",
+					message: "Parece que hubo un error al editar la maquina",
+					position: "bottom-right",
+				});
+			} else {
+				$q.notify({
+					type: "positive",
+					message: "La maquina se ah actualizado correctamente",
+					position: "bottom-right",
+				});
+				listarUsuarios();
+			}
+		} catch (error) {
+			console.error("Error al editar la maquina:", error);
+		}
+	}
+}
 
 function resetear() {
-	codigoM.value = "";
-	sedeM.value = "";
-	descripcionM.value = "";
-	fechaIngresoM.value = "";
-	fechaUltMantM.value = "";
+	codigoMaquinas.value = "";
+	sedeMaquinas.value = "";
+	descripcionMaquinas.value = "";
+	fechaIngresoMaquinas.value = "";
+	fechaUltMantMaquinas.value = "";
 }
 
 async function validarDatos() {
@@ -138,22 +201,97 @@ async function validarDatos() {
 			position: "bottom-right",
 		});
 		verificado = false;
+	} else {
+		if (codigoMaquinas.value == "") {
+			$q.notify({
+				type: "negative",
+				message: "El codigo no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (sedeMaquinas.value == "") {
+			$q.notify({
+				type: "negative",
+				message: "La sede no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (descripcionMaquinas.value == "") {
+			$q.notify({
+				type: "negative",
+				message: "la descripcion no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (fechaIngresoMaquinas.value == "") {
+			$q.notify({
+				type: "negative",
+				message: "La fecha de ingreso no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (fechaUltMantMaquinas.value == "") {
+			$q.notify({
+				type: "negative",
+				message:
+					"La fecha de ultimo mantenimiento no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
 	}
 	return verificado;
 }
 
-function editarVistaFondo(boolean) {
+// hay que separa lo de ultima fecha
+function editarVistaFondo(boolean, extra, boton) {
 	mostrarFormularioMaquina.value = boolean;
+	datos.value = extra;
+	mostrarBotonEnviar.value = boton;
+	if (boton == false && extra != null) {
+		const sede = nombreCodigo.value.find(
+			(element) => element.valor === datos.value.idSede
+		);
+		const formatoISO = datos.value.fechaIngreso;
+		const formatoDate = formatoISO.substring(0, 10);
+
+		// codigoMaq
+		uinas.value = datos.value.codigo;
+		sedeMaquinas.value = sede;
+		descripcionMaquinas.value = datos.value.descripcion;
+		fechaIngresoMaquinas.value = formatoDate;
+		fechaUltMantMaquinas.value = datos.value.fechaUltMan;
+	} else {
+		codigoMaquinas.value = "";
+		sedeMaquinas.value = "";
+		descripcionMaquinas.value = "";
+		fechaIngresoMaquinas.value = "";
+		fechaUltMantMaquinas.value = "";
+	}
 }
 
 const fechaBonita = (info) => {
-    console.log(info);
-    const nuevoFormato = format(new Date(info), 'dd/MM/yyyy');
-    return nuevoFormato
+	console.log(info);
+	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
+	return nuevoFormato;
 };
+
+const organizarSedes = computed(() => {
+	nombreCodigo.value = sedesTodo.value.map((element) => ({
+		label: `${element.ciudad} / ${element.nombre}`,
+		valor: `${element._id}`,
+		nombre: `${element.nombre}`,
+	}));
+	return nombreCodigo.value;
+});
 
 onMounted(() => {
 	listarMaquinas();
+	sedes();
 });
 </script>
 
@@ -161,7 +299,9 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true)"> agregar </q-btn>
+				<q-btn @click="editarVistaFondo(true, null, true)">
+					agregar
+				</q-btn>
 			</div>
 			<q-table
 				flat
@@ -172,7 +312,10 @@ onMounted(() => {
 				row-key="id">
 				<template v-slot:body-cell-opciones="props">
 					<q-td :props="props">
-						<q-btn> ✏️ </q-btn>
+						<q-btn
+							@click="editarVistaFondo(true, props.row, false)">
+							✏️
+						</q-btn>
 						<q-btn
 							v-if="props.row.estado == 1"
 							@click="editarEstado(props.row)">
@@ -191,31 +334,40 @@ onMounted(() => {
 						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
-                <template v-slot:body-cell-fechaIngreso="props">
-                    <q-td :props="props">
-                        <p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
-                    </q-td>
-                </template>
-                <template v-slot:body-cell-fechaUltMan="props">
-                    <q-td :props="props">
-                        <p>{{ props.row.fechaUltMant ? fechaBonita(props.row.fechaUltMant) : 'N/A' }}</p>
-                    </q-td>
-                </template>
+				<template v-slot:body-cell-fechaIngreso="props">
+					<q-td :props="props">
+						<p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
+					</q-td>
+				</template>
+				<template v-slot:body-cell-fechaUltMan="props">
+					<q-td :props="props">
+						<p>
+							{{
+								props.row.fechaUltMant
+									? fechaBonita(props.row.fechaUltMant)
+									: "N/A"
+							}}
+						</p>
+					</q-td>
+				</template>
 			</q-table>
 		</div>
 
 		<div id="formularioMaquina" v-if="mostrarFormularioMaquina == true">
 			<q-form
-				@submit="registrar()"
+				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@reset="resetear()"
 				class="q-gutter-md">
 				<q-input
 					standout="bg-green text-white"
 					v-model="codigoMaquinas"
 					label="Código" />
-				<q-input
+				<q-select
 					standout="bg-green text-white"
 					v-model="sedeMaquinas"
+					:options="organizarSedes"
+					option-value="valor"
+					option-label="label"
 					label="Sede"
 					color="black" />
 				<q-input
@@ -226,16 +378,26 @@ onMounted(() => {
 				<q-input
 					standout="bg-green text-white"
 					v-model="fechaIngresoMaquinas"
+					type="date"
 					label="Fecha de Ingreso Máquina"
 					color="black" />
 				<q-input
 					standout="bg-green text-white"
 					v-model="fechaUltMantMaquinas"
-					type="tel"
+					type="date"
 					label="Fecha Último Mantenimiento"
 					color="black" />
 				<div>
-					<q-btn label="Enviar" type="submit" color="primary" />
+					<q-btn
+						v-if="mostrarBotonEnviar"
+						label="Enviar"
+						type="submit"
+						color="primary" />
+					<q-btn
+						v-else
+						label="Actualizar"
+						type="submit"
+						color="primary" />
 					<q-btn
 						label="Limpiar"
 						type="reset"
@@ -244,7 +406,9 @@ onMounted(() => {
 						class="q-ml-sm" />
 				</div>
 			</q-form>
-			<button id="botonF" @click="editarVistaFondo(false)"></button>
+			<button
+				id="botonF"
+				@click="editarVistaFondo(false, null, false)"></button>
 		</div>
 	</div>
 </template>
