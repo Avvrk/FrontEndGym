@@ -36,7 +36,7 @@ let columns = ref([
 		name: "opciones",
 		label: "Opciones",
 		field: "opciones",
-		aling: "center",
+		align: "center",
 	},
 ]);
 
@@ -54,41 +54,45 @@ let hoy = new Date();
 hoy.setHours(0, 0, 0, 0);
 
 // Variables que se usan en el formulario
-const nombreCodigo = ref([]);
-const documentoNombre = ref([]);
+const nombreCodigo = ref(null);
+const documentoNombre = ref(null);
 
 const datos = ref("");
 
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioIngreso = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
 
-const organizarSedes = computed(() => {
+const organizarSedes = () => {
 	nombreCodigo.value = sedesTodo.value.map((element) => ({
 		label: `${element.ciudad} / ${element.nombre}`,
 		valor: `${element._id}`,
 		nombre: `${element.nombre}`,
 	}));
 	return nombreCodigo.value;
-});
+};
 
-const organizarClientes = computed(() => {
+const organizarClientes = () => {
 	documentoNombre.value = clientesTodo.value.map((element) => ({
 		label: `${element.documento} / ${element.nombre}`,
 		valor: `${element._id}`,
-		nombre: `${element.documento}`,
+		nombre: `${element.nombre}`,
 	}));
 	console.log(documentoNombre.value);
 	return documentoNombre.value;
-});
+};
 
 const buscarNombre = (id) => {
-	try {
-		const cliente = clientesTodo.value.find((c) => c._id == id);
-		return cliente;
-	} catch (error) {
-		console.log("Error al buscar el cliente:", error);
-	}
+	const cliente = clientesTodo.value.find((c) => c._id === id);
+	return cliente.nombre;
+};
+
+const clienteBuscar = (id) => {
+	const cliente = documentoNombre.value.find(
+		(element) => element.valor === id
+	);
+	return cliente;
 };
 
 const fechaBonita = (info) => {
@@ -96,11 +100,9 @@ const fechaBonita = (info) => {
 	return nuevoFormato;
 };
 
-// Funcion que se encarga de traer todos los datos de ingreso
 async function listarIngresos() {
 	try {
 		const res = await useIngreso.getIngresos();
-		console.log(res.data);
 		rows.value = res.data.ingresos;
 	} catch (error) {
 		console.error("Error al listar los ingresos:", error);
@@ -110,8 +112,8 @@ async function listarIngresos() {
 async function listarSedes() {
 	try {
 		const res = await useSede.getSedes();
-		console.log(res.data);
 		sedesTodo.value = res.data.sedes;
+		organizarSedes()
 	} catch (error) {
 		console.error("Error al listar las sedes:", error);
 	}
@@ -120,14 +122,19 @@ async function listarSedes() {
 async function listarClientes() {
 	try {
 		const res = await useCliente.getClientes();
-		console.log(res.data);
 		clientesTodo.value = res.data.clientes;
+		organizarClientes()
 	} catch (error) {
 		console.error("Error al listar los clientes:", error);
 	}
 }
 
-// Funcion que se encarga de enviar los datos del registro
+async function listarDatos() {
+	await Promise.all([listarIngresos(), listarSedes(), listarClientes()]);
+	loading.value = false; // Datos cargados
+}
+
+// Función que se encarga de enviar los datos del registro
 async function registrar() {
 	if (await validarDatos()) {
 		try {
@@ -197,9 +204,9 @@ async function validarDatos() {
 	fsDate = new Date(fechaIngreso.value + "T00:00:00");
 
 	if (
-		fechaIngreso.value == "" ||
-		sedeIngreso.value == "" ||
-		clienteIngreso.value == ""
+		fechaIngreso.value === "" ||
+		sedeIngreso.value === "" ||
+		clienteIngreso.value === ""
 	) {
 		$q.notify({
 			type: "negative",
@@ -208,33 +215,33 @@ async function validarDatos() {
 		});
 		verificado = false;
 	} else {
-		if (fechaIngreso.value == "") {
+		if (fechaIngreso.value === "") {
 			$q.notify({
 				type: "negative",
-				message: "La fecha de ingreso no puede estar vacia",
+				message: "La fecha de ingreso no puede estar vacía",
 				position: "bottom-right",
 			});
 			verificado = false;
 		} else if (fsDate < hoy) {
 			$q.notify({
 				type: "negative",
-				message: "Ingrese una fecha valida",
+				message: "Ingrese una fecha válida",
 				position: "bottom-right",
 			});
 			verificado = false;
 		}
-		if (sedeIngreso.value == "") {
+		if (sedeIngreso.value === "") {
 			$q.notify({
 				type: "negative",
-				message: "La sede no puede estar vacia",
+				message: "La sede no puede estar vacía",
 				position: "bottom-right",
 			});
 			verificado = false;
 		}
-		if (clienteIngreso.value == "") {
+		if (clienteIngreso.value === "") {
 			$q.notify({
 				type: "negative",
-				message: "El cliente no puede estar vacio",
+				message: "El cliente no puede estar vacío",
 				position: "bottom-right",
 			});
 			verificado = false;
@@ -244,24 +251,26 @@ async function validarDatos() {
 }
 
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioIngreso.value = boolean;
 	datos.value = extra;
 	mostrarBotonEnviar.value = boton;
-	if (boton == false && extra != null) {
-		fechaIngreso.value = datos.value.fecha;
+	if (boton === false && extra != null) {
+		const formatoISO = datos.value.fecha;
+		const formatoDate = formatoISO.substring(0, 10);
+
+		fechaIngreso.value = formatoDate;
 		sedeIngreso.value = datos.value.sede;
-		clienteIngreso.value = datos.value.cliente;
+		clienteIngreso.value = clienteBuscar(datos.value.cliente);
+		console.log(datos.value.cliente, documentoNombre.value, clienteBuscar(datos.value.cliente));
 	} else {
 		fechaIngreso.value = "";
 		sedeIngreso.value = "";
 		clienteIngreso.value = "";
 	}
+	mostrarFormularioIngreso.value = boolean;
 }
 
 onMounted(() => {
-	listarIngresos();
-	listarClientes();
-	listarSedes();
+	listarDatos();
 });
 </script>
 
@@ -269,11 +278,12 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
 			<q-table
+				v-if="!loading"
 				flat
 				bordered
 				title="Lista de Ingresos"
@@ -287,7 +297,12 @@ onMounted(() => {
 				</template>
 				<template v-slot:body-cell-cliente="props">
 					<q-td :props="props">
-						<p>{{ buscarNombre(props.row.cliente).nombre }}</p>
+						<p>{{ buscarNombre(props.row.cliente) }}</p>
+					</q-td>
+				</template>
+				<template v-slot:body-cell-sede="props">
+					<q-td :props="props">
+						<p>{{ props.row.sede }}</p>
 					</q-td>
 				</template>
 				<template v-slot:body-cell-opciones="props">
@@ -299,9 +314,11 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
+			<!-- Indicador de carga -->
 		</div>
 
-		<div id="formularioIngreso" v-if="mostrarFormularioIngreso == true">
+		<div id="formularioIngreso" v-if="mostrarFormularioIngreso">
 			<q-form
 				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@reset="resetear()"

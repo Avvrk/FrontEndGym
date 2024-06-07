@@ -123,7 +123,7 @@ async function registrar() {
 				sede: sedeMaquinas.value,
 				descripcion: descripcionMaquinas.value,
 				fechaIngreso: fechaIngresoMaquinas.value,
-				fechaUltMan: fechaUltMantMaquinas.value,
+				fechaUltMant: fechaUltMantMaquinas.value,
 			};
 			const res = await useMaquina.postMaquinas(info);
 			if (res.status !== 200) {
@@ -154,7 +154,7 @@ async function editar() {
 				sede: sedeMaquinas.value,
 				descripcion: descripcionMaquinas.value,
 				fechaIngreso: fechaIngresoMaquinas.value,
-				fechaUltMan: fechaUltMantMaquinas.value,
+				fechaUltMant: fechaUltMantMaquinas.value,
 			};
 			const res = await useMaquina.putMaquinas(datos.value._id, info);
 			if (res.status !== 200) {
@@ -259,8 +259,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		const formatoISO = datos.value.fechaIngreso;
 		const formatoDate = formatoISO.substring(0, 10);
 
-		// codigoMaq
-		uinas.value = datos.value.codigo;
+		codigoMaquinas.value = datos.value.codigo;
 		sedeMaquinas.value = sede;
 		descripcionMaquinas.value = datos.value.descripcion;
 		fechaIngresoMaquinas.value = formatoDate;
