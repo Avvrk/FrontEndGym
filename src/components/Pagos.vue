@@ -62,15 +62,39 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioPago = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+const organizarPlanes = () => {
+	codigoValor.value = planesTodo.value.map((element) => ({
+		label: `${element.codigo} / ${element.valor}`,
+		valor: `${element._id}`,
+		nombre: `${element.codigo}`,
+	}));
+	return codigoValor.value;
+};
+
+async function listarDatos() {
+	await Promise.all([listarPagos(), listarPlanes()]);
+	loading.value = false; // Datos cargados
+}
 
 // Funcion que se encarga de traer todas las sedes
 async function listarPagos() {
 	try {
 		const res = await usePago.getPagos();
-		console.log(res.data);
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.log("Error al listar pagos:", error);
+	}
+}
+
+async function listarPlanes() {
+	try {
+		const res = await usePlanes.getPlanes();
+		planesTodo.value = res.data.planes;
+		organizarPlanes();
+	} catch (error) {
+		console.log("Error al listar planes:", error);
 	}
 }
 
@@ -121,7 +145,6 @@ async function registrar() {
 
 // Funcion que se encarga de enviar los datos para la edicion
 async function editar() {
-	console.log("holaaaaaaaaa");
 	if (await validarDatos()) {
 		try {
 			const info = {
@@ -216,24 +239,31 @@ async function validarDatos() {
 // Funcion que se encarga de mostrar el formulario y configurar datos extras para el
 // boolean: para saber si se muestra o no el formulario, extra: contiene los datos de la persona que se editara, boton: contiene un dato booleano para saber si aparece el boton de registar o actualizar
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioPago.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
+		const plan = codigoValor.value.find(
+			(element) => element.valor === datos.value.idPlan
+		);
+		const formatoISO = datos.value.fechaPago;
+		const formatoDate = formatoISO.substring(0, 10);
+
 		clientePago.value = datos.value.cliente;
-		planPago.value = datos.value.plan;
-		fechaPago.value = datos.value.fechaPago;
+		planPago.value = plan;
+		fechaPago.value = formatoDate;
 		valorPago.value = datos.value.valorPago;
 	} else {
 		clientePago.value = "";
 		planPago.value = "";
 		fechaPago.value = "";
 		valorPago.value = "";
-	}
+	}	
+	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioPago.value = boolean;
 }
 
 onMounted(() => {
-	listarPagos();
+	listarDatos();
 });
 </script>
 
@@ -241,11 +271,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Pagos"
@@ -277,21 +307,24 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div id="formularioPago" v-if="mostrarFormularioPago">
 			<q-form
-				@submit="mostrarBotonEnviar == true ? registrar() : editar()"
+				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@reset="resetear"
 				class="q-gutter-md">
 				<q-input
 					standout="bg-green text-white"
 					v-model="clientePago"
 					label="Cliente" />
-				<q-input
+				<q-select 
 					standout="bg-green text-white"
 					v-model="planPago"
-					label="Plan"
-					color="black" />
+					:options="organizarPlanes()"
+					option-value="valor"
+					option-label="label"
+					label="Plan"/>
 				<q-input
 					standout="bg-green text-white"
 					v-model="fechaPago"

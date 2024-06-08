@@ -66,6 +66,7 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioMantenimiento = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
 
 const organizarMaquinas = () => {
 	codigoSede.value = maquinasTodo.value.map((element) => ({
@@ -77,9 +78,15 @@ const organizarMaquinas = () => {
 };
 
 const buscarMaquina = (id) => {
-	const maquina = maquinasTodo.find((m) => m._id == id);
+	const maquina = maquinasTodo.value.find((m) => m._id == id);
+	console.log(maquina, id, maquinasTodo.value);
 	return maquina.codigo;
 };
+
+async function listarDatos() {
+	await Promise.all([listarMantenimientos(), listarMaquinas()]);
+	loading.value = false; // Datos cargados
+}
 
 async function listarMantenimientos() {
 	try {
@@ -243,15 +250,16 @@ async function validarDatos() {
 }
 
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioMantenimiento.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
+		const formatoISO = datos.value.fecha;
+		const formatoDate = formatoISO.substring(0, 10);
+
 		const maquina = codigoSede.value.find(
 			(element) => element.valor === datos.value.idMaquina
 		);
 		idMaquinaMantenimiento.value = maquina;
-		fechaMantenimiento.value = datos.value.fecha;
+		fechaMantenimiento.value = formatoDate;
 		descripcionMantenimiento.value = datos.value.descripcion;
 		responsableMantenimiento.value = datos.value.responsable;
 		precioMantenimiento.value = datos.value.precio;
@@ -262,11 +270,13 @@ function editarVistaFondo(boolean, extra, boton) {
 		responsableMantenimiento.value = "";
 		precioMantenimiento.value = "";
 	}
+	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioMantenimiento.value = boolean;
 }
 
 onMounted(() => {
-	listarMantenimientos();
-	listarMaquinas();
+	listarDatos();
 });
 </script>
 
@@ -274,11 +284,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Mantenimientos"
@@ -298,6 +308,7 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div
 			id="formularioMantenimiento"
@@ -309,7 +320,7 @@ onMounted(() => {
 				<q-select
 					standout="bg-green text-white"
 					v-model="idMaquinaMantenimiento"
-					:options="organizarMaquinas"
+					:options="organizarMaquinas()"
 					option-value="valor"
 					option-label="label"
 					label="Maquina"

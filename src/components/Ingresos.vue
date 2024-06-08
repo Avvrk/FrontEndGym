@@ -54,8 +54,8 @@ let hoy = new Date();
 hoy.setHours(0, 0, 0, 0);
 
 // Variables que se usan en el formulario
-const nombreCodigo = ref(null);
-const documentoNombre = ref(null);
+const nombreCodigo = ref([]);
+const documentoNombre = ref([]);
 
 const datos = ref("");
 
@@ -249,8 +249,6 @@ async function validarDatos() {
 
 function editarVistaFondo(boolean, extra, boton) {
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
-	mostrarFormularioIngreso.value = boolean;
 	if (boton === false && extra != null) {
 		const formatoISO = datos.value.fecha;
 		const formatoDate = formatoISO.substring(0, 10);
@@ -264,6 +262,8 @@ function editarVistaFondo(boolean, extra, boton) {
 		clienteIngreso.value = "";
 	}
 	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioIngreso.value = boolean;
 }
 
 onMounted(() => {
@@ -328,13 +328,13 @@ onMounted(() => {
 				<q-select
 					standout="bg-green text-white"
 					v-model="sedeIngreso"
-					:options="organizarSedes"
+					:options="organizarSedes()"
 					label="Sedes"
 					color="black" />
 				<q-select
 					standout="bg-green text-white"
 					v-model="clienteIngreso"
-					:options="organizarClientes"
+					:options="organizarClientes()"
 					label="Clientes"
 					color="black" />
 				<div>

@@ -65,6 +65,12 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioPlan = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+async function listarDatos() {
+	await Promise.all([listarPlanes()]);
+	loading.value = false; // Datos cargados
+}
 
 // Funcion que se encarga de traer todos los planes
 async function listarPlanes() {
@@ -165,10 +171,10 @@ async function validarDatos() {
 	let verificado = true;
 
 	if (
-		codigoPlanes.value == "" ||
-		descripcionPlanes.value == "" ||
-		valorPlanes.value == "" ||
-		diasPlanes.value == ""
+		!codigoPlanes.value ||
+		!descripcionPlanes.value ||
+		!valorPlanes.value ||
+		!diasPlanes.value
 	) {
 		$q.notify({
 			type: "negative",
@@ -228,9 +234,7 @@ async function validarDatos() {
 }
 
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioPlan.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
 		codigoPlanes.value = datos.value.codigo;
 		descripcionPlanes.value = datos.value.descripcion;
@@ -242,10 +246,13 @@ function editarVistaFondo(boolean, extra, boton) {
 		valorPlanes.value = "";
 		diasPlanes.value = "";
 	}
+	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioPlan.value = boolean;
 }
 
 onMounted(() => {
-	listarPlanes();
+	listarDatos();
 });
 </script>
 
@@ -253,10 +260,10 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
 			</div>
-			<q-table
-				flat
+			<q-table v-if="!loading"
+				flat 
 				bordered
 				title="Lista de Planes"
 				:rows="rows"
@@ -287,6 +294,7 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 
 		<div id="formularioPlan" v-if="mostrarFormularioPlan == true">

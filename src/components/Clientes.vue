@@ -93,6 +93,7 @@ const opcionBusqueda = ref("");
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
 const mostrarBotonEnviar = ref(false);
+const loading = ref(true); // Agregar estado de carga
 
 // Variables que se usan en el formulario
 // CC = Cedula de Ciudadania, TI = Tarjeta de Identidad, CE = Cedula Extranjera, PS = Pasaporte, TE = Tarjeta Estudiantil, Otro = Documento que no este en la lista
@@ -112,6 +113,11 @@ const fechaBonita = (info) => {
 	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
 	return nuevoFormato;
 };
+
+async function listarDatos() {
+	await Promise.all([listarClientes()]);
+	loading.value = false; // Datos cargados
+}
 
 //Funcion que se encarga de traer todos los clientes
 async function listarClientes() {
@@ -394,6 +400,7 @@ async function validarDatos() {
 }
 
 function editarVistaFondo(boolean, extra, boton) {
+	datos.value = extra;
 	if (boton == false && extra != null) {
 		const plan = codigoValor.value.find(
 			(element) => element.valor === datos.value.idPlan
@@ -419,7 +426,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		objetivoCliente.value = "";
 		planCliente.value = "";
 	}
-    datos.value = extra;
+    
 	mostrarBotonEnviar.value = boton;
     mostrarFormularioCliente.value = boolean;
 }
@@ -427,8 +434,7 @@ function editarVistaFondo(boolean, extra, boton) {
 // const configuracionTabla =
 
 onMounted(() => {
-	listarClientes();
-	listarPlanes();
+	listarDatos();
 });
 </script>
 
@@ -436,11 +442,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-option-group
+			<q-option-group v-if="!loading"
 				v-model="opcionBusqueda"
 				inline
 				class="q-mb-md"
@@ -452,7 +458,7 @@ onMounted(() => {
 					{ label: 'Por cumpleaños', value: 'cumpleanios' },
 					{ label: 'Por ingreso', value: 'ingresos' },
 				]" />
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Clientes"
@@ -498,10 +504,11 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div id="formularioCliente" v-if="mostrarFormularioCliente == true">
 			<q-form
-				@submit="registrar()"
+				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@button="actualizar()"
 				@reset="resetear()"
 				class="q-gutter-md">
@@ -542,10 +549,10 @@ onMounted(() => {
 					v-model="objetivoCliente" />
 				<q-select
 					standout="bg-green text-white"
-					:options="organizarPlanes"
-					label="Plan"
+					:options="organizarPlanes()"
 					option-value="valor"
 					option-label="label"
+					label="Plan"
 					v-model="planCliente" />
 				<div>
 					<q-btn

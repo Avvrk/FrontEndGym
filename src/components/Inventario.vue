@@ -59,6 +59,12 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioInventario = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+async function listarDatos() {
+	await Promise.all([listarInventario()]);
+	loading.value = false; // Datos cargados
+}
 
 async function listarInventario() {
 	try {
@@ -194,9 +200,7 @@ async function validarDatos() {
 }
 
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioInventario.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
 		codigoProducto.value = datos.value.codigo;
 		descripcionProducto.value = datos.value.descripcion;
@@ -208,10 +212,13 @@ function editarVistaFondo(boolean, extra, boton) {
 		valorProducto.value = "";
 		cantidadProducto.value = "";
 	}
+
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioInventario.value = boolean;
 }
 
 onMounted(() => {
-	listarInventario();
+	listarDatos();
 });
 </script>
 
@@ -219,11 +226,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Inventario"
@@ -238,7 +245,16 @@ onMounted(() => {
 						</q-btn>
 					</q-td>
 				</template>
+				<template v-slot:body-cell-estado="props">
+					<q-td :props="props">
+						<p v-if="props.row.estado == 1" style="color: green">
+							Activo
+						</p>
+						<p v-else style="color: red">Inactivo</p>
+					</q-td>
+				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div
 			id="formularioInventario"

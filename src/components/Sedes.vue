@@ -77,12 +77,17 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioSede = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+async function listarDatos() {
+	await Promise.all([listarSedes()]);
+	loading.value = false; // Datos cargados
+}
 
 // Funcion que se encarga de traer todas las sedes
 async function listarSedes() {
 	try {
 		const res = await useSede.getSedes();
-		console.log(res.data);
 		rows.value = res.data.sedes;
 	} catch (error) {
 		console.log("Error al listar sedes:", error);
@@ -139,7 +144,6 @@ async function registrar() {
 
 // Funcion que se encarga de enviar los datos para la edicion
 async function editar() {
-	console.log("holaaaaaaaaa");
 	if (await validarDatos()) {
 		try {
 			const info = {
@@ -259,9 +263,7 @@ async function validarDatos() {
 // Funcion que se encarga de mostrar el formulario y configurar datos extras para el
 // boolean: para saber si se muestra o no el formulario, extra: contiene los datos de la persona que se editara, boton: contiene un dato booleano para saber si aparece el boton de registar o actualizar
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioSede.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
 		nombreSede.value = datos.value.nombre;
 		ciudadSede.value = datos.value.ciudad;
@@ -277,11 +279,14 @@ function editarVistaFondo(boolean, extra, boton) {
 		horarioSede.value = "";
 		nombreSede.value = "";
 		telefonoSede.value = "";
-	}
+	}	
+	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioSede.value = boolean;
 }
 
 onMounted(() => {
-	listarSedes();
+	listarDatos();
 });
 </script>
 
@@ -289,11 +294,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Sedes"
@@ -325,10 +330,11 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div id="formularioSede" v-if="mostrarFormularioSede">
 			<q-form
-				@submit="mostrarBotonEnviar == true ? registrar() : editar()"
+				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@reset="resetear"
 				class="q-gutter-md">
 				<q-input
@@ -348,6 +354,7 @@ onMounted(() => {
 				<q-input
 					standout="bg-green text-white"
 					v-model="horarioSede"
+					hide= "(hora inicio) / (hora cierre)"
 					label="Horario"
 					color="black" />
 				<q-input

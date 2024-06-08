@@ -22,10 +22,10 @@ let columns = ref([
 		align: "center",
 	},
 	{
-		name: "sede",
+		name: "idSede",
 		sortable: true,
 		label: "Sede",
-		field: "sede",
+		field: "idSede",
 		align: "center",
 	},
 	{
@@ -65,6 +65,12 @@ let columns = ref([
 
 const nombreCodigo = ref([]);
 
+let fsDateI;
+let fsDateUM;
+
+let hoy = new Date();
+hoy.setHours(0, 0, 0, 0);
+
 // Variables que contienen los datos ingresados en el formulario
 let codigoMaquinas = ref("");
 let sedeMaquinas = ref("");
@@ -80,11 +86,35 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioMaquina = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+const fechaBonita = (info) => {
+	console.log(info);
+	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
+	return nuevoFormato;
+};
+
+const organizarSedes = () => {
+	nombreCodigo.value = sedesTodo.value.map((element) => ({
+		label: `${element.ciudad} / ${element.nombre}`,
+		valor: `${element._id}`,
+		nombre: `${element.nombre}`,
+	}));
+	return nombreCodigo.value;
+};
+
+const buscarSede = (id) => {
+	return sedesTodo.value.find((element) => element._id === id)
+}
+
+async function listarDatos() {
+	await Promise.all([listarMaquinas(), sedes()]);
+	loading.value = false; // Datos cargados
+}
 
 async function listarMaquinas() {
 	try {
 		const res = await useMaquina.getMaquinas();
-		console.log(res.data);
 		rows.value = res.data.maquinas;
 	} catch (error) {
 		console.error("Error al listar maquinas:", error);
@@ -95,6 +125,7 @@ async function sedes() {
 	try {
 		const res = await useSede.getSedes();
 		sedesTodo.value = res.data.sedes;
+		organizarSedes
 	} catch (error) {
 		console.error("Error al listar sedes:", error);
 	}
@@ -187,6 +218,8 @@ function resetear() {
 
 async function validarDatos() {
 	let verificado = true;
+	fsDateI = new Date(fechaIngresoMaquinas.value + "T00:00:00");
+	fsDateUM = new Date(fechaUltMantMaquinas.value + "T00:00:00");
 
 	if (
 		codigoMaquinas.value == "" ||
@@ -233,12 +266,26 @@ async function validarDatos() {
 				position: "bottom-right",
 			});
 			verificado = false;
+		} else if (fsDateI > hoy) {
+			$q.notify({
+				type: "negative",
+				message: "Ingrese una fecha de ingreso valida",
+				position: "bottom-right",
+			});
+			verificado = false;
 		}
 		if (fechaUltMantMaquinas.value == "") {
 			$q.notify({
 				type: "negative",
 				message:
 					"La fecha de ultimo mantenimiento no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		} else if (fsDateUM > hoy) {
+			$q.notify({
+				type: "negative",
+				message: "Ingrese una fecha de ultimo mantenimiento valida",
 				position: "bottom-right",
 			});
 			verificado = false;
@@ -249,21 +296,23 @@ async function validarDatos() {
 
 // hay que separa lo de ultima fecha
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioMaquina.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
 		const sede = nombreCodigo.value.find(
 			(element) => element.valor === datos.value.idSede
 		);
-		const formatoISO = datos.value.fechaIngreso;
-		const formatoDate = formatoISO.substring(0, 10);
-
+		const formatoISOi = datos.value.fechaIngreso;
+		const formatoDatei = formatoISOi.substring(0, 10);
+		if (datos.value.fechaUltMant) {
+			const formatoISOum = datos.value.fechaUltMant;
+			const formatoDateum = formatoISOum.substring(0, 10);
+			fechaUltMantMaquinas.value = formatoDateum;
+		}
+		
 		codigoMaquinas.value = datos.value.codigo;
 		sedeMaquinas.value = sede;
 		descripcionMaquinas.value = datos.value.descripcion;
-		fechaIngresoMaquinas.value = formatoDate;
-		fechaUltMantMaquinas.value = datos.value.fechaUltMan;
+		fechaIngresoMaquinas.value = formatoDatei;
 	} else {
 		codigoMaquinas.value = "";
 		sedeMaquinas.value = "";
@@ -271,26 +320,14 @@ function editarVistaFondo(boolean, extra, boton) {
 		fechaIngresoMaquinas.value = "";
 		fechaUltMantMaquinas.value = "";
 	}
+	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioMaquina.value = boolean;
 }
 
-const fechaBonita = (info) => {
-	console.log(info);
-	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-	return nuevoFormato;
-};
-
-const organizarSedes = computed(() => {
-	nombreCodigo.value = sedesTodo.value.map((element) => ({
-		label: `${element.ciudad} / ${element.nombre}`,
-		valor: `${element._id}`,
-		nombre: `${element.nombre}`,
-	}));
-	return nombreCodigo.value;
-});
 
 onMounted(() => {
-	listarMaquinas();
-	sedes();
+	listarDatos();
 });
 </script>
 
@@ -298,11 +335,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Maquinas"
@@ -349,7 +386,15 @@ onMounted(() => {
 						</p>
 					</q-td>
 				</template>
+				<template v-slot:body-cell-idSede="props">
+					<q-td :props="props">
+						<p>
+							{{ buscarSede(props._id) }}
+						</p>
+					</q-td>
+				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 
 		<div id="formularioMaquina" v-if="mostrarFormularioMaquina == true">
@@ -364,7 +409,7 @@ onMounted(() => {
 				<q-select
 					standout="bg-green text-white"
 					v-model="sedeMaquinas"
-					:options="organizarSedes"
+					:options="organizarSedes()"
 					option-value="valor"
 					option-label="label"
 					label="Sede"
