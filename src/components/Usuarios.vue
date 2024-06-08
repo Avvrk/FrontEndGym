@@ -127,8 +127,8 @@ async function registrar() {
 				telefono: telefonoUsuario.value,
 				password: contraseñaUsuario.value,
 				sede: sedeUsuario.value.nombre,
-				idSede: sedeUsuario.value.valor,
 				rol: rolUsuario.value,
+				idSede: sedeUsuario.value.valor,
 			};
 			const res = await useUsuario.log(info);
 			if (res.status !== 200) {

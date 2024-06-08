@@ -204,9 +204,9 @@ async function validarDatos() {
 	fsDate = new Date(fechaIngreso.value + "T00:00:00");
 
 	if (
-		fechaIngreso.value === "" ||
-		sedeIngreso.value === "" ||
-		clienteIngreso.value === ""
+		!fechaIngreso.value &&
+		!sedeIngreso.value &&
+		!clienteIngreso.value
 	) {
 		$q.notify({
 			type: "negative",
@@ -215,7 +215,7 @@ async function validarDatos() {
 		});
 		verificado = false;
 	} else {
-		if (fechaIngreso.value === "") {
+		if (!fechaIngreso.value) {
 			$q.notify({
 				type: "negative",
 				message: "La fecha de ingreso no puede estar vacía",
@@ -230,7 +230,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (sedeIngreso.value === "") {
+		if (!sedeIngreso.value) {
 			$q.notify({
 				type: "negative",
 				message: "La sede no puede estar vacía",
@@ -238,7 +238,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (clienteIngreso.value === "") {
+		if (!clienteIngreso.value) {
 			$q.notify({
 				type: "negative",
 				message: "El cliente no puede estar vacío",
@@ -253,6 +253,7 @@ async function validarDatos() {
 function editarVistaFondo(boolean, extra, boton) {
 	datos.value = extra;
 	mostrarBotonEnviar.value = boton;
+	mostrarFormularioIngreso.value = boolean;
 	if (boton === false && extra != null) {
 		const formatoISO = datos.value.fecha;
 		const formatoDate = formatoISO.substring(0, 10);
@@ -260,13 +261,12 @@ function editarVistaFondo(boolean, extra, boton) {
 		fechaIngreso.value = formatoDate;
 		sedeIngreso.value = datos.value.sede;
 		clienteIngreso.value = clienteBuscar(datos.value.cliente);
-		console.log(datos.value.cliente, documentoNombre.value, clienteBuscar(datos.value.cliente));
 	} else {
 		fechaIngreso.value = "";
 		sedeIngreso.value = "";
 		clienteIngreso.value = "";
 	}
-	mostrarFormularioIngreso.value = boolean;
+	
 }
 
 onMounted(() => {

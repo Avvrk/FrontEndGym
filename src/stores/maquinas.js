@@ -21,6 +21,37 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 		}
 	};
 
+	const getMaquinasId = async () => {
+		try{
+			const { id } = req.params;
+            const maquinasId = await Maquina.findById(id);
+            res.json({ maquinasId });
+		}catch (error){
+			console.log(error);
+			return error;
+		}
+	};
+
+	const getMaquinasActivos = async () =>{
+		try{
+			const maquinasAc = await Maquina.find({ estado: 1 });
+            res.json({ maquinasAc });
+		}catch (error){
+			console.log(error);
+			return error;
+		}
+	};
+
+	const getMaquinasInactivos = async () =>{
+		try{
+			const maquinasIn = await Maquina.find({ estado: 0 });
+            res.json({ maquinasIn });
+		}catch (error){
+			console.log(error);
+			return error;
+		}
+	};
+
 	const postMaquinas = async () => {
 		try {
 			const res = await axios.post(`${url}/maquinas`, null, {
@@ -91,9 +122,24 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 
 	return {
 		getMaquinas,
+		getMaquinasId, //falta
+		getMaquinasActivos, //falta
+		getMaquinasInactivos, //falta
 		postMaquinas,
         putMaquinas,
 		putMaquinasInactivar,
 		putMaquinasActivar,
 	};
 });
+
+//Todas las peticiones
+/*
+getMaquinas
+getMaquinasId
+getMaquinasActivos
+getMaquinasInactivos
+postMaquinas
+putMaquinas
+putMaquinasActivar
+putMaquinasInactivar
+*/

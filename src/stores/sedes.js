@@ -37,6 +37,26 @@ export const useStoreSedes = defineStore("Sedes", () => {
         }
     }
 
+    const getSedesActivos = async (id) => {
+        try {
+            const sedes = await Sede.find({ estado: 1 });
+            res.json({ sedes });
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+
+    const getSedesInactivos = async (id) => {
+        try {
+            const sedes = await Sede.find({ estado: 0 });
+            res.json({ sedes });
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+
     const postSedes = async (info) => {
         try {
             const res = await axios.post(`${url}/sedes`, info, {
@@ -100,6 +120,19 @@ export const useStoreSedes = defineStore("Sedes", () => {
     }
 
     return {
-        getSedes, getSedesId, postSedes, putSedes, putSedeInactivar, putSedesActivar
+        getSedes, getSedesId, getSedesActivos, getSedesInactivos, postSedes, putSedes, putSedeInactivar, putSedesActivar
     };
 });
+
+
+//Todas las peticiones
+/*
+getSedes 
+getSedesId
+getSedesActivos
+getSedesInactivos
+postSedes
+putSedes
+putSedesActivar
+putSedesInactivar
+*/

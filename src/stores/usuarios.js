@@ -125,3 +125,17 @@ export const useStoreUsuarios = defineStore("Usuario", {
     },
     persist: true,
 });
+
+
+//Todas las peticiones
+/*
+getUsuarios 
+getUsuariosActivos
+getUsuariosInactivos
+getUsuariosLogin
+postUsuariosLog
+putUsuarios
+putUsuariosContraseña
+putUsuariosActivar
+putUsuariosInactivar
+*/

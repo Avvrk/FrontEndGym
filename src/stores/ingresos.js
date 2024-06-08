@@ -5,7 +5,6 @@ import axios from "axios";
 
 export const useStoreIngresos = defineStore("Ingresos", () => {
 	const useUsuarios = useStoreUsuarios();
-	let token = ref("");
 	const url = "https://avvrk-vyktor23-backendgym.onrender.com";
 
 	const getIngresos = async () => {
@@ -74,3 +73,11 @@ export const useStoreIngresos = defineStore("Ingresos", () => {
 		putIngresos,
 	};
 });
+
+//Todas las peticiones
+/*
+getIngresos
+getIngresosId
+postIngresos
+putIngresos
+*/

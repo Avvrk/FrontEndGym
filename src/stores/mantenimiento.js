@@ -90,3 +90,12 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
 		putMantenimientos,
 	};
 });
+
+//Todas las peticiones
+/*
+getMantenimientos
+getMantenimientosId
+getMantenimientosFechas
+postMantenimientos
+putMantenimientos
+*/
