@@ -9,6 +9,13 @@ const useMaquina = useStoreMaquinas();
 let rows = ref([]);
 let columns = ref([
 	{
+		name: "idMaquina",
+		sortable: true,
+		label: "Maquina",
+		field: "idMaquina",
+		aling: "center",
+	},
+	{
 		name: "fecha",
 		sortable: true,
 		label: "Fecha",
@@ -36,13 +43,6 @@ let columns = ref([
 		align: "center",
 	},
 	{
-		name: "estado",
-		sortable: true,
-		label: "Estado",
-		field: "estado",
-		align: "center",
-	},
-	{
 		name: "opciones",
 		label: "Opciones",
 		field: "opciones",
@@ -61,28 +61,36 @@ let descripcionMantenimiento = ref("");
 let responsableMantenimiento = ref("");
 let precioMantenimiento = ref("");
 
+const datos = ref("");
+
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioMantenimiento = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
 
-const organizarMaquinas = computed(() => {
+const organizarMaquinas = () => {
 	codigoSede.value = maquinasTodo.value.map((element) => ({
 		label: `${element.codigo} / ${element.sede}`,
 		valor: `${element._id}`,
 		nombre: `${element.codigo}`,
 	}));
 	return codigoSede.value;
-});
+};
 
 const buscarMaquina = (id) => {
-	const maquina = maquinasTodo.find((m) => m._id == id);
-	return maquina;
+	const maquina = maquinasTodo.value.find((m) => m._id == id);
+	console.log(maquina, id, maquinasTodo.value);
+	return maquina.codigo;
 };
+
+async function listarDatos() {
+	await Promise.all([listarMantenimientos(), listarMaquinas()]);
+	loading.value = false; // Datos cargados
+}
 
 async function listarMantenimientos() {
 	try {
 		const res = await useMantenimiento.getMantenimientos();
-		console.log(res.data);
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
 		console.log("Error al listar mantenimientos:", error);
@@ -92,28 +100,10 @@ async function listarMantenimientos() {
 async function listarMaquinas() {
 	try {
 		const res = await useMaquina.getMaquinas();
-		console.log(res.data);
 		maquinasTodo.value = res.data.maquinas;
+		organizarMaquinas();
 	} catch (error) {
 		console.log("Error al listar maquinas:", error);
-	}
-}
-
-// Funcion que se encarga de cambiar el estado de una sede
-async function editarEstado(elemento) {
-	try {
-		if (elemento.estado == "1") {
-			const res = await useMantenimiento.putMantenimientosInactivar(
-				elemento.id
-			);
-		} else if (elemento.estado == "0") {
-			const res = await useMantenimiento.putMantenimientosActivar(
-				elemento.id
-			);
-		}
-		listarMantenimientos();
-	} catch (error) {
-		console.log("Error al editar el estado del mantenimiento:", error);
 	}
 }
 
@@ -122,11 +112,11 @@ async function registrar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				idMaquinaantenimiento: idMaquinaM.value,
-				fechaMantenimiento: fechaM.value,
-				descripcionMantenimiento: descripcionM.value,
-				responsableMantenimiento: responsableM.value,
-				precioMantenimiento: precioM.value,
+				idMaquina: idMaquinaMantenimiento.value,
+				fecha: fechaMantenimiento.value,
+				descripcion: descripcionMantenimiento.value,
+				responsable: responsableMantenimiento.value,
+				precio: precioMantenimiento.value,
 			};
 			const res = await useMantenimiento.postMantenimientos(info);
 			if (res.status !== 200) {
@@ -153,11 +143,11 @@ async function editar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				idMaquinaantenimiento: idMaquinaM.value,
-				fechaMantenimiento: fechaM.value,
-				descripcionMantenimiento: descripcionM.value,
-				responsableMantenimiento: responsableM.value,
-				precioMantenimiento: precioM.value,
+				idMaquina: idMaquinaMantenimiento.value,
+				fecha: fechaMantenimiento.value,
+				descripcion: descripcionMantenimiento.value,
+				responsable: responsableMantenimiento.value,
+				precio: precioMantenimiento.value,
 			};
 			const res = await useMantenimiento.putMantenimientos(
 				datos.value._id,
@@ -195,11 +185,11 @@ async function validarDatos() {
 	let verificado = true;
 
 	if (
-		idMaquinaM.value == "" ||
-		fechaM.value == "" ||
-		descripcionM.value == "" ||
-		responsableM.value == "" ||
-		precioM.value == ""
+		!idMaquinaMantenimiento.value &&
+		!fechaMantenimiento.value &&
+		!descripcionMantenimiento.value &&
+		!responsableMantenimiento.value &&
+		!precioMantenimiento.value
 	) {
 		$q.notify({
 			type: "negative",
@@ -208,19 +198,85 @@ async function validarDatos() {
 		});
 		verificado = false;
 	} else {
-		if (idMaquinaMantenimiento.value == "") {
+		if (!idMaquinaMantenimiento.value) {
+			$q.notify({
+				type: "negative",
+				message: "La maquina no puede estar vacia",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!fechaMantenimiento.value) {
+			$q.notify({
+				type: "negative",
+				message: "La fecha del mantenimiento no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!descripcionMantenimiento.value) {
+			$q.notify({
+				type: "negative",
+				message: "La descripcion no puede estar vacia",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!fechaMantenimiento.value) {
+			$q.notify({
+				type: "negative",
+				message: "El responsable no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!precioMantenimiento.value) {
+			$q.notify({
+				type: "negative",
+				message: "El precio no puede estar vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		} else if (precioMantenimiento.value < 0) {
+			$q.notify({
+				type: "negative",
+				message: "Ingrese un precio valido",
+				position: "bottom-right",
+			});
+			verificado = false;
 		}
 	}
 	return verificado;
 }
 
-function editarVistaFondo(boolean) {
+function editarVistaFondo(boolean, extra, boton) {
+	datos.value = extra;
+	if (boton == false && extra != null) {
+		const formatoISO = datos.value.fecha;
+		const formatoDate = formatoISO.substring(0, 10);
+
+		const maquina = codigoSede.value.find(
+			(element) => element.valor === datos.value.idMaquina
+		);
+		idMaquinaMantenimiento.value = maquina;
+		fechaMantenimiento.value = formatoDate;
+		descripcionMantenimiento.value = datos.value.descripcion;
+		responsableMantenimiento.value = datos.value.responsable;
+		precioMantenimiento.value = datos.value.precio;
+	} else {
+		idMaquinaMantenimiento.value = "";
+		fechaMantenimiento.value = "";
+		descripcionMantenimiento.value = "";
+		responsableMantenimiento.value = "";
+		precioMantenimiento.value = "";
+	}
+	
+	mostrarBotonEnviar.value = boton;
 	mostrarFormularioMantenimiento.value = boolean;
 }
 
 onMounted(() => {
-	listarMantenimientos();
-	listarMaquinas();
+	listarDatos();
 });
 </script>
 
@@ -228,53 +284,43 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Mantenimientos"
 				:rows="rows"
 				:columns="columns"
 				row-key="id">
+				<template v-slot:body-cell-idMaquina="props">
+                     <q-td :props="props">
+                        <p>{{ buscarMaquina(props._id) }}</p>
+                     </q-td>
+                </template>
 				<template v-slot:body-cell-opciones="props">
 					<q-td :props="props">
 						<q-btn @click="editarVistaFondo(true, props.row, true)">
 							✏️
 						</q-btn>
-						<q-btn
-							v-if="props.row.estado == 1"
-							@click="editarEstado(props.row)">
-							❌
-						</q-btn>
-						<q-btn v-else @click="editarEstado(props.row)">
-							✅
-						</q-btn>
-					</q-td>
-				</template>
-				<template v-slot:body-cell-estado="props">
-					<q-td :props="props">
-						<p v-if="props.row.estado == 1" style="color: green">
-							Activo
-						</p>
-						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div
 			id="formularioMantenimiento"
 			v-if="mostrarFormularioMantenimiento == true">
 			<q-form
-			@submit="mostrarBotonEnviar ? registrar() : editar()"
+				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@reset="resetear()"
 				class="q-gutter-md">
 				<q-select
 					standout="bg-green text-white"
 					v-model="idMaquinaMantenimiento"
-					:options="organizarMaquinas"
+					:options="organizarMaquinas()"
 					option-value="valor"
 					option-label="label"
 					label="Maquina"

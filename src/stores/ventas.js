@@ -22,6 +22,17 @@ export const useStoreVenta = defineStore("Venta", () => {
         }
     };
 
+    const getVentasID = async ()=>{ //Nueva peticion agregada
+        try {
+            const { id } = req.params;
+            const ventas = await Venta.findById(id);
+            res.json({ ventas });
+        } catch (error){
+            console.log(error)
+            return error;
+        }
+    };
+
     const postVentas = async () => {
         try {
             const res = await axios.post(`${url}/ventas`,{
@@ -35,7 +46,19 @@ export const useStoreVenta = defineStore("Venta", () => {
             console.log(r);
             return error;
         }
-    }
+    };
+
+    const putVentas = async ()=>{ //Nueva peticion agregada
+        try {
+            const { id } = req.params;
+            const { ...info } = req.body;
+            const ventas = await Venta.findByIdAndUpdate(id, info, { new: true });
+            res.json({ ventas });
+        } catch (error){
+            console.log(error)
+            return error;
+        }
+    };
 
     const putVentasActivar = async (codigo) => {
         try {
@@ -50,7 +73,7 @@ export const useStoreVenta = defineStore("Venta", () => {
             console.log(error);
             return error;
         }
-    }
+    };
     
     const putVentasInactivar = async (codigo) => {
         try {
@@ -65,9 +88,17 @@ export const useStoreVenta = defineStore("Venta", () => {
             console.log(error);
             return error;
         }
-    }    
+    }; 
 
     return {
-        getVentas, putVentasInactivar, putVentasActivar
+        getVentas, getVentasId, postVentas, putVentas, putVentasInactivar, putVentasActivar
     };
 });
+
+//Todas las peticiones
+/*
+getVentas 
+getVentasId
+postVentas
+putVentas
+*/

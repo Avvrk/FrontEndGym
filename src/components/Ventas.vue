@@ -5,115 +5,238 @@ import { useStoreVenta } from "../stores/ventas.js";
 const useVentas = useStoreVenta();
 
 let rows = ref([]);
-
 let columns = ref([
-    { name: "codigo", sortable: true, label: "Código Producto", field: "codigo", align: "center" },
-    { name: "valorUnitario", label: "Valor Unitario", field: "valorUnitario", align: "center" },
-    { name: "fecha", label: "Fecha", field: "fecha", align: "center" },
-    { name: "valorTotal", label: "Valor Total", field: "valorTotal", align: "center" },
+    { name: "idInvetario", sortable: true, label: "Código Producto", field: "idInventario", align: "center" },
+    { name: "valorUnitario", sortable: true, label: "Valor Unitario", field: "valorUnitario", align: "center" },
+    { name: "fecha", sortable: true, label: "Fecha", field: "fecha", align: "center" },
+    { name: "valorTotal", sortable: true, label: "Valor Total", field: "valorTotal", align: "center" },
 ]);
 
-async function listarVentas() {
-    const res = await useVentas.getVentas();
-    console.log(res.data);
-    rows.value = res.data.ventas;
-}
-
 // Variables que contienen los datos ingresados en el formulario
-let codigo = ref("");
-let valorUnitario = ref("");
-let fecha = ref("");
-let valorTotal = ref("");
+let codigoVentas = ref("");
+let valorUnitarioVentas = ref("");
+let fechaVentas = ref("");
+let valorTotalVentas = ref("");
+
+const inventarioTodo = ref([]);
+
+const codigoValor = ref([]);
 
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioVenta = ref(false);
+const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
 
+const orgranizarInvetario = () => {
+    codigoValor.value = inventarioTodo.value.map((element) => ({
+        label: `${element.codigo} / ${element.valor}`,
+        valor: `${element._id}`,
+    }))
+}
 
+const buscarInvetario = (id) => {
+    return inventarioTodo.value.find((element) => element._id === id).codigo;
+}
 
+async function listarDatos() {
+	await Promise.all([listarVentas(), listarInventario()]);
+	loading.value = false; // Datos cargados
+}
+
+async function listarVentas() {
+    try {
+        const res = await useVentas.getVentas();
+        rows.value = res.data.ventas;
+    } catch (error) {
+        console.error("Error al listar ventas:", error);
+    }
+}
+
+async function listarInventario() {
+	try {
+		const res = await useInventario.getInventario();
+		rows.value = res.data.inventarios;
+        orgranizarInvetario()
+	} catch (error) {
+		console.log("Error al listar el inventario:", error);
+	}
+}
 
 // Funcion que se encarga de enviar los datos del registro
 async function registrar() {
-    if (validarDatos()) {
-        const info = {
-            codigoProducto: codigo.value,
-            valorUnitario: valorUnitario.value,
-            fecha: fecha.value,
-            valorTotal: valorTotal.value,
-        };
-        const res = await useVentas.log(info);
-        console.log(res);
+    if (await validarDatos()) {
+        try {
+            const info = {
+                codigoProducto: codigo.value,
+                valorUnitario: valorUnitario.value,
+                fecha: fecha.value,
+                valorTotal: valorTotal.value,
+            };
+            const res = await useVentas.log(info);
+            if (res.status !== 200) {
+                $q.notify({
+                    type: "negative",
+                    message: "Parece que hubo un error en el registro",
+                    position: "bottom-right",
+                });
+            } else {
+                $q.notify({
+                    type: "positive",
+                    message: "El registro se ah realizado correctamente",
+                    position: "bottom-right",
+                });
+                listarUsuarios();
+            }
+        } catch (error) {
+            console.error("Error al registrar ventas:", error);
+        }
     }
-} // falta terminar
-
-
-function resetear() {
-    codigo.value = "";
-    valorUnitario.value = "";
-    fecha.value = "";
-    valorTotal.value = "";
 }
 
+async function editar() {
+    if (await validarDatos()) {
+        try {
+            const info = {
+                codigoProducto: codigo.value,
+                valorUnitario: valorUnitario.value,
+                fecha: fecha.value,
+                valorTotal: valorTotal.value,
+            };
+            const res = await useVentas.log(datos.value._id, info);
+            if (res.status !== 200) {
+                $q.notify({
+                    type: "negative",
+                    message: "Parece que hubo un error al editar el usuario",
+                    position: "bottom-right",
+                });
+            } else {
+                $q.notify({
+                    type: "positive",
+                    message: "El usuario se ha editado correctamente",
+                    position: "bottom-right",
+                });
+                listarUsuarios();
+            }
+        } catch (error) {
+            console.error("Error al editar ventas:", error);
+        }
+    }
+}
+
+function resetear() {
+    codigoVentas.value = "";
+    valorUnitarioVentas.value = "";
+    fechaVentas.value = "";
+    valorTotalVentas.value = "";
+}
 
 async function validarDatos() {
-  let verificado = true;
+    let verificado = true;
 
-    if (codigo.value == "" || valorUnitario.value == "" || fecha.value == "" || valorTotal.value == "") {
+    if (!codigoVentas.value || !valorUnitarioVentas.value || !fechaVentas.value || !valorTotalVentas.value) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
             position: "bottom-right",
         });
         verificado = false;
+    } else {
+        if (!codigoVentas.value) {
+            $q.notify({
+                type: "negative",
+                message: "El codigo no puede estar vacio",
+                position: "bottom-right",
+            })
+            verificado = false;
+        }
+        if (!valorUnitarioVentas.value) {
+            $q.notify({
+                type: "negative",
+                message: "El valor unitario no puede estar vacio",
+                position: "bottom-right",
+            })
+            verificado = false;
+        }
+        if (!fechaVentas.value) {
+            $q.notify({
+                type: "negative",
+                message: "La fecha no puede estar vacia",
+                position: "bottom-right",
+            })
+            verificado = false;
+        }
+        if (!valorTotalVentas.value) {
+            $q.notify({
+                type: "negative",
+                message: "El valor total no puede estar vacio",
+                position: "bottom-right",
+            })
+            verificado = false;
+        }
     }
     return verificado;
 }
 
+function editarVistaFondo(boolean, extra, boton) {
+	datos.value = extra;
+	if (boton == false && extra != null) {
+		const inventario = codigoValor.value.find(
+			(element) => element.valor === datos.value.idInventario
+		);
+        const formatoISO = datos.value.fecha;
+		const formatoDate = formatoISO.substring(0, 10);
 
-function editarVistaFondo(boolean) {
+        codigoVentas.value = inventario;
+        valorUnitarioVentas.value = datos.value.valorUnitario;
+        fechaVentas.value = formatoDate;
+        valorTotalVentas.value = datos.value.valorTotal;
+	} else {
+        codigoVentas.value = "";
+        valorUnitarioVentas.value = "";
+        fechaVentas.value = "";
+        valorTotalVentas.value = "";
+	}
+	mostrarBotonEnviar.value = boton;
     mostrarFormularioVenta.value = boolean;
 }
 
 onMounted(() => {
-    listarVentas();
+    listarDatos();
 });
 </script>
 
-
-
 <template>
-<div>
+    <div>
         <div class="q-pa-md">
-          <div>
-            <q-btn @click="editarVistaFondo(true)"> agregar </q-btn>
-          </div>
-          <q-table flat bordered title="Lista de Ventas" :rows="rows" :columns="columns" row-key="id">
+            <div>
+                <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
+            </div>
+            <q-table v-if="!loading" flat bordered title="Lista de Ventas" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
-                        <q-btn> ✏️ </q-btn>
-                        <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"> ❌ </q-btn>
-                        <q-btn v-else @click="editarEstado(props.row)"> ✅ </q-btn>
+                        <q-btn @click="editarVistaFondo(true, props.row, false)"> ✏️ </q-btn>
                     </q-td>
                 </template>
-                <template v-slot:body-cell-estado="props">
+                <template v-slot:body-cell-idInvetario="props">
                     <q-td :props="props">
-                        <p v-if="props.row.estado == 1" style="color: green">Activo</p>
-                        <p v-else style="color: red">Inactivo</p>
+                        <p>{{ buscarInvetario(props._id)}}</p>
                     </q-td>
                 </template>
             </q-table>
+            <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
         </div>
         <div id="formularioVentas" v-if="mostrarFormularioVenta == true">
-            <q-form @submit="registrar()" @reset="resetear()" class="q-gutter-md">
-                <q-input standout="bg-green text-white" v-model="codigo" label="Código" />
-                <q-input standout="bg-green text-white" v-model="valorUnitario" label="Valor Unitario" color="black" />
-                <q-input standout="bg-green text-white" v-model="fecha" label="Fecha" color="black" />
-                <q-input standout="bg-green text-white" v-model="valorTotal" label="Valor Total" color="black" />
+            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="resetear()" class="q-gutter-md">
+                <q-input standout="bg-green text-white" v-model="codigoVentas" label="Código" />
+                <q-input standout="bg-green text-white" v-model="valorUnitarioVentas" label="Valor Unitario" color="black" />
+                <q-input standout="bg-green text-white" v-model="fechaVentas" label="Fecha" color="black" />
+                <q-input standout="bg-green text-white" v-model="valorTotalVentas" label="Valor Total" color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
                     <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
-            <button id="botonF"  @click="editarVistaFondo(false)"></button>
+            <button id="botonF" @click="editarVistaFondo(false, null, false)"></button>
         </div>
     </div>
 </template>

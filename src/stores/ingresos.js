@@ -1,53 +1,83 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
+import { popScopeId, ref } from "vue";
 import { useStoreUsuarios } from "../stores/usuarios.js";
 import axios from "axios";
 
-export const useStoreIngresos= defineStore("Ingresos", () => {
-    const useUsuarios = useStoreUsuarios()
-    let token = ref("");
-    const url = "https://avvrk-vyktor23-backendgym.onrender.com"
+export const useStoreIngresos = defineStore("Ingresos", () => {
+	const useUsuarios = useStoreUsuarios();
+	const url = "https://avvrk-vyktor23-backendgym.onrender.com";
 
-    const getIngresos = async () => {
-        try {
-            const res = await axios.get(`${url}/ingresos`, {
-                headers: {
-                    token: useUsuarios.token
-                }
-            });
-            console.log(res);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    };
+	const getIngresos = async () => {
+		try {
+			const res = await axios.get(`${url}/ingresos`, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
-    const getIngresosId = async (id) => {
-        try {
-            const res = await axios.get(`${url}/ingresos/ingreso/${id}`, {
-                headers: {
-                    token: useUsuarios.token
-                }
-            })
-            console.log(res);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    }
+	const getIngresosId = async (id) => {
+		try {
+			const res = await axios.get(`${url}/ingresos/id/${id}`, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
-    const postIngresos = async () => {
-        try {
-            const r = await axios.post("http://localhost:4000/api/sedes")
-        } catch (error) {
-            console.log(r);
-            return error;
-        }
-    }
+	const postIngresos = async (info) => {
+		try {
+			const res = await axios.post(`${url}/ingresos`, info, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
-    return {
-        getIngresos,
-    };
+	const putIngresos = async (id, info) => {
+		try {
+			const res = await axios.put(`${url}/ingresos/${id}`, info, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	return {
+		getIngresos,
+		getIngresosId,
+		postIngresos,
+		putIngresos,
+	};
 });
+
+//Todas las peticiones
+/*
+getIngresos
+getIngresosId
+postIngresos
+putIngresos
+*/

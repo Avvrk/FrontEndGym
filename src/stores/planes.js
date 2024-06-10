@@ -138,3 +138,15 @@ export const useStorePlanes = defineStore("Planes", () => {
 		putPlanesInactivar,
 	};
 });
+
+//Todas las peticiones
+/*
+getPlanes 
+getPlanesId
+getPlanesActivos
+getPlanesInactivos
+postPlanes
+putPlanes
+putPlanesActivar
+putPlanesInactivar
+*/

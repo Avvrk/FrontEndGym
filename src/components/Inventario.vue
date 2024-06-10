@@ -59,11 +59,16 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioInventario = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+async function listarDatos() {
+	await Promise.all([listarInventario()]);
+	loading.value = false; // Datos cargados
+}
 
 async function listarInventario() {
 	try {
 		const res = await useInventario.getInventario();
-		console.log(res.data);
 		rows.value = res.data.inventarios;
 	} catch (error) {
 		console.log("Error al listar el inventario:", error);
@@ -75,13 +80,12 @@ async function registrar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				codigo: codigoP.value,
-				descripcion: descripcionP.value,
-				valorP: valorP.value,
-				cantidad: cantidadP.value,
-				estado: estadoP.value,
+				codigo: codigoProducto.value,
+				descripcion: descripcionProducto.value,
+				valorP: valorProducto.value,
+				cantidad: cantidadProducto.value,
 			};
-			const res = await useInventario.log(info);
+			const res = await useInventario.postInventario(info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -106,13 +110,15 @@ async function editar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				codigo: codigoP.value,
-				descripcion: descripcionP.value,
-				valorP: valorP.value,
-				cantidad: cantidadP.value,
-				estado: estadoP.value,
+				codigo: codigoProducto.value,
+				descripcion: descripcionProducto.value,
+				valorP: valorProducto.value,
+				cantidad: cantidadProducto.value,
 			};
-			const res = await useInventario.log(datps.value._id, info);
+			const res = await useInventario.putInventarios(
+				datos.value._id,
+				info
+			);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -145,10 +151,10 @@ async function validarDatos() {
 	let verificado = true;
 
 	if (
-		codigoProducto.value == "" ||
-		descripcionProducto.value == "" ||
-		valorProducto.value == "" ||
-		cantidadProducto.value == ""
+		!codigoProducto.value &&
+		!descripcionProducto.value &&
+		!valorProducto.value &&
+		!cantidadProducto.value
 	) {
 		$q.notify({
 			type: "negative",
@@ -157,7 +163,7 @@ async function validarDatos() {
 		});
 		verificado = false;
 	} else {
-		if (codigoProducto.value == "") {
+		if (!codigoProducto.value) {
 			$q.notify({
 				type: "negative",
 				message: "El codigo no puede estar vacio",
@@ -165,7 +171,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (descripcionProducto == "") {
+		if (!descripcionProducto) {
 			$q.notify({
 				type: "negative",
 				message: "La descripcion no puede estar vacia",
@@ -173,7 +179,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (valorProducto == "") {
+		if (!valorProducto) {
 			$q.notify({
 				type: "negative",
 				message: "El valor no puede estar vacia",
@@ -181,7 +187,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (cantidadProducto == "") {
+		if (!cantidadProducto) {
 			$q.notify({
 				type: "negative",
 				message: "La cantidad no puede estar vacia",
@@ -194,9 +200,7 @@ async function validarDatos() {
 }
 
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioInventario.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
 		codigoProducto.value = datos.value.codigo;
 		descripcionProducto.value = datos.value.descripcion;
@@ -208,10 +212,13 @@ function editarVistaFondo(boolean, extra, boton) {
 		valorProducto.value = "";
 		cantidadProducto.value = "";
 	}
+
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioInventario.value = boolean;
 }
 
 onMounted(() => {
-	listarInventario();
+	listarDatos();
 });
 </script>
 
@@ -219,17 +226,35 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de Inventario"
 				:rows="rows"
 				:columns="columns"
-				row-key="id"></q-table>
+				row-key="id">
+				<template v-slot:body-cell-opciones="props">
+					<q-td :props="props">
+						<q-btn
+							@click="editarVistaFondo(true, props.row, false)">
+							✏️
+						</q-btn>
+					</q-td>
+				</template>
+				<template v-slot:body-cell-estado="props">
+					<q-td :props="props">
+						<p v-if="props.row.estado == 1" style="color: green">
+							Activo
+						</p>
+						<p v-else style="color: red">Inactivo</p>
+					</q-td>
+				</template>
+			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div
 			id="formularioInventario"

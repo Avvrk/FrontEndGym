@@ -82,6 +82,12 @@ const datos = ref("");
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioUsuario = ref(false);
 const mostrarBotonEnviar = ref(true);
+const loading = ref(true); // Agregar estado de carga
+
+async function listarDatos() {
+	await Promise.all([listarUsuarios(), sedes()]);
+	loading.value = false; // Datos cargados
+}
 
 // Función que se encarga de traer todos los usuarios
 async function listarUsuarios() {
@@ -127,8 +133,8 @@ async function registrar() {
 				telefono: telefonoUsuario.value,
 				password: contraseñaUsuario.value,
 				sede: sedeUsuario.value.nombre,
-				idSede: sedeUsuario.value.valor,
 				rol: rolUsuario.value,
+				idSede: sedeUsuario.value.valor,
 			};
 			const res = await useUsuario.log(info);
 			if (res.status !== 200) {
@@ -310,9 +316,7 @@ const organizarSedes = computed(() => {
 // Funcion que se encarga de mostrar el formulario y configurar datos extras para el
 // boolean: para saber si se muestra o no el formulario, extra: contiene los datos de la persona que se editara, boton: contiene un dato booleano para saber si aparece el boton de registar o actualizar
 function editarVistaFondo(boolean, extra, boton) {
-	mostrarFormularioUsuario.value = boolean;
 	datos.value = extra;
-	mostrarBotonEnviar.value = boton;
 	if (boton == false && extra != null) {
 		const sede = nombreCodigo.value.find(
 			(element) => element.valor === datos.value.idSede
@@ -330,11 +334,13 @@ function editarVistaFondo(boolean, extra, boton) {
 		sedeUsuario.value = "";
 		rolUsuario.value = "";
 	}
+	
+	mostrarBotonEnviar.value = boton;
+	mostrarFormularioUsuario.value = boolean;
 }
 
 onMounted(() => {
-	listarUsuarios();
-	sedes();
+	listarDatos();
 });
 </script>
 
@@ -342,11 +348,11 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn @click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table
+			<q-table v-if="!loading"
 				flat
 				bordered
 				title="Lista de usuarios"
@@ -378,6 +384,7 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div id="formularioUsuario" v-if="mostrarFormularioUsuario">
 			<q-form
@@ -415,7 +422,7 @@ onMounted(() => {
 				<q-select
 					standout="bg-green text-white"
 					v-model="sedeUsuario"
-					:options="organizarSedes"
+					:options="organizarSedes()"
 					option-value="valor"
 					option-label="label"
 					label="Sedes"

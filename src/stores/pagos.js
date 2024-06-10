@@ -21,6 +21,41 @@ export const useStorePagos = defineStore("Pagos", () => {
 		}
 	};
 
+
+	const getPagosFechas = async () => {
+		try {
+			const { fecha } = req.params;
+            const pagos = await Pago.find({ fecha: fecha });
+            res.json({ pagos });
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
+
+	const getPagosPlan = async () => {
+		try {
+			const { plan } = req.params;
+            const pagos = await Pago.find({ plan: plan });
+            res.json({ pagos });
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
+
+	const getPagosCliente = async () =>{
+		try{
+			const { id } = req.params;
+            const pagos = await Pago.findById(id);
+            res.json({ pagos });
+		} catch (error){
+		console.log(error);
+			return error;
+	}
+};
+
+
 	const getPagosId = async (id) => {
 		try {
 			const res = await axios.get(`${url}/pagos/id/${id}`, {
@@ -129,6 +164,9 @@ export const useStorePagos = defineStore("Pagos", () => {
 
 	return {
 		getPagos,
+		getPagosFechas,
+		getPagosPlan,
+		getPagosCliente,
 		getPagosId,
 		getPagosActivos,
 		getPagosInactivos,
@@ -138,3 +176,17 @@ export const useStorePagos = defineStore("Pagos", () => {
 		putPagosInactivar,
 	};
 });
+
+//Todas las peticiones
+/*
+getPagos 
+getPagosFechas
+getPagosPlan
+getPagosCliente
+getPagosActivos
+getPagosInactivos
+postPagos
+putPagos
+putPagosActivar
+putPagosInactivar
+*/
