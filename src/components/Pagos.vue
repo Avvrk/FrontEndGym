@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStorePagos } from "../stores/pagos.js";
+import { useStorePlanes } from "../stores/planes.js"
 import { useQuasar } from "quasar";
 
 const $q = useQuasar();
 
 // Variables que contienen la store
 const usePago = useStorePagos();
+const usePlanes = useStorePlanes();
 
 // Variables para el funcionamiento de la tabla
 let rows = ref([]);
@@ -55,6 +57,10 @@ let clientePago = ref("");
 let planPago = ref("");
 let fechaPago = ref("");
 let valorPago = ref("");
+
+const planesTodo = ref([])
+
+const codigoValor = ref([])
 
 // Variable que contiene los datos de la sede a editar
 const datos = ref("");

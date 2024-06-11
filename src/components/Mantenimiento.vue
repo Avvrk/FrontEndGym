@@ -77,11 +77,11 @@ const organizarMaquinas = () => {
 	return codigoSede.value;
 };
 
-const buscarMaquina = (id) => {
-	const maquina = maquinasTodo.value.find((m) => m._id == id);
-	console.log(maquina, id, maquinasTodo.value);
-	return maquina.codigo;
-};
+// const buscarMaquina = (id) => {
+// 	const maquina = maquinasTodo.value.find((m) => m._id == id);
+// 	console.log(maquina, id, maquinasTodo.value);
+// 	return maquina.codigo;
+// };
 
 async function listarDatos() {
 	await Promise.all([listarMantenimientos(), listarMaquinas()]);
@@ -295,11 +295,11 @@ onMounted(() => {
 				:rows="rows"
 				:columns="columns"
 				row-key="id">
-				<template v-slot:body-cell-idMaquina="props">
+				<!-- <template v-slot:body-cell-idMaquina="props">
                      <q-td :props="props">
-                        <p>{{ buscarMaquina(props._id) }}</p>
+                        <p>{{ buscarMaquina(props.row._id) }}</p>
                      </q-td>
-                </template>
+                </template> -->
 				<template v-slot:body-cell-opciones="props">
 					<q-td :props="props">
 						<q-btn @click="editarVistaFondo(true, props.row, true)">
