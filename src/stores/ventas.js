@@ -91,7 +91,7 @@ export const useStoreVenta = defineStore("Venta", () => {
     }; 
 
     return {
-        getVentas, getVentasId, postVentas, putVentas, putVentasInactivar, putVentasActivar
+        getVentas, getVentasID, postVentas, putVentas, putVentasInactivar, putVentasActivar
     };
 });
 
