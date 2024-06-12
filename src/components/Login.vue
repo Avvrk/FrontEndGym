@@ -12,7 +12,12 @@ let password = ref("");
 async function login() {
     try {
         const res = await useUsuario.login(email.value, password.value);
-        router.push("/main/hogar");
+        if (res.data.status != 200){
+            router.push("/main/hogar");
+        } else {
+            console.log("error");
+        }
+        
     } catch (error) {
         console.log(error);
     }
