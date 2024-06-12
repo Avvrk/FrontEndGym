@@ -2,6 +2,10 @@
 import { ref, onMounted } from "vue";
 import { useStoreVenta } from "../stores/ventas.js";
 import { useStoreInventario } from "../stores/inventario.js";
+import { useQuasar } from "quasar";
+
+
+const $q = useQuasar();
 
 const useVentas = useStoreVenta();
 const useInventario = useStoreInventario();
@@ -114,7 +118,7 @@ async function registrar() {
 					message: "El registro se ah realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarVentas();
 			}
 		} catch (error) {
 			console.error("Error al registrar ventas:", error);
@@ -144,7 +148,7 @@ async function editar() {
 					message: "El usuario se ha editado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarVentas();
 			}
 		} catch (error) {
 			console.error("Error al editar ventas:", error);

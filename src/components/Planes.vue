@@ -119,7 +119,7 @@ async function registrar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarPlanes();
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);

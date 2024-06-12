@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStoreInventario } from "../stores/inventario.js";
+import { useQuasar } from "quasar";
+
+
+const $q = useQuasar();
 
 const useInventario = useStoreInventario();
 
@@ -98,7 +102,7 @@ async function registrar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarInventario();
 			}
 		} catch (error) {
 			console.error("Error al registrar el inventario:", error);
@@ -132,7 +136,7 @@ async function editar() {
 					message: "El inventario se ha actualizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarInventario();
 			}
 		} catch (error) {
 			console.error("Error al actualizar el inventario:", error);

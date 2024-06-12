@@ -168,7 +168,7 @@ async function editar() {
 					message: "El usuario se ha editado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarSedes();
 			}
 		} catch (error) {
 			console.error("Error al editar usuario:", error);

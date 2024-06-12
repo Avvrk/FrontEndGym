@@ -2,6 +2,10 @@
 import { ref, onMounted, computed } from "vue";
 import { useStoreMantenimiento } from "../stores/mantenimiento.js";
 import { useStoreMaquinas } from "../stores/maquinas.js";
+import { useQuasar } from "quasar";
+
+
+const $q = useQuasar();
 
 const useMantenimiento = useStoreMantenimiento();
 const useMaquina = useStoreMaquinas();
@@ -131,7 +135,7 @@ async function registrar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarMantenimientos();
 			}
 		} catch (error) {
 			console.error("Error al registrar el mantenimiento:", error);
@@ -165,7 +169,7 @@ async function editar() {
 					message: "El mantenimiento se ha actualizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarMantenimientos();
 			}
 		} catch (error) {
 			console.error("Error al editar el mantenimiento:", error);

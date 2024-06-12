@@ -172,7 +172,7 @@ async function editar() {
 					message: "El pago se ha editado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarPagos();
 			}
 		} catch (error) {
 			console.error("Error al editar el pago:", error);

@@ -3,7 +3,10 @@ import { ref, onMounted, computed } from "vue";
 import { useStoreIngresos } from "../stores/ingresos.js";
 import { useStoreSedes } from "../stores/sedes";
 import { useStoreClientes } from "../stores/clientes.js";
+import { useQuasar } from "quasar";
 import { format } from "date-fns";
+
+const $q = useQuasar();
 
 const useIngreso = useStoreIngresos();
 const useSede = useStoreSedes();
@@ -140,7 +143,7 @@ async function registrar() {
 				sede: sedeIngreso.value.nombre,
 				cliente: clienteIngreso.value.valor,
 			};
-			const res = await useIngreso.log(info);
+			const res = await useIngreso.postIngresos(info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -153,7 +156,7 @@ async function registrar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarIngresos();
 			}
 		} catch (error) {
 			console.error("Error al registrar el ingreso:", error);
@@ -169,7 +172,7 @@ async function editar() {
 				sede: sedeIngreso.value.nombre,
 				cliente: clienteIngreso.value.valor,
 			};
-			const res = await useIngreso.log(datos.value._id, info);
+			const res = await useIngreso.putIngresos(datos.value._id, info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -182,7 +185,7 @@ async function editar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarIngresos();
 			}
 		} catch (error) {
 			console.error("Error al actualizar el ingreso:", error);
@@ -219,14 +222,14 @@ async function validarDatos() {
 				position: "bottom-right",
 			});
 			verificado = false;
-		} else if (fsDate < hoy) {
+		} /* else if (fsDate < hoy) {
 			$q.notify({
 				type: "negative",
 				message: "Ingrese una fecha válida",
 				position: "bottom-right",
 			});
 			verificado = false;
-		}
+		} */
 		if (!sedeIngreso.value) {
 			$q.notify({
 				type: "negative",

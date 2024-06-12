@@ -169,7 +169,7 @@ async function registrar() {
 					message: "El registro se ha realizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarMaquinas();
 			}
 		} catch (error) {
 			console.error("Error al registrar la maquina:", error);
@@ -200,7 +200,7 @@ async function editar() {
 					message: "La maquina se ah actualizado correctamente",
 					position: "bottom-right",
 				});
-				listarUsuarios();
+				listarMaquinas();
 			}
 		} catch (error) {
 			console.error("Error al editar la maquina:", error);
