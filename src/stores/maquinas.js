@@ -52,9 +52,9 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 		}
 	};
 
-	const postMaquinas = async () => {
+	const postMaquinas = async (info) => {
 		try {
-			const res = await axios.post(`${url}/maquinas`, null, {
+			const res = await axios.post(`${url}/maquinas`, info, {
 				headers: {
 					token: useUsuario.token,
 				},

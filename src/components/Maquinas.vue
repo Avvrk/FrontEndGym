@@ -154,8 +154,9 @@ async function registrar() {
 				sede: sedeMaquinas.value,
 				descripcion: descripcionMaquinas.value,
 				fechaIngreso: fechaIngresoMaquinas.value,
-				fechaUltMant: fechaUltMantMaquinas.value,
+				fechaUltMan: fechaUltMantMaquinas.value,
 			};
+			console.log(info);
 			const res = await useMaquina.postMaquinas(info);
 			if (res.status !== 200) {
 				$q.notify({

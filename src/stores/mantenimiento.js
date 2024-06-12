@@ -52,9 +52,9 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
 		}
 	};
 
-	const postMantenimientos = async () => {
+	const postMantenimientos = async (info) => {
 		try {
-			const res = await axios.post(`${url}/mantenimientos`, {
+			const res = await axios.post(`${url}/mantenimientos`, info, {
 				headers: {
 					token: useUsuario.token,
 				},

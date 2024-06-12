@@ -44,9 +44,9 @@ export const useStoreInventario = defineStore("Inventario", () => {
         }
     };
 
-    const postInventario = async () => {
+    const postInventario = async (info) => {
         try {
-            const res = await axios.post(`${url}/inventario`,{
+            const res = await axios.post(`${url}/inventario`,info,{
                 headers:{
                     token: useUsuario.token
                 }

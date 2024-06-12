@@ -33,9 +33,9 @@ export const useStoreVenta = defineStore("Venta", () => {
         }
     };
 
-    const postVentas = async () => {
+    const postVentas = async (info) => {
         try {
-            const res = await axios.post(`${url}/ventas`,{
+            const res = await axios.post(`${url}/ventas`,info,{
                 headers:{
                     token: useUsuario.token
                 }
