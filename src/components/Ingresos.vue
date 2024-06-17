@@ -85,10 +85,10 @@ const organizarClientes = () => {
 	return documentoNombre.value;
 };
 
-const buscarNombre = (id) => {
-	const cliente = clientesTodo.value.find((c) => c._id === id);
-	return cliente.nombre;
-};
+// const buscarNombre = (id) => {
+// 	const cliente = clientesTodo.value.find((c) => c._id === id);
+// 	return cliente.nombre;
+// };
 
 const clienteBuscar = (id) => {
 	const cliente = documentoNombre.value.find(
@@ -297,7 +297,7 @@ onMounted(() => {
 				</template>
 				<template v-slot:body-cell-cliente="props">
 					<q-td :props="props">
-						<p>{{ buscarNombre(props.row.cliente) }}</p>
+						<!-- <p>{{ buscarNombre(props.row.cliente) }}</p> -->
 					</q-td>
 				</template>
 				<template v-slot:body-cell-sede="props">

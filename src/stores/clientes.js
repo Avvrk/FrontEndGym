@@ -14,7 +14,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -29,7 +29,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -44,7 +44,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -59,7 +59,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -74,7 +74,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -82,14 +82,14 @@ export const useStoreClientes = defineStore("Clientes", () => {
 		}
 	};
 
-	const getClientesPlan = async (plan) => {
+	const getClientesPlan = async (idPlan) => {
 		try {
-			const res = await axios.get(`${url}/clientes/plan/${plan}`, {
+			const res = await axios.get(`${url}/clientes/plan/${idPlan}`, {
 				headers: {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -99,12 +99,15 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const getClientesCumpleanios = async (fecha) => {
 		try {
-			const res = await axios.get(`${url}/clientes/cumpleanios/${fecha}`, {
-				headers: {
-					token: useUsuario.token,
-				},
-			});
-			console.log(res);
+			const res = await axios.get(
+				`${url}/clientes/cumpleanios/${fecha}`,
+				{
+					headers: {
+						token: useUsuario.token,
+					},
+				}
+			);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -119,9 +122,11 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-		} catch (error) {
-			console.log(res);
+			console.log(res.data);
 			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
 		}
 	};
 
@@ -132,7 +137,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
 					token: useUsuario.token,
 				},
 			});
-			console.log(res);
+			console.log(res.data);
 			return res;
 		} catch (error) {
 			console.log(error);
@@ -142,12 +147,21 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const postClientesSeguimiento = async (id, info) => {
 		try {
-			const res = await axios.post(`${url}/clientes/seguimiento/${id}`, info, {
-				headers: {
-					token: useUsuario.token,
-				},
-			});
-		} catch (error) {}
+			const res = await axios.post(
+				`${url}/clientes/seguimiento/${id}`,
+				info,
+				{
+					headers: {
+						token: useUsuario.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
 	};
 
 	const putClientes = async (id, info) => {
@@ -167,11 +181,15 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const putClientesSeguimiento = async (id, info) => {
 		try {
-			const res = await axios.put(`${url}/clientes/seguimiento/${id}`, info, {
-				headers: {
-					token: useUsuario.token,
-				},
-			});
+			const res = await axios.put(
+				`${url}/clientes/seguimiento/${id}`,
+				info,
+				{
+					headers: {
+						token: useUsuario.token,
+					},
+				}
+			);
 			console.log(res.data);
 			return res;
 		} catch (error) {
@@ -182,11 +200,15 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const putClientesActivar = async (id) => {
 		try {
-			const res = await axios.put(`${url}/clientes/activar/${id}`, {
-				headers: {
-					token: useUsuario.token,
-				},
-			});
+			const res = await axios.put(
+				`${url}/clientes/activar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuario.token,
+					},
+				}
+			);
 			console.log(res.data);
 			return res;
 		} catch (error) {
@@ -197,11 +219,15 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const putClientesInactivar = async (id) => {
 		try {
-			const res = await axios.put(`${url}/clientes/inactivar/${id}`, {
-				headers: {
-					token: useUsuario.token,
-				},
-			});
+			const res = await axios.put(
+				`${url}/clientes/inactivar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuario.token,
+					},
+				}
+			);
 			console.log(res.data);
 			return res;
 		} catch (error) {

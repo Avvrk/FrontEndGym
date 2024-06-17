@@ -4,7 +4,6 @@ import { useStoreMantenimiento } from "../stores/mantenimiento.js";
 import { useStoreMaquinas } from "../stores/maquinas.js";
 import { useQuasar } from "quasar";
 
-
 const $q = useQuasar();
 
 const useMantenimiento = useStoreMantenimiento();
@@ -72,6 +71,8 @@ const mostrarFormularioMantenimiento = ref(false);
 const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
+const estadoBuscar = ref("ninguno");
+
 const organizarMaquinas = () => {
 	codigoSede.value = maquinasTodo.value.map((element) => ({
 		label: `${element.codigo} / ${element.sede}`,
@@ -79,6 +80,28 @@ const organizarMaquinas = () => {
 		nombre: `${element.codigo}`,
 	}));
 	return codigoSede.value;
+};
+
+const fechaC = () => {
+	estadoBuscar.value = "plan";
+	botonBuscar.value = true;
+};
+
+const estadoTabla = () => {
+	switch (opcionBusqueda.value) {
+		case "activas":
+			listarClientesActivos();
+			break;
+		case "inactivos":
+			listarClientesInactivos();
+			break;
+		case "fecha":
+			fechaC();
+			break;
+		default:
+			listarMantenimientos();
+			break;
+	}
 };
 
 // const buscarMaquina = (id) => {
@@ -274,10 +297,12 @@ function editarVistaFondo(boolean, extra, boton) {
 		responsableMantenimiento.value = "";
 		precioMantenimiento.value = "";
 	}
-	
+
 	mostrarBotonEnviar.value = boton;
 	mostrarFormularioMantenimiento.value = boolean;
 }
+
+watch(opcionBusqueda, estadoTabla);
 
 onMounted(() => {
 	listarDatos();
@@ -288,11 +313,41 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
+				<q-btn
+					v-if="!loading"
+					@click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table v-if="!loading"
+			<q-option-group
+				v-if="!loading"
+				v-model="opcionBusqueda"
+				inline
+				class="q-mb-md"
+				:options="[
+					{ label: 'Todos (predeterminado)', value: 'todos' },
+					{ label: 'Activos', value: 'activas' },
+					{ label: 'Inactivos', value: 'inactivos' },
+					{ label: 'Por fecha', value: 'fecha' },
+				]" />
+			<q-input
+				v-if="estadoBuscar == 'fecha'"
+				standout="bg-green text-white"
+				type="date"
+				label="Fecha de Inicio"
+				v-model="cumpleanioAbuscar"
+				style="width: 200px" />
+			<q-input
+				v-if="estadoBuscar == 'fecha'"
+				standout="bg-green text-white"
+				type="date"
+				label="Fecha Final"
+				v-model="cumpleanioAbuscar"
+				style="width: 200px" />
+				<q-btn v-if="botonBuscar" @click="
+				"> 🔎 </q-btn>
+			<q-table
+				v-if="!loading"
 				flat
 				bordered
 				title="Lista de Mantenimientos"
@@ -312,7 +367,11 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
+			<q-inner-loading
+				:showing="loading"
+				label="Please wait..."
+				label-class="text-teal"
+				label-style="font-size: 1.1em" />
 		</div>
 		<div
 			id="formularioMantenimiento"

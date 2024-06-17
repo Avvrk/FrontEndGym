@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import { useStoreInventario } from "../stores/inventario.js";
 import { useQuasar } from "quasar";
 
-
 const $q = useQuasar();
 
 const useInventario = useStoreInventario();
@@ -60,13 +59,15 @@ let cantidadProducto = ref("");
 
 const datos = ref("");
 
+const iTotal = ref(0);
+
 // Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioInventario = ref(false);
 const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
 async function listarDatos() {
-	await Promise.all([listarInventario()]);
+	await Promise.all([listarInventario(), listarTotal()]);
 	loading.value = false; // Datos cargados
 }
 
@@ -76,6 +77,15 @@ async function listarInventario() {
 		rows.value = res.data.inventarios;
 	} catch (error) {
 		console.log("Error al listar el inventario:", error);
+	}
+}
+
+async function listarTotal() {
+	try {
+		const res = await useInventario.getInventariosTotal();
+		iTotal.value = res.data.total;
+	} catch (error) {
+		console.error("Error al listar el total de inventario:", error);
 	}
 }
 
@@ -230,11 +240,14 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
+				<q-btn
+					v-if="!loading"
+					@click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table v-if="!loading"
+			<q-table
+				v-if="!loading"
 				flat
 				bordered
 				title="Lista de Inventario"
@@ -258,7 +271,16 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
+			<!-- <div>
+				<q-card flat bordered>
+					<q-card-section v-html="iTotal" />
+				</q-card>
+			</div> -->
+			<q-inner-loading
+				:showing="loading"
+				label="Please wait..."
+				label-class="text-teal"
+				label-style="font-size: 1.1em" />
 		</div>
 		<div
 			id="formularioInventario"
