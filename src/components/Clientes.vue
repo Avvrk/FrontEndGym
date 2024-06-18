@@ -69,11 +69,14 @@ let columns = ref([
 		field: "estado",
 		align: "center",
 	},
+	{ name: "seguimiento", label:"Seguimiento", field:"seguimiento", align:"center"}, //Linea añadida
+
 	{ name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 ]);
 
 let planesTodo = ref([]);
 
+let segui = ref([]);
 // Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
 const datos = ref("");
 
@@ -93,6 +96,7 @@ const opcionBusqueda = ref("todos");
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
 const mostrarBotonEnviar = ref(false);
+const mostrarSeguimientoCliente = ref(false);
 const loading = ref(true); // Agregar estado de carga
 
 // Variables que se usan en el formulario
@@ -285,6 +289,11 @@ async function editarEstado(elemento) {
 	}
 }
 
+//Funcion para ver el seguimiento del cliente.
+function verSeguimiento(seguimiento){
+	mostrarSeguimientoCliente.value = true;
+	segui.value;
+};
 //Funcion que se encarga de enviar los datos del registro
 async function registrar() {
 	if (await validarDatos()) {
@@ -604,10 +613,10 @@ onMounted(() => {
 				</template>
 				<template v-slot:body-cell-opciones="props">
 					<q-td :props="props">
-						<q-btn
+						<!-- <q-btn
 							@click="verSeguimiento(true, true, props.row._id)">
 							📋
-						</q-btn>
+						</q-btn> -->
 						<q-btn
 							@click="editarVistaFondo(true, props.row, false)">
 							✏️
@@ -619,6 +628,14 @@ onMounted(() => {
 						</q-btn>
 						<q-btn v-else @click="editarEstado(props.row)">
 							✅
+						</q-btn>
+					</q-td>
+				</template>
+				<template v-slot:body-cell-seguimiento="props"> <!--Linea añadida-->
+					<q-td :props="props">
+						<q-btn
+							@click="verSeguimiento(props.row.seguimiento)">
+							📋
 						</q-btn>
 					</q-td>
 				</template>
@@ -636,6 +653,19 @@ onMounted(() => {
 				label="Please wait..."
 				label-class="text-teal"
 				label-style="font-size: 1.1em" />
+		</div>
+
+		<div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true" style="background-color: black; width: 200px; height: 200px;">
+			<p>a</p>
+			<section v-for="item in segui" :key="item._id">
+				<p>fecha</p>
+				<p>brazo</p>
+				<p>cintura</p>
+				<p>estatura</p>
+				<p>imc</p>
+				<p>peso</p>
+				<p>pierna</p>
+			</section>
 		</div>
 		<div id="formularioCliente" v-if="mostrarFormularioCliente == true">
 			<q-form
