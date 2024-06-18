@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useStoreMantenimiento } from "../stores/mantenimiento.js";
 import { useStoreMaquinas } from "../stores/maquinas.js";
 import { useQuasar } from "quasar";
@@ -73,6 +73,12 @@ const loading = ref(true); // Agregar estado de carga
 
 const estadoBuscar = ref("ninguno");
 
+const opcionBusqueda = ref("");
+const botonBuscar = ref(false);
+
+const fecha1Abuscar = ref("");
+const fecha2Abuscar = ref("");
+
 const organizarMaquinas = () => {
 	codigoSede.value = maquinasTodo.value.map((element) => ({
 		label: `${element.codigo} / ${element.sede}`,
@@ -83,17 +89,17 @@ const organizarMaquinas = () => {
 };
 
 const fechaC = () => {
-	estadoBuscar.value = "plan";
+	estadoBuscar.value = "fecha";
 	botonBuscar.value = true;
 };
 
 const estadoTabla = () => {
 	switch (opcionBusqueda.value) {
 		case "activas":
-			listarClientesActivos();
+			listarMantenimientosActivos();
 			break;
 		case "inactivos":
-			listarClientesInactivos();
+			listarMantenimientosInactivos();
 			break;
 		case "fecha":
 			fechaC();
@@ -120,7 +126,7 @@ async function listarMantenimientos() {
 		const res = await useMantenimiento.getMantenimientos();
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
-		console.log("Error al listar mantenimientos:", error);
+		console.error("Error al listar mantenimientos:", error);
 	}
 }
 
@@ -130,7 +136,39 @@ async function listarMaquinas() {
 		maquinasTodo.value = res.data.maquinas;
 		organizarMaquinas();
 	} catch (error) {
-		console.log("Error al listar maquinas:", error);
+		console.error("Error al listar maquinas:", error);
+	}
+}
+
+async function listarMantenimientosFecha() {
+	try {
+		console.log(fecha1Abuscar.value, fecha2Abuscar.value);
+		const res = await useMantenimiento.getMantenimientosFecha(fecha1Abuscar.value, fecha2Abuscar.value);
+		rows.value = res.data.mantenimientos;
+	} catch (error) {
+		console.error("Error al listar mantenimientos entre fechas:", error);
+	}
+}
+
+async function listarMantenimientosActivos() {
+	try {
+		estadoBuscar.value = "ninguno";
+		botonBuscar.value = false;
+		const res = await useMantenimiento.getMantenimientosActivos();
+		rows.value = res.data.mantenimientos;
+	} catch (error) {
+		console.error("Error al listar maquinas activas:", error);
+	}
+}
+
+async function listarMantenimientosInactivos() {
+	try {
+		estadoBuscar.value = "ninguno";
+		botonBuscar.value = false;
+		const res = await useMantenimiento.getMantenimientosInactivos();
+		rows.value = res.data.mantenimientos;
+	} catch (error) {
+		console.error("Error al listar maquinas activas:", error);
 	}
 }
 
@@ -335,17 +373,16 @@ onMounted(() => {
 				standout="bg-green text-white"
 				type="date"
 				label="Fecha de Inicio"
-				v-model="cumpleanioAbuscar"
+				v-model="fecha1Abuscar"
 				style="width: 200px" />
 			<q-input
 				v-if="estadoBuscar == 'fecha'"
 				standout="bg-green text-white"
 				type="date"
 				label="Fecha Final"
-				v-model="cumpleanioAbuscar"
+				v-model="fecha2Abuscar"
 				style="width: 200px" />
-				<q-btn v-if="botonBuscar" @click="
-				"> 🔎 </q-btn>
+				<q-btn v-if="botonBuscar" @click="listarMantenimientosFecha()"> 🔎 </q-btn>
 			<q-table
 				v-if="!loading"
 				flat
