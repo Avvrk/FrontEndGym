@@ -37,13 +37,6 @@ let columns = ref([
 		align: "center",
 	},
 	{
-		name: "estado",
-		sortable: true,
-		label: "Estado",
-		field: "estado",
-		align: "center",
-	},
-	{
 		name: "opciones",
 		label: "Opciones",
 		field: "opciones",
@@ -96,7 +89,7 @@ async function registrar() {
 			const info = {
 				codigo: codigoProducto.value,
 				descripcion: descripcionProducto.value,
-				valorP: valorProducto.value,
+				valor: valorProducto.value,
 				cantidad: cantidadProducto.value,
 			};
 			const res = await useInventario.postInventario(info);
@@ -126,7 +119,7 @@ async function editar() {
 			const info = {
 				codigo: codigoProducto.value,
 				descripcion: descripcionProducto.value,
-				valorP: valorProducto.value,
+				valor: valorProducto.value,
 				cantidad: cantidadProducto.value,
 			};
 			const res = await useInventario.putInventarios(
@@ -260,14 +253,6 @@ onMounted(() => {
 							@click="editarVistaFondo(true, props.row, false)">
 							✏️
 						</q-btn>
-					</q-td>
-				</template>
-				<template v-slot:body-cell-estado="props">
-					<q-td :props="props">
-						<p v-if="props.row.estado == 1" style="color: green">
-							Activo
-						</p>
-						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
 			</q-table>

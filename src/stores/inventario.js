@@ -54,22 +54,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
 
 	const postInventario = async (info) => {
 		try {
-			const res = await axios.post(`${url}/inventario`, info, {
-				headers: {
-					token: useUsuarios.token,
-				},
-			});
-			console.log(res.data);
-			return res;
-		} catch (error) {
-			console.log(r);
-			return error;
-		}
-	};
-
-	const putInventarios = async (id, info) => {
-		try {
-			const res = await axios.put(`${url}/inventario/${id}`, info, {
+			const res = await axios.post(`${url}/inventarios`, info, {
 				headers: {
 					token: useUsuarios.token,
 				},
@@ -82,43 +67,20 @@ export const useStoreInventario = defineStore("Inventario", () => {
 		}
 	};
 
-	// const putInventarioActivar = async (id) => {
-	// 	try {
-	// 		const res = await axios.put(
-	// 			`${url}/inventario/activar/${id}`,
-	// 			{},
-	// 			{
-	// 				headers: {
-	// 					token: token.value,
-	// 				},
-	// 			}
-	// 		);
-	// 		console.log(res);
-	// 		return res;
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 		return error;
-	// 	}
-	// };
-
-	// const putInventarioInactivar = async (id) => {
-	// 	try {
-	// 		const res = await axios.put(
-	// 			`${url}/inventario/inactivar/${id}`,
-	// 			{},
-	// 			{
-	// 				headers: {
-	// 					token: token.value,
-	// 				},
-	// 			}
-	// 		);
-	// 		console.log(res);
-	// 		return res;
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 		return error;
-	// 	}
-	// };
+	const putInventarios = async (id, info) => {
+		try {
+			const res = await axios.put(`${url}/inventarios/${id}`, info, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
 	return {
 		getInventario,

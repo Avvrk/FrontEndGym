@@ -289,7 +289,7 @@ async function registrar() {
             let hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
             const fNacimiento = new Date(nacimientoCliente.value);
-            const diferenciaEnMilisegundos = hoy-  fNacimiento;
+            const diferenciaEnMilisegundos = hoy - fNacimiento; // Cambiado de fNacimiento - hoy a hoy - fNacimiento
 
             const msPorAño = 1000 * 60 * 60 * 24 * 365.25;
             const edad = Math.floor(diferenciaEnMilisegundos / msPorAño);
@@ -334,7 +334,7 @@ async function editar() {
             let hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
             const fNacimiento = new Date(nacimientoCliente.value);
-            const diferenciaEnMilisegundos = fNacimiento - hoy;
+            const diferenciaEnMilisegundos = hoy - fNacimiento; // Cambiado de fNacimiento - hoy a hoy - fNacimiento
 
             const msPorAño = 1000 * 60 * 60 * 24 * 365.25;
             const edad = Math.floor(diferenciaEnMilisegundos / msPorAño);
@@ -356,13 +356,13 @@ async function editar() {
             if (res.status !== 200) {
                 $q.notify({
                     type: "negative",
-                    message: "Parece que hubo un error en la edicion",
+                    message: "Parece que hubo un error en la edición",
                     position: "bottom-right",
                 });
             } else {
                 $q.notify({
                     type: "positive",
-                    message: "El cliente se ah editado correctamente",
+                    message: "El cliente se ha editado correctamente",
                     position: "bottom-right",
                 });
                 listarClientes();
