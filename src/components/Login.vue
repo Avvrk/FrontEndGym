@@ -2,6 +2,9 @@
 import { ref } from "vue";
 import { useStoreUsuarios } from "../stores/usuarios";
 import { useRouter } from "vue-router";
+import { useQuasar } from "quasar";
+
+const $q = useQuasar();
 
 const router = useRouter();
 const useUsuario = useStoreUsuarios();
@@ -10,17 +13,65 @@ let email = ref("");
 let password = ref("");
 
 async function login() {
-    try {
+    if (validarDatos()) {
         const res = await useUsuario.login(email.value, password.value);
-        if (res.data.status != 200){
-            router.push("/main/hogar");
+        if (res.code === "ERR_BAD_REQUEST") {
+            if (res.response.data.msg === "Usuario / Password no son correctos.") {
+                $q.notify({
+                    type: "negative",
+                    message: "El usuario no existe",
+                    position: "bottom-right",
+                });
+            } else if (res.response.data.msg === "Usuario / Password no son correctos") {
+                $q.notify({
+                    type: "negative",
+                    message: "Correo o contraseña no son correctos",
+                    position: "bottom-right",
+                });
+            } else {
+                $q.notify({
+                    type: "negative",
+                    message: "Error inesperado",
+                    position: "bottom-right",
+                });
+            }
         } else {
-            console.log("error");
+            if (res.data.status != 200) {
+                router.push("/main/hogar");
+            }
         }
-        
-    } catch (error) {
-        console.log(error);
     }
+}
+
+function validarDatos() {
+    let verificado = true;
+    if (!email.value && !password.value) {
+        $q.notify({
+            type: "negative",
+            message: "Llenar todos los campos",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else {
+        if (!email.value) {
+            $q.notify({
+                type: "negative",
+                message: "El correo no puede estar vacio",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!password.value) {
+            $q.notify({
+                type: "negative",
+                message: "la contraseña no puede estar vacia",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+    }
+
+    return verificado;
 }
 </script>
 
@@ -41,7 +92,11 @@ async function login() {
                         <input type="password" class="input" placeholder="Contraseña" v-model="password" />
                         <i class="fas fa-lock"></i>
                     </div>
-                    <button class="submit" type="submit">Iniciar</button>
+                    <q-btn class="submit bg-primary" type="submit" :loading="useUsuario.loading"
+                        >Iniciar
+                        <template v-slot:loading>
+                            <q-spinner color="secondary" size="1em" /> </template
+                    ></q-btn>
                     <div class="remember-me">
                         <input type="checkbox" id="remember" />
                         <label for="remember">Recordarme</label>
@@ -127,7 +182,7 @@ async function login() {
     border-radius: 10px;
     font-size: 16px;
     color: #fff;
-    background-color: #4caf50;
+    background-color: primary;
     cursor: pointer;
 }
 

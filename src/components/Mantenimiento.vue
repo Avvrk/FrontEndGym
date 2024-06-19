@@ -46,6 +46,13 @@ let columns = ref([
 		align: "center",
 	},
 	{
+		name: "estado",
+		sortable: true,
+		label: "Estado",
+		field: "estado",
+		align: "center",
+	},
+	{
 		name: "opciones",
 		label: "Opciones",
 		field: "opciones",
@@ -110,11 +117,11 @@ const estadoTabla = () => {
 	}
 };
 
-// const buscarMaquina = (id) => {
-// 	const maquina = maquinasTodo.value.find((m) => m._id == id);
-// 	console.log(maquina, id, maquinasTodo.value);
-// 	return maquina.codigo;
-// };
+const buscarMaquina = (id) => {
+	const maquina = maquinasTodo.value.find((m) => m._id == id);
+	console.log(maquina, id, maquinasTodo.value);
+	return maquina.codigo;
+};
 
 async function listarDatos() {
 	await Promise.all([listarMantenimientos(), listarMaquinas()]);
@@ -169,6 +176,19 @@ async function listarMantenimientosInactivos() {
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
 		console.error("Error al listar maquinas activas:", error);
+	}
+}
+
+async function editarEstado(elemento) {
+	try {
+		if (elemento.estado === 1) {
+			const res = await useMantenimiento.putMantenimientosInactivar(elemento._id);
+		} else if (elemento.estado === 0) {
+			const res = await useMantenimiento.putMantenimientosActivar(elemento._id);
+		}
+		listarMantenimientos();
+	} catch (error) {
+		console.error("Error al editar el estado del cliente:", error);
 	}
 }
 
@@ -302,7 +322,7 @@ async function validarDatos() {
 				position: "bottom-right",
 			});
 			verificado = false;
-		} else if (precioMantenimiento.value < 0) {
+		} else if (isNaN(precioMantenimiento.value) || precioMantenimiento.value < 0) {
 			$q.notify({
 				type: "negative",
 				message: "Ingrese un precio valido",
@@ -391,16 +411,33 @@ onMounted(() => {
 				:rows="rows"
 				:columns="columns"
 				row-key="id">
-				<!-- <template v-slot:body-cell-idMaquina="props">
-                     <q-td :props="props">
-                        <p>{{ buscarMaquina(props.row._id) }}</p>
-                     </q-td>
-                </template> -->
 				<template v-slot:body-cell-opciones="props">
 					<q-td :props="props">
-						<q-btn @click="editarVistaFondo(true, props.row, true)">
+						<q-btn
+							@click="editarVistaFondo(true, props.row, false)">
 							✏️
 						</q-btn>
+						<q-btn
+							v-if="props.row.estado == 1"
+							@click="editarEstado(props.row)">
+							❌
+						</q-btn>
+						<q-btn v-else @click="editarEstado(props.row)">
+							✅
+						</q-btn>
+					</q-td>
+				</template>
+				<template v-slot:body-cell-idMaquina="props">
+                     <q-td :props="props">
+                        <p>{{ buscarMaquina(props.row.idMaquina) }}</p>
+                     </q-td>
+                </template>
+				<template v-slot:body-cell-estado="props">
+					<q-td :props="props">
+						<p v-if="props.row.estado == 1" style="color: green">
+							Activo
+						</p>
+						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
 			</q-table>

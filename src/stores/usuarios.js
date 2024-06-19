@@ -6,9 +6,11 @@ export const useStoreUsuarios = defineStore("Usuario", {
         token: "",
         user: {},
         url: "https://avvrk-vyktor23-backendgym.onrender.com",
+        loading: false,
     }),
     actions: {
         async login(email, password) {
+            this.loading = true;
             try {
                 const res = await axios.post(`${this.url}/usuarios/login`, { email, password });
                 this.token = res.data.token;
@@ -18,9 +20,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
                 console.error(error);
                 console.log(email, "hola");
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async getUsuarios() {
+            this.loading = true;
             try {
                 const res = await axios.get(`${this.url}/usuarios`, {
                     headers: {
@@ -32,9 +37,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async getUsuariosActivos() {
+            this.loading = true;
             try {
                 const res = await axios.get(`${this.url}/usuarios/activos`, {
                     headers: {
@@ -46,9 +54,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async getUsuariosInactivos() {
+            this.loading = true;
             try {
                 const res = await axios.get(`${this.url}/usuarios/inactivos`, {
                     headers: {
@@ -60,9 +71,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async log(info) {
+            this.loading = true;
             try {
                 const res = await axios.post(`${this.url}/usuarios/log`, info);
                 console.log(res.data);
@@ -70,9 +84,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async putUsuarios(id, info) {
+            this.loading = true;
             try {
                 const res = await axios.put(`${this.url}/usuarios/${id}`, info, {
                     headers: {
@@ -84,9 +101,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async putUsuariosActivar(id) {
+            this.loading = true;
             try {
                 const res = await axios.put(
                     `${this.url}/usuarios/activar/${id}`,
@@ -102,9 +122,12 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
         async putUsuariosInactivar(id) {
+            this.loading = true;
             try {
                 const res = await axios.put(
                     `${this.url}/usuarios/inactivar/${id}`,
@@ -120,12 +143,13 @@ export const useStoreUsuarios = defineStore("Usuario", {
             } catch (error) {
                 console.error(error);
                 return error;
+            } finally {
+                this.loading = false;
             }
         },
     },
     persist: true,
 });
-
 
 //Todas las peticiones
 /*

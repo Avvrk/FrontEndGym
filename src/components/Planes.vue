@@ -206,7 +206,7 @@ async function validarDatos() {
 				position: "bottom-right",
 			});
 			verificado = false;
-		} else if (valorPlanes.value.length < 0) {
+		} else if (isNaN(valorPlanes) || valorPlanes.value.length < 0) {
 			$q.notify({
 				type: "negative",
 				message: "El valor debe ser un numero valido",

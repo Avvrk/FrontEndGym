@@ -16,54 +16,49 @@ import Venta from "../components/Ventas.vue";
 import { useStoreUsuarios } from "../stores/usuarios.js";
 
 const auth = (to, from, next) => {
-	const userUsuario = useStoreUsuarios();
-	if (checkAuth()) {
-		const rol = userUsuario.user.rol;
-		console.log(rol);
-		if (!to.meta.rol.includes(rol)) {
-			return next({ name: "login" });
-		}
-		next();
-	} else {
-		return next({ name: "login" });
-	}
+    const userUsuario = useStoreUsuarios();
+    if (checkAuth()) {
+        const rol = userUsuario.user.rol;
+        console.log(rol);
+        if (!to.meta.rol.includes(rol)) {
+            return next({ name: "login" });
+        }
+        next();
+    } else {
+        return next({ name: "login" });
+    }
 };
 
 const checkAuth = () => {
-	const userUsuario = useStoreUsuarios();
-	const token = userUsuario.token;
-	console.log(token);
-	if (!token) return false;
-	return true;
+    const userUsuario = useStoreUsuarios();
+    const token = userUsuario.token;
+    console.log(token);
+    if (!token) return false;
+    return true;
 };
 
 const routes = [
-	{ path: "/", component: Login},
-	{
-		path: "/main",
-		component: Main,
-		children: [
-			{ path: "hogar", component: Home },
-			{ path: "clientes", component: Cliente },
-			{
-				path: "sedes",
-				component: Sedes,
-				beforeEnter: auth,
-				meta: { rol: ["administrador", "recepcionista"] },
-			},
-			{ path: "ingresos", component: Ingresos },
-			{ path: "inventario", component: Inventario },
-			{ path: "mantenimiento", component: Mantenimiento },
-			{ path: "usuarios", component: Usuario },
-			{ path: "maquinas", component: Maquina },
-			{ path: "pagos", component: Pago },
-			{ path: "planes", component: Plan },
-			{ path: "ventas", component: Venta },
-		],
-	},
+    { path: "/", component: Login },
+    {
+        path: "/main",
+        component: Main,
+        children: [
+            { path: "hogar", component: Home, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "clientes", component: Cliente, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "sedes", component: Sedes, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "ingresos", component: Ingresos, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
+            { path: "inventario", component: Inventario, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
+            { path: "mantenimiento", component: Mantenimiento, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
+            { path: "usuarios", component: Usuario, beforeEnter: auth, meta: { rol: ["administrador"] } },
+            { path: "maquinas", component: Maquina, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "pagos", component: Pago, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
+            { path: "planes", component: Plan, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "ventas", component: Venta, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
+        ],
+    },
 ];
 
 export const router = createRouter({
-	history: createWebHashHistory(),
-	routes,
+    history: createWebHashHistory(),
+    routes,
 });

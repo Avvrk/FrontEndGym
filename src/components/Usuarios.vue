@@ -251,7 +251,7 @@ async function validarDatos(indicador) {
 				position: "bottom-right",
 			});
 			verificado = false;
-		} else if (telefonoUsuario.value.length < 10) {
+		} else if (isNaN(telefonoUsuario.value) || telefonoUsuario.value.length < 10) {
 			$q.notify({
 				type: "negative",
 				message: "El teléfono no puede tener menos de 10 caracteres",

@@ -104,7 +104,8 @@ const organizarSedes = () => {
 };
 
 const buscarSede = (id) => {
-	return sedesTodo.value.find((element) => element._id === id)
+	console.log(id, sedesTodo.value);
+	return sedesTodo.value.find((element) => element._id === id).nombre
 }
 
 async function listarDatos() {
@@ -125,7 +126,6 @@ async function sedes() {
 	try {
 		const res = await useSede.getSedes();
 		sedesTodo.value = res.data.sedes;
-		organizarSedes
 	} catch (error) {
 		console.error("Error al listar sedes:", error);
 	}
@@ -371,6 +371,11 @@ onMounted(() => {
 						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
+				<template v-slot:body-cell-sede="props">
+					<q-td :props="props">
+					   <p>{{ buscarSede(props.row.idSede) }}</p>
+					</q-td>
+			   </template>
 				<template v-slot:body-cell-fechaIngreso="props">
 					<q-td :props="props">
 						<p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
@@ -390,7 +395,7 @@ onMounted(() => {
 				<template v-slot:body-cell-idSede="props">
 					<q-td :props="props">
 						<p>
-							{{ buscarSede(props._id) }}
+							{{ buscarSede(props.row.idSede) }}
 						</p>
 					</q-td>
 				</template>
