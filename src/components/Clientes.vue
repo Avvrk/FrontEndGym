@@ -289,7 +289,7 @@ async function registrar() {
             let hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
             const fNacimiento = new Date(nacimientoCliente.value);
-            const diferenciaEnMilisegundos = fNacimiento - hoy;
+            const diferenciaEnMilisegundos = hoy-  fNacimiento;
 
             const msPorAño = 1000 * 60 * 60 * 24 * 365.25;
             const edad = Math.floor(diferenciaEnMilisegundos / msPorAño);
@@ -334,7 +334,7 @@ async function editar() {
             let hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
             const fNacimiento = new Date(nacimientoCliente.value);
-            const diferenciaEnMilisegundos = hoy - fNacimiento;
+            const diferenciaEnMilisegundos = fNacimiento - hoy;
 
             const msPorAño = 1000 * 60 * 60 * 24 * 365.25;
             const edad = Math.floor(diferenciaEnMilisegundos / msPorAño);
