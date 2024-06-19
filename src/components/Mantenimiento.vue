@@ -93,6 +93,11 @@ const fechaC = () => {
 	botonBuscar.value = true;
 };
 
+const fechaBonita = (info) => {
+	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
+	return nuevoFormato;
+};
+
 const estadoTabla = () => {
 	switch (opcionBusqueda.value) {
 		case "activas":
