@@ -21,11 +21,15 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 		}
 	};
 
-	const getMaquinasId = async () => {
+	const getMaquinasId = async (id) => {
 		try{
-			const { id } = req.params;
-            const maquinasId = await Maquina.findById(id);
-            res.json({ maquinasId });
+			const res = await axios.get(`${url}/maquinas/id/${id}`, {
+				headers: {
+					token: useUsuario.token,
+				},
+			});
+			console.log(res.data);
+			return res;
 		}catch (error){
 			console.log(error);
 			return error;
@@ -34,8 +38,13 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 
 	const getMaquinasActivos = async () =>{
 		try{
-			const maquinasAc = await Maquina.find({ estado: 1 });
-            res.json({ maquinasAc });
+			const res = await axios.get(`${url}/maquinas/activos`, {
+				headers: {
+					token: useUsuario.token,
+				},
+			});
+			console.log(res.data);
+			return res;
 		}catch (error){
 			console.log(error);
 			return error;
@@ -44,8 +53,13 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 
 	const getMaquinasInactivos = async () =>{
 		try{
-			const maquinasIn = await Maquina.find({ estado: 0 });
-            res.json({ maquinasIn });
+			const res = await axios.get(`${url}/maquinas/inactivos`, {
+				headers: {
+					token: useUsuario.token,
+				},
+			});
+			console.log(res.data);
+			return res;
 		}catch (error){
 			console.log(error);
 			return error;
@@ -122,9 +136,9 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 
 	return {
 		getMaquinas,
-		getMaquinasId, //falta
-		getMaquinasActivos, //falta
-		getMaquinasInactivos, //falta
+		getMaquinasId,
+		getMaquinasActivos,
+		getMaquinasInactivos,
 		postMaquinas,
         putMaquinas,
 		putMaquinasInactivar,
