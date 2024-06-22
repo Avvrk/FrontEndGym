@@ -60,6 +60,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 },
             });
             console.log(res.data);
+            return res;
         } catch (error) {
             console.log(error);
             return error;
@@ -74,6 +75,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 },
             });
             console.log(res.data);
+            return res
         } catch (error) {
             console.log(error);
             return error;

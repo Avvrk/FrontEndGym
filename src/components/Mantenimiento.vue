@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import { useStoreMantenimiento } from "../stores/mantenimiento.js";
 import { useStoreMaquinas } from "../stores/maquinas.js";
 import { useQuasar } from "quasar";
+import { format } from "date-fns";
 
 const $q = useQuasar();
 
@@ -80,7 +81,7 @@ const loading = ref(true); // Agregar estado de carga
 
 const estadoBuscar = ref("ninguno");
 
-const opcionBusqueda = ref("");
+const opcionBusqueda = ref("todos");
 const botonBuscar = ref(false);
 
 const fecha1Abuscar = ref("");
@@ -100,19 +101,19 @@ const fechaC = () => {
 	botonBuscar.value = true;
 };
 
-const estadoTabla = () => {
+const estadoTabla = async () => {
 	switch (opcionBusqueda.value) {
 		case "activas":
-			listarMantenimientosActivos();
+			await listarMantenimientosActivos();
 			break;
 		case "inactivos":
-			listarMantenimientosInactivos();
+			await listarMantenimientosInactivos();
 			break;
 		case "fecha":
 			fechaC();
 			break;
 		default:
-			listarMantenimientos();
+			await listarMantenimientos();
 			break;
 	}
 };
@@ -121,6 +122,11 @@ const buscarMaquina = (id) => {
 	const maquina = maquinasTodo.value.find((m) => m._id == id);
 	console.log(maquina, id, maquinasTodo.value);
 	return maquina.codigo;
+};
+
+const fechaBonita = (info) => {
+    const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
+    return nuevoFormato;
 };
 
 async function listarDatos() {
@@ -427,6 +433,11 @@ onMounted(() => {
 						</q-btn>
 					</q-td>
 				</template>
+				<template v-slot:body-cell-fecha="props">
+					<q-td :props="props">
+					   <p>{{ fechaBonita(props.row.fecha) }}</p>
+					</q-td>
+			   </template>
 				<template v-slot:body-cell-idMaquina="props">
                      <q-td :props="props">
                         <p>{{ buscarMaquina(props.row.idMaquina) }}</p>
