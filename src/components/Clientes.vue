@@ -76,7 +76,6 @@ let columns = ref([
 let planesTodo = ref([]);
 
 let segui = ref([]);
-
 // Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
 const datos = ref("");
 
@@ -838,6 +837,21 @@ onMounted(() => {
     border-top-right-radius: inherit;
     padding: 18px;
     margin: auto;
+}
+
+
+#seguimientoCliente{
+	position: absolute;
+	width: 200px;
+	height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgb(255, 255, 255);
+	border-radius: 1pc;
+	z-index: 3;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	background-color: #ccc;
 }
 
 .q-pa-md {
