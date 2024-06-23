@@ -80,8 +80,8 @@ function validarDatos() {
         <div class="login-container">
             <div class="login-card">
                 <div class="login-header">
+                    <h2>Bienvenido</h2>
                     <h2>Iniciar Sesión</h2>
-                    <p>Bienvenido</p>
                 </div>
                 <form @submit.prevent="login">
                     <div class="input-field">
@@ -100,6 +100,9 @@ function validarDatos() {
                     <div class="remember-me">
                         <input type="checkbox" id="remember" />
                         <label for="remember">Recordarme</label>
+                    </div>
+                    <div class="create-account">
+                        <a href="#">¿No tienes cuenta? Registrarse</a>
                     </div>
                     <div class="forgot-password">
                         <a href="#">¿Olvidaste la contraseña?</a>
@@ -205,6 +208,17 @@ function validarDatos() {
 .remember-me label {
     font-size: 16px;
     color: #666;
+}
+
+.create-account{
+    margin-top: 10px;
+    text-align: right;
+}
+
+.create-account a {
+    font-size: 16px;
+    color: #666;
+    text-decoration: none;
 }
 
 .forgot-password {

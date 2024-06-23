@@ -16,7 +16,7 @@ let columns = ref([
     {
         name: "nombre",
         sortable: true,
-        label: "Nombre Usuario",
+        label: "Nombre",
         field: "nombre",
         align: "center",
     },
@@ -69,10 +69,13 @@ let columns = ref([
         field: "estado",
         align: "center",
     },
+    { name: "seguimiento", label: "Seguimiento", field: "seguimiento", align: "center" }, //Linea añadida
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 ]);
 
 let planesTodo = ref([]);
+
+let segui = ref([]);
 
 // Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
 const datos = ref("");
@@ -94,6 +97,7 @@ const opcionBusqueda = ref("todos");
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
 const mostrarBotonEnviar = ref(false);
+const mostrarSeguimientoCliente = ref(false); //Linea añadida
 const loading = ref(true); // Agregar estado de carga
 
 // Variables que se usan en el formulario
@@ -281,6 +285,37 @@ async function editarEstado(elemento) {
         console.error("Error al editar el estado del cliente:", error);
     }
 }
+
+//Funcion para ver el seguimiento del cliente.
+function verSeguimiento(seguimiento) {
+    seguimiento.forEach(item => {
+        const estaturaMetros = item.estatura / 100;
+        item.imc = item.peso / (estaturaMetros * estaturaMetros);
+    });
+    segui.value = seguimiento;
+    mostrarSeguimientoCliente.value = true;
+};
+
+
+function cerrarSeguimiento() {
+    mostrarSeguimientoCliente.value = false;
+};
+
+function calcularEstadoIMC(imc) {
+    if (imc < 18.5) {
+        return "Bajo peso";
+    } else if (imc >= 18.5 && imc < 24.9) {
+        return "Peso Normal";
+    } else if (imc >= 25 && imc < 29.9) {
+        return "Sobrepeso";
+    } else if (imc >= 30 && imc < 34.9) {
+        return "Obesidad I";
+    } else if (imc >= 35 && imc < 39.9) {
+        return "Obesidad II";
+    } else if (imc >= 40) {
+        return "Obesidad III";
+    }
+};
 
 //Funcion que se encarga de enviar los datos del registro
 async function registrar() {
@@ -572,25 +607,26 @@ onMounted(() => {
     <div>
         <div class="q-pa-md">
             <div>
-                <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
+                <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar Cliente </q-btn>
+
+                <q-btn v-if="!loading"> agregar Seguimiento </q-btn>
+
             </div>
-            <q-option-group
-                v-if="!loading"
-                v-model="opcionBusqueda"
-                inline
-                class="q-mb-md"
-                :options="[
-                    { label: 'Todos (predeterminado)', value: 'todos' },
-                    { label: 'Activos', value: 'activas' },
-                    { label: 'Inactivos', value: 'inactivos' },
-                    { label: 'Por plan', value: 'plan' },
-                    { label: 'Por cumpleaños', value: 'cumpleanios' },
-                    { label: 'Por ingreso', value: 'ingresos' },
-                ]" />
+            <q-option-group v-if="!loading" v-model="opcionBusqueda" inline class="q-mb-md" :options="[
+                { label: 'Todos (predeterminado)', value: 'todos' },
+                { label: 'Activos', value: 'activas' },
+                { label: 'Inactivos', value: 'inactivos' },
+                { label: 'Por plan', value: 'plan' },
+                { label: 'Por cumpleaños', value: 'cumpleanios' },
+                { label: 'Por ingreso', value: 'ingresos' },
+            ]" />
             <div class="row">
-                <q-select v-if="estadoBuscar == 'plan'" standout="bg-green text-white" :options="organizarPlanes()" option-value="valor" option-label="label" label="Plan" v-model="planAbuscar" style="width: 200px" />
-                <q-input v-if="estadoBuscar == 'cumpleanios'" standout="bg-green text-white" type="date" label="Cumpleaños" v-model="cumpleanioAbuscar" style="width: 200px" />
-                <q-input v-if="estadoBuscar == 'ingresos'" standout="bg-green text-white" type="date" label="Ingresaron" v-model="ingresoAbuscar" style="width: 200px" />
+                <q-select v-if="estadoBuscar == 'plan'" standout="bg-green text-white" :options="organizarPlanes()"
+                    option-value="valor" option-label="label" label="Plan" v-model="planAbuscar" style="width: 200px" />
+                <q-input v-if="estadoBuscar == 'cumpleanios'" standout="bg-green text-white" type="date"
+                    label="Cumpleaños" v-model="cumpleanioAbuscar" style="width: 200px" />
+                <q-input v-if="estadoBuscar == 'ingresos'" standout="bg-green text-white" type="date" label="Ingresaron"
+                    v-model="ingresoAbuscar" style="width: 200px" />
                 <q-btn v-if="botonBuscar" @click="tipoBoton"> 🔎 </q-btn>
             </div>
 
@@ -607,9 +643,10 @@ onMounted(() => {
                 </template>
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
-                        <q-btn @click="verSeguimiento(true, true, props.row._id)"> 📋 </q-btn>
+                        <!-- <q-btn @click="verSeguimiento(true, true, props.row._id)"> 📋 </q-btn> -->
                         <q-btn @click="editarVistaFondo(true, props.row, false)"> ✏️ </q-btn>
-                        <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)" :loading="useCliente.loading">
+                        <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"
+                            :loading="useCliente.loading">
                             ❌
                             <template v-slot:loading>
                                 <q-spinner color="secondary" size="1em" />
@@ -623,6 +660,13 @@ onMounted(() => {
                         </q-btn>
                     </q-td>
                 </template>
+                <template v-slot:body-cell-seguimiento="props"> <!--Linea añadida-->
+                    <q-td :props="props">
+                        <q-btn @click="verSeguimiento(props.row.seguimiento)">
+                            📋
+                        </q-btn>
+                    </q-td>
+                </template>
                 <template v-slot:body-cell-estado="props">
                     <q-td :props="props">
                         <p v-if="props.row.estado == 1" style="color: green">Activo</p>
@@ -630,21 +674,85 @@ onMounted(() => {
                     </q-td>
                 </template>
             </q-table>
-            <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
+            <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal"
+                label-style="font-size: 1.1em" />
+        </div>
+        <div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true">
+            <section v-for="item in segui" :key="item._id">
+                <q-card class="my-card" flat bordered>
+                    <q-card-section>
+                        <div class="text-h4" style="text-align: center;">Seguimiento </div>
+                    </q-card-section>
+
+                    <q-markup-table>
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Fecha:</td>
+                                <td class="text-center">{{ fechaBonita(item.fecha) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Brazo:</td>
+                                <td class="text-center">{{ item.brazo }} cm</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Cintura:</td>
+                                <td class="text-center">{{ item.cintura }} cm</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Pierna:</td>
+                                <td class="text-center">{{ item.pierna }} cm</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Estatura:</td>
+                                <td class="text-center">{{ item.estatura }} cm</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">IMC:</td>
+                                <td class="text-center"> {{ item.imc.toFixed(2) }} </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Estado:</td>
+                                <td class="text-center">{{ calcularEstadoIMC(item.imc) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">Peso:</td>
+                                <td class="text-center">{{ item.peso }} kg</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </q-markup-table>
+                    <button class="botonSeguimiento">Editar</button>
+                    <button @click="cerrarSeguimiento()" class="botonSeguimiento">Cerrar</button>
+                </q-card>
+            </section>
         </div>
         <div id="formularioCliente" v-if="mostrarFormularioCliente == true">
-            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @button="actualizar()" @reset="resetear()" class="q-gutter-md">
+            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @button="actualizar()" @reset="resetear()"
+                class="q-gutter-md">
                 <q-input standout="bg-green text-white" type="text" label="Nombre" v-model="nombreCliente" />
-                <q-select standout="bg-green text-white" :options="tipoD" label="Tipo de Documento" v-model="tipoDocumento" />
+                <q-select standout="bg-green text-white" :options="tipoD" label="Tipo de Documento"
+                    v-model="tipoDocumento" />
                 <q-input standout="bg-green text-white" type="text" label="Documento" v-model="documentoCliente" />
                 <q-input standout="bg-green text-white" type="date" label="Fecha de ingreso" v-model="ingresoCliente" />
-                <q-input standout="bg-green text-white" type="date" label="Fecha de Nacimiento" v-model="nacimientoCliente" />
+                <q-input standout="bg-green text-white" type="date" label="Fecha de Nacimiento"
+                    v-model="nacimientoCliente" />
                 <q-input standout="bg-green text-white" type="text" label="Direccion" v-model="residenciaCliente" />
                 <q-input standout="bg-green text-white" type="tel" label="Telefono" v-model="telefonoCliente" />
                 <q-input standout="bg-green text-white" type="text" label="Objetivo" v-model="objetivoCliente" />
-                <q-select standout="bg-green text-white" :options="organizarPlanes()" option-value="valor" option-label="label" label="Plan" v-model="planCliente" />
+                <q-select standout="bg-green text-white" :options="organizarPlanes()" option-value="valor"
+                    option-label="label" label="Plan" v-model="planCliente" />
                 <div>
-                    <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" :loading="useCliente.loading">
+                    <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary"
+                        :loading="useCliente.loading">
                         <template v-slot:loading>
                             <q-spinner color="secondary" size="1em" />
                         </template>
@@ -690,6 +798,46 @@ onMounted(() => {
     align-items: center;
     border: 0;
     z-index: 1;
+}
+
+
+#seguimientoCliente {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    box-sizing: inherit;
+    top: 0;
+    background-color: rgba(8, 8, 8, 0.305);
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    z-index: 1;
+}
+
+
+.botonSeguimiento {
+    height: 50px;
+    width: 100px;
+    margin: 40px 40px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.my-card{
+    border-radius: 15px;
+}
+.q-card > div:nth-child(1 of :not(.q--avoid-card-border)), .q-card > img:nth-child(1 of :not(.q--avoid-card-border)) {
+    border-top: 0;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    padding: 18px;
+    margin: auto;
 }
 
 .q-pa-md {
