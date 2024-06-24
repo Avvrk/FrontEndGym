@@ -39,8 +39,13 @@ export const useStoreSedes = defineStore("Sedes", () => {
 
     const getSedesActivos = async (id) => {
         try {
-            const sedes = await Sede.find({ estado: 1 });
-            res.json({ sedes });
+            const res = await axios.get(`${url}/sedes/activos`, {
+                headers: {
+                    token: useUsuarios.token
+                }
+            });
+            console.log(res);
+            return res;
         } catch (error) {
             console.log(error);
             return error;
@@ -49,8 +54,13 @@ export const useStoreSedes = defineStore("Sedes", () => {
 
     const getSedesInactivos = async (id) => {
         try {
-            const sedes = await Sede.find({ estado: 0 });
-            res.json({ sedes });
+            const res = await axios.get(`${url}/sedes/inactivos`, {
+                headers: {
+                    token: useUsuarios.token
+                }
+            });
+            console.log(res);
+            return res;
         } catch (error) {
             console.log(error);
             return error;
@@ -89,7 +99,6 @@ export const useStoreSedes = defineStore("Sedes", () => {
 
     const putSedeInactivar = async (id) => {
         try {
-            token.value = useUsuarios.token;
             const res = await axios.put(`${url}/sedes/inactivar/${id}`, {}, {
                 headers: {
                     token: useUsuarios.token
@@ -105,7 +114,6 @@ export const useStoreSedes = defineStore("Sedes", () => {
 
     const putSedesActivar = async (id) => {
         try {
-            token.value = useUsuarios.token;
             const res = await axios.put(`${url}/sedes/activar/${id}`, {}, {
                 headers: {
                     token: useUsuarios.token

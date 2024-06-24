@@ -22,22 +22,30 @@ export const useStorePagos = defineStore("Pagos", () => {
 	};
 
 
-	const getPagosFechas = async () => {
+	const getPagosFechas = async (fechainicio, fechafin) => {
 		try {
-			const { fecha } = req.params;
-            const pagos = await Pago.find({ fecha: fecha });
-            res.json({ pagos });
+			const res = await axios.get(`${url}/pagos/fechainicio/${fechainicio}/fechafin/${fechafin}`, {
+				headers: {
+					token: useUsuarios.token,
+				}
+			})
+			console.log(res.data);
+			return res;
 		} catch (error) {
 			console.log(error);
 			return error;
 		}
 	};
 
-	const getPagosPlan = async () => {
+	const getPagosPlan = async (plan) => {
 		try {
-			const { plan } = req.params;
-            const pagos = await Pago.find({ plan: plan });
-            res.json({ pagos });
+			const res = await axios.get(`${url}/pagos/plan/${plan}`, {
+				headers: {
+					token: useUsuarios.token,
+				}
+			})
+			console.log(res.data);
+			return res;
 		} catch (error) {
 			console.log(error);
 			return error;

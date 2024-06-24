@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useStoreUsuarios } from "../stores/usuarios.js";
 import { useStoreSedes } from "../stores/sedes.js";
 import { useQuasar } from "quasar";
@@ -84,6 +84,24 @@ const mostrarFormularioUsuario = ref(false);
 const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
+const opcionBusqueda = ref("todos");
+
+const estadoTabla = () => {
+	switch (opcionBusqueda.value) {
+		case "activas":
+			listarUsuariosActivos();
+			break;
+		case "inactivos":
+			listarUsuariosInactivos();
+			break;
+		default:
+			listarUsuarios();
+			break;
+	}
+};
+
+watch(opcionBusqueda, estadoTabla);
+
 async function listarDatos() {
 	await Promise.all([listarUsuarios(), sedes()]);
 	loading.value = false; // Datos cargados
@@ -104,8 +122,27 @@ async function sedes() {
 	try {
 		const res = await useSede.getSedes();
 		sedesTodo.value = res.data.sedes;
+		organizarSedes();
 	} catch (error) {
 		console.error("Error al listar sedes:", error);
+	}
+}
+
+async function listarUsuariosActivos() {
+	try {
+		const res = await useUsuario.getUsuariosActivos();
+		rows.value = res.data.usuarios;
+	} catch (error) {
+		console.error("Error al listar usuarios activos:", error);
+	}
+}
+
+async function listarUsuariosInactivos() {
+	try {
+		const res = await useUsuario.getUsuariosInactivos();
+		rows.value = res.data.usuarios;
+	} catch (error) {
+		console.error("Error al listar usuarios inactivos:", error);
 	}
 }
 
@@ -251,7 +288,10 @@ async function validarDatos(indicador) {
 				position: "bottom-right",
 			});
 			verificado = false;
-		} else if (isNaN(telefonoUsuario.value) || telefonoUsuario.value.length < 10) {
+		} else if (
+			isNaN(telefonoUsuario.value) ||
+			telefonoUsuario.value.length < 10
+		) {
 			$q.notify({
 				type: "negative",
 				message: "El teléfono no puede tener menos de 10 caracteres",
@@ -304,14 +344,14 @@ async function validarDatos(indicador) {
 }
 
 // Función que se encarga de arreglar la información de sedes para mostrarse en la tabla
-const organizarSedes = computed(() => {
+const organizarSedes = () => {
 	nombreCodigo.value = sedesTodo.value.map((element) => ({
 		label: `${element.ciudad} / ${element.nombre}`,
 		valor: `${element._id}`,
 		nombre: `${element.nombre}`,
 	}));
 	return nombreCodigo.value;
-});
+};
 
 // Funcion que se encarga de mostrar el formulario y configurar datos extras para el
 // boolean: para saber si se muestra o no el formulario, extra: contiene los datos de la persona que se editara, boton: contiene un dato booleano para saber si aparece el boton de registar o actualizar
@@ -334,7 +374,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		sedeUsuario.value = "";
 		rolUsuario.value = "";
 	}
-	
+
 	mostrarBotonEnviar.value = boton;
 	mostrarFormularioUsuario.value = boolean;
 }
@@ -348,11 +388,24 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
+				<q-btn
+					v-if="!loading"
+					@click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-			<q-table v-if="!loading"
+			<q-option-group
+				v-if="!loading"
+				v-model="opcionBusqueda"
+				inline
+				class="q-mb-md"
+				:options="[
+					{ label: 'Todos (predeterminado)', value: 'todos' },
+					{ label: 'Activos', value: 'activas' },
+					{ label: 'Inactivos', value: 'inactivos' },
+				]" />
+			<q-table
+				v-if="!loading"
 				flat
 				bordered
 				title="Lista de usuarios"
@@ -384,7 +437,11 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
+			<q-inner-loading
+				:showing="loading"
+				label="Please wait..."
+				label-class="text-teal"
+				label-style="font-size: 1.1em" />
 		</div>
 		<div id="formularioUsuario" v-if="mostrarFormularioUsuario">
 			<q-form

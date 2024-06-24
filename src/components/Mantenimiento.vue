@@ -408,7 +408,7 @@ onMounted(() => {
 				label="Fecha Final"
 				v-model="fecha2Abuscar"
 				style="width: 200px" />
-				<q-btn v-if="botonBuscar" @click="listarMantenimientosFecha()"> 🔎 </q-btn>
+			<q-btn v-if="botonBuscar" @click="listarMantenimientosFecha()"> 🔎 </q-btn>
 			<q-table
 				v-if="!loading"
 				flat

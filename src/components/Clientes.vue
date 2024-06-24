@@ -593,7 +593,6 @@ onMounted(() => {
                 <q-input v-if="estadoBuscar == 'ingresos'" standout="bg-green text-white" type="date" label="Ingresaron" v-model="ingresoAbuscar" style="width: 200px" />
                 <q-btn v-if="botonBuscar" @click="tipoBoton"> 🔎 </q-btn>
             </div>
-
             <q-table v-if="!loading" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-fechaIngreso="props">
                     <q-td :props="props">

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useStorePlanes } from "../stores/planes.js";
 import { useQuasar } from "quasar";
 
@@ -67,6 +67,24 @@ const mostrarFormularioPlan = ref(false);
 const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
+const opcionBusqueda = ref("todos");
+
+const estadoTabla = () => {
+	switch (opcionBusqueda.value) {
+		case "activas":
+			listarPlanesActivos();
+			break;
+		case "inactivos":
+			listarPlanesInactivos();
+			break;
+		default:
+			listarPlanes();
+			break;
+	}
+};
+
+watch(opcionBusqueda, estadoTabla);
+
 async function listarDatos() {
 	await Promise.all([listarPlanes()]);
 	loading.value = false; // Datos cargados
@@ -82,12 +100,30 @@ async function listarPlanes() {
 	}
 }
 
+async function listarPlanesActivos() {
+	try {
+		const res = await usePlanes.getPlanesActivos()
+		rows.value = res.data.planes;
+	} catch (error) {
+		console.error("Error al listar planes activos:", error);
+	}
+}
+
+async function listarPlanesInactivos() {
+	try {
+		const res = await usePlanes.getPlanesInactivos()
+		rows.value = res.data.planes;
+	} catch (error) {
+		console.error("Error al listar planes inactivos:", error);
+	}
+}
+
 // Funcion que se encarga de cambiar el estado de un plan
 async function editarEstado(elemento) {
 	try {
-		if (elemento.estado == 1) {
+		if (elemento.estado === 1) {
 			const res = await usePlanes.putPlanesInactivar(elemento._id);
-		} else if (elemento.estado == 0) {
+		} else if (elemento.estado === 0) {
 			const res = await usePlanes.putPlanesActivar(elemento._id);
 		}
 		listarPlanes();
@@ -106,7 +142,7 @@ async function registrar() {
 				valor: valorPlanes.value,
 				dias: diasPlanes.value,
 			};
-			const res = await usePlanes.log(info);
+			const res = await usePlanes.postPlanes(info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -206,7 +242,7 @@ async function validarDatos() {
 				position: "bottom-right",
 			});
 			verificado = false;
-		} else if (isNaN(valorPlanes) || valorPlanes.value.length < 0) {
+		} else if (isNaN(valorPlanes.value) || valorPlanes.value.length < 0) {
 			$q.notify({
 				type: "negative",
 				message: "El valor debe ser un numero valido",
@@ -262,6 +298,16 @@ onMounted(() => {
 			<div>
 				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
 			</div>
+			<q-option-group
+				v-if="!loading"
+				v-model="opcionBusqueda"
+				inline
+				class="q-mb-md"
+				:options="[
+					{ label: 'Todos (predeterminado)', value: 'todos' },
+					{ label: 'Activos', value: 'activas' },
+					{ label: 'Inactivos', value: 'inactivos' },
+				]" />
 			<q-table v-if="!loading"
 				flat 
 				bordered
