@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useStoreVenta } from "../stores/ventas.js";
 import { useStoreInventario } from "../stores/inventario.js";
 import { useQuasar } from "quasar";
+import { format } from "date-fns";
 
 
 const $q = useQuasar();
@@ -43,10 +44,10 @@ let columns = ref([
 ]);
 
 // Variables que contienen los datos ingresados en el formulario
-let codigoVentas = ref("");
-let valorUnitarioVentas = ref("");
+let inventarioVentas = ref("");
+let valorUVentas = ref("");
 let fechaVentas = ref("");
-let valorTotalVentas = ref("");
+let valorTVentas = ref("");
 
 const inventarioTodo = ref([]);
 
@@ -62,14 +63,36 @@ const orgranizarInvetario = () => {
 		label: `${element.codigo} / ${element.valor}`,
 		valor: `${element._id}`,
 	}));
+	return codigoValor.value
 };
 
-// const buscarInvetario = (id) => {
-// 	console.log(inventarioTodo.value, id);
-// 	const codigoI = inventarioTodo.value.find((element) => element._id == id);
-// 	console.log(codigoI);
-// 	return codigoI.codigo;
-// };
+const buscarInvetario = (id) => {
+	console.log(inventarioTodo.value, id);
+	const codigoI = inventarioTodo.value.find((element) => element._id == id);
+	console.log(codigoI);
+	return codigoI.codigo;
+};
+
+const fechaBonita = (info) => {
+	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
+	return nuevoFormato;
+};
+
+function formatoNumerico(numero) {
+    if (typeof numero === 'number') {
+        numero = numero.toString();
+    }
+
+    if (numero.length >= 4 && numero.length <= 9){
+        const formatoActualizado = numero.split("");
+        formatoActualizado.splice(-3, 0, ".");
+        if (numero.length == 7 || numero.length == 8 || numero.length == 9){
+            formatoActualizado.splice(-7, 0, ".");
+        }
+        return formatoActualizado.join("");
+    }
+	return numero;
+}
 
 async function listarDatos() {
 	await Promise.all([listarVentas(), listarInventario()]);
@@ -100,12 +123,12 @@ async function registrar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				codigoProducto: codigo.value,
-				valorUnitario: valorUnitario.value,
-				fecha: fecha.value,
-				valorTotal: valorTotal.value,
+				idInventario: inventarioVentas.value,
+				valorUnitario: valorUVentas.value,
+				fecha: fechaVentas.value,
+				valorTotal: valorTVentas.value,
 			};
-			const res = await useVentas.log(info);
+			const res = await useVentas.postVentas(info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -135,7 +158,7 @@ async function editar() {
 				fecha: fecha.value,
 				valorTotal: valorTotal.value,
 			};
-			const res = await useVentas.log(datos.value._id, info);
+			const res = await useVentas.putVentas(datos.value._id, info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -157,20 +180,20 @@ async function editar() {
 }
 
 function resetear() {
-	codigoVentas.value = "";
-	valorUnitarioVentas.value = "";
+	inventarioVentas.value = "";
+	valorUVentas.value = "";
 	fechaVentas.value = "";
-	valorTotalVentas.value = "";
+	valorTVentas.value = "";
 }
 
 async function validarDatos() {
 	let verificado = true;
 
 	if (
-		!codigoVentas.value ||
-		!valorUnitarioVentas.value ||
+		!inventarioVentas.value ||
+		!valorUVentas.value ||
 		!fechaVentas.value ||
-		!valorTotalVentas.value
+		!valorTVentas.value
 	) {
 		$q.notify({
 			type: "negative",
@@ -179,7 +202,7 @@ async function validarDatos() {
 		});
 		verificado = false;
 	} else {
-		if (!codigoVentas.value) {
+		if (!inventarioVentas.value) {
 			$q.notify({
 				type: "negative",
 				message: "El codigo no puede estar vacio",
@@ -187,7 +210,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!valorUnitarioVentas.value) {
+		if (!valorUVentas.value) {
 			$q.notify({
 				type: "negative",
 				message: "El valor unitario no puede estar vacio",
@@ -203,7 +226,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!valorTotalVentas.value) {
+		if (!valorTVentas.value) {
 			$q.notify({
 				type: "negative",
 				message: "El valor total no puede estar vacio",
@@ -224,15 +247,15 @@ function editarVistaFondo(boolean, extra, boton) {
 		const formatoISO = datos.value.fecha;
 		const formatoDate = formatoISO.substring(0, 10);
 
-		codigoVentas.value = inventario;
-		valorUnitarioVentas.value = datos.value.valorUnitario;
+		inventarioVentas.value = inventario;
+		valorUVentas.value = datos.value.valorUnitario;
 		fechaVentas.value = formatoDate;
-		valorTotalVentas.value = datos.value.valorTotal;
+		valorTVentas.value = datos.value.valorTotal;
 	} else {
-		codigoVentas.value = "";
-		valorUnitarioVentas.value = "";
+		inventarioVentas.value = "";
+		valorUVentas.value = "";
 		fechaVentas.value = "";
-		valorTotalVentas.value = "";
+		valorTVentas.value = "";
 	}
 	mostrarBotonEnviar.value = boton;
 	mostrarFormularioVenta.value = boolean;
@@ -269,11 +292,26 @@ onMounted(() => {
 						</q-btn>
 					</q-td>
 				</template>
-				<!-- <template v-slot:body-cell-idInventario="props">
+				<template v-slot:body-cell-idInventario="props">
 					<q-td :props="props">
-						<p>{{ buscarInvetario(props.row._id) }}</p>
+						<p>{{ buscarInvetario(props.row.idInventario) }}</p>
 					</q-td>
-				</template> -->
+				</template>
+			<template v-slot:body-cell-fecha="props">
+				<q-td :props="props">
+					<p>{{ fechaBonita(props.row.fecha) }}</p>
+				</q-td>
+			</template>
+			<template v-slot:body-cell-valorUnitario="props">
+				<q-td :props="props">
+					<p>$ {{ formatoNumerico(props.row.valorUnitario) }}</p>
+				</q-td>
+			</template>
+			<template v-slot:body-cell-valorTotal="props">
+				<q-td :props="props">
+					<p>$ {{ formatoNumerico(props.row.valorTotal) }}</p>
+				</q-td>
+			</template>
 			</q-table>
 			<q-inner-loading
 				:showing="loading"
@@ -286,23 +324,27 @@ onMounted(() => {
 				@submit="mostrarBotonEnviar ? registrar() : editar()"
 				@reset="resetear()"
 				class="q-gutter-md">
-				<q-input
+				<q-select
 					standout="bg-green text-white"
-					v-model="codigoVentas"
+					:option="orgranizarInvetario()"
+					option-value="valor" 
+					option-label="label"
+					v-model="inventarioVentas"
 					label="Código" />
 				<q-input
 					standout="bg-green text-white"
-					v-model="valorUnitarioVentas"
+					v-model="valorUVentas"
 					label="Valor Unitario"
 					color="black" />
 				<q-input
 					standout="bg-green text-white"
 					v-model="fechaVentas"
+					type="date"
 					label="Fecha"
 					color="black" />
 				<q-input
 					standout="bg-green text-white"
-					v-model="valorTotalVentas"
+					v-model="valorTVentas"
 					label="Valor Total"
 					color="black" />
 				<div>

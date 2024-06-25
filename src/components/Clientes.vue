@@ -193,6 +193,22 @@ const tipoBoton = () => {
     }
 };
 
+function formatoNumerico(numero) {
+    if (typeof numero === 'number') {
+        numero = numero.toString();
+    }
+
+    if (numero.length >= 4 && numero.length <= 9){
+        const formatoActualizado = numero.split("");
+        formatoActualizado.splice(-3, 0, ".");
+        if (numero.length == 7 || numero.length == 8 || numero.length == 9){
+            formatoActualizado.splice(-7, 0, ".");
+        }
+        return formatoActualizado.join("");
+    }
+	return numero;
+}
+
 async function listarDatos() {
     await Promise.all([listarClientes(), listarPlanes()]);
     loading.value = false; // Datos cargados
@@ -544,7 +560,7 @@ function editarVistaFondo(boolean, extra, boton) {
 
         const plan = codigoValor.value.find((element) => element.valor === datos.value._idPlan);
         const tipoDoc = tipoD.find((element) => element == datos.value.tipoDocumento);
-console.log(plan, codigoValor.value, datos.value._idPlan);
+
         nombreCliente.value = datos.value.nombre;
         tipoDocumento.value = tipoDoc;
         documentoCliente.value = datos.value.documento;
@@ -642,6 +658,11 @@ onMounted(() => {
                 <template v-slot:body-cell-fechaNacimiento="props">
                     <q-td :props="props">
                         <p>{{ fechaBonita(props.row.fechaNacimiento) }}</p>
+                    </q-td>
+                </template>
+                <template v-slot:body-cell-documento="props">
+                    <q-td :props="props">
+                        <p>$ {{ formatoNumerico(props.row.documento) }}</p>
                     </q-td>
                 </template>
                 <template v-slot:body-cell-opciones="props">

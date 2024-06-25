@@ -129,6 +129,22 @@ const fechaBonita = (info) => {
     return nuevoFormato;
 };
 
+function formatoNumerico(numero) {
+    if (typeof numero === 'number') {
+        numero = numero.toString();
+    }
+
+    if (numero.length >= 4 && numero.length <= 9){
+        const formatoActualizado = numero.split("");
+        formatoActualizado.splice(-3, 0, ".");
+        if (numero.length == 7 || numero.length == 8 || numero.length == 9){
+            formatoActualizado.splice(-7, 0, ".");
+        }
+        return formatoActualizado.join("");
+    }
+	return numero;
+}
+
 async function listarDatos() {
 	await Promise.all([listarMantenimientos(), listarMaquinas()]);
 	loading.value = false; // Datos cargados
@@ -451,6 +467,11 @@ onMounted(() => {
 						<p v-else style="color: red">Inactivo</p>
 					</q-td>
 				</template>
+				<template v-slot:body-cell-precio="props">
+                    <q-td :props="props">
+                        <p>$ {{ formatoNumerico(props.row.precio) }}</p>
+                    </q-td>
+                </template>
 			</q-table>
 			<q-inner-loading
 				:showing="loading"
