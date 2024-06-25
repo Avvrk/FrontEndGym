@@ -166,10 +166,7 @@ export const useStoreClientes = defineStore("Clientes", () => {
             console.log(error);
             return error;
         } finally {
-            setTimeout(() => {
-                loading.value = false;
-            }, 2000);
-            
+                loading.value = false; 
         }
     };
 

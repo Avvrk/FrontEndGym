@@ -775,6 +775,7 @@ onMounted(() => {
                 <q-input standout="bg-green text-white" type="text" label="Direccion" v-model="residenciaCliente" />
                 <q-input standout="bg-green text-white" type="tel" label="Telefono" v-model="telefonoCliente" />
                 <q-input standout="bg-green text-white" type="text" label="Objetivo" v-model="objetivoCliente" />
+                <!-- <q-input standout="bg-green text-white" type="text" label="Observaciones" v-model="observacionesCliente" /> -->
                 <q-select standout="bg-green text-white" :options="organizarPlanes()" option-value="valor" option-label="label" label="Plan" v-model="planCliente" />
                 <div>
                     <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" :loading="useCliente.loading">
