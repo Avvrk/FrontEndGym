@@ -96,6 +96,7 @@ let residenciaCliente = ref("");
 let telefonoCliente = ref("");
 let objetivoCliente = ref("");
 let planCliente = ref("");
+/* let observacionesCliente = ref(""); */
 
 // Variable para controlar el dato que se mostrara en la tabla
 const opcionBusqueda = ref("todos");
@@ -341,6 +342,7 @@ async function registrar() {
                 objetivo: objetivoCliente.value,
                 plan: planCliente.value.nombre,
                 _idPlan: planCliente.value.valor,
+                /* observaciones: observacionesCliente.value, */
             };
             const res = await useCliente.postClientes(info);
             if (res.status !== 200) {
@@ -386,6 +388,7 @@ async function editar() {
                 objetivo: objetivoCliente.value,
                 plan: planCliente.value.nombre,
                 _idPlan: planCliente.value.valor,
+/*                 observaciones: observacionesCliente.value, */
             };
             const res = await useCliente.putClientes(datos.value._id, info);
             if (res.status !== 200) {
@@ -430,12 +433,12 @@ async function validarDatos() {
     let hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    if (!nombreCliente.value && !tipoDocumento.value && !documentoCliente.value & !edadCliente.value && !residenciaCliente.value && !telefonoCliente.value && !objetivoCliente.value && !planCliente.value) {
+    if (!nombreCliente.value && !tipoDocumento.value && !documentoCliente.value & !edadCliente.value && !residenciaCliente.value && !telefonoCliente.value && !objetivoCliente.value && !planCliente.value/*  && !objetivoCliente */) {
         $q.notify({
             type: "negative",
             message: "LLena todos los campos",
             position: "bottom-right",
-        });
+        }); 
         verificado = false;
     } else {
         if (!nombreCliente.value) {

@@ -11,10 +11,7 @@ import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
 import "quasar/src/css/index.sass";
 
 const pinia = createPinia();
-pinia.use(piniaPluginPersist, {
-  store: sessionStorage, // Esto es opcional, usa localStorage como almacenamiento subyacente
-  paths: ["Usuario"], 
-});
+pinia.use(piniaPluginPersist);
 
 const app = createApp(App);
 
