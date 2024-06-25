@@ -198,15 +198,24 @@ function formatoNumerico(numero) {
         numero = numero.toString();
     }
 
-    if (numero.length >= 4 && numero.length <= 9){
-        const formatoActualizado = numero.split("");
-        formatoActualizado.splice(-3, 0, ".");
-        if (numero.length == 7 || numero.length == 8 || numero.length == 9){
-            formatoActualizado.splice(-7, 0, ".");
+    if (numero.length >= 4) {
+        const partes = [];
+        let contadorPuntos = 0;
+
+        for (let i = numero.length - 1; i >= 0; i--) {
+            partes.unshift(numero.charAt(i));
+            contadorPuntos++;
+
+            if (contadorPuntos === 3 && i !== 0) {
+                partes.unshift('.');
+                contadorPuntos = 0;
+            }
         }
-        return formatoActualizado.join("");
+
+        return partes.join('');
     }
-	return numero;
+
+    return numero;
 }
 
 async function listarDatos() {
@@ -662,7 +671,7 @@ onMounted(() => {
                 </template>
                 <template v-slot:body-cell-documento="props">
                     <q-td :props="props">
-                        <p>$ {{ formatoNumerico(props.row.documento) }}</p>
+                        <p>{{ formatoNumerico(props.row.documento) }}</p>
                     </q-td>
                 </template>
                 <template v-slot:body-cell-opciones="props">
