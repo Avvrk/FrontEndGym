@@ -22,13 +22,17 @@ export const useStoreVenta = defineStore("Venta", () => {
         }
     };
 
-    const getVentasID = async ()=>{ //Nueva peticion agregada
+    const getVentasID = async (id)=>{
         try {
-            const { id } = req.params;
-            const ventas = await Venta.findById(id);
-            res.json({ ventas });
-        } catch (error){
-            console.log(error)
+            const res = await axios.get(`${url}/ventas/id/${id}`, {
+                headers: {
+                    token: useUsuarios.token
+                }
+            });
+            console.log(res.data);
+            return res;
+        } catch (error) {
+            console.log(error);
             return error;
         }
     };
@@ -37,7 +41,7 @@ export const useStoreVenta = defineStore("Venta", () => {
         try {
             const res = await axios.post(`${url}/ventas`,info,{
                 headers:{
-                    token: useUsuario.token
+                    token: useUsuarios.token
                 }
             });
             console.log(res.data);

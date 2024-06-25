@@ -160,6 +160,7 @@ async function sedes() {
     try {
         const res = await useSede.getSedes();
         sedesTodo.value = res.data.sedes;
+        organizarSedes()
     } catch (error) {
         console.error("Error al listar sedes:", error);
     }

@@ -115,6 +115,7 @@ async function listarSedes() {
 	try {
 		const res = await useSede.getSedes();
 		sedesTodo.value = res.data.sedes;
+		organizarSedes()
 	} catch (error) {
 		console.error("Error al listar las sedes:", error);
 	}
@@ -124,6 +125,7 @@ async function listarClientes() {
 	try {
 		const res = await useCliente.getClientes();
 		clientesTodo.value = res.data.clientes;
+		organizarClientes()
 	} catch (error) {
 		console.error("Error al listar los clientes:", error);
 	}

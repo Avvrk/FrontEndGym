@@ -260,9 +260,8 @@ async function registrar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				cliente: clientePago.value.valor,
-				idPlan: planPago.value.valor,
-				plan: planPago.value.descripcion,
+				_idCliente: clientePago.value.valor,
+				_idPlan: planPago.value.valor,
 				fecha: fechaPago.value,
 				valor: valorPago.value,
 			};
@@ -292,8 +291,8 @@ async function editar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				cliente: clientePago.value.valor,
-				plan: planPago.value,
+				_idCliente: clientePago.value.valor,
+				_idPlan: planPago.value.valor,
 				fecha: fechaPago.value,
 				valor: valorPago.value,
 			};
@@ -388,7 +387,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		const plan = codigoValor.value.find(
 			(element) => element.valor === datos.value.idPlan
 		);
-		const formatoISO = datos.value.fechaPago;
+		const formatoISO = datos.value.fecha;
 		const formatoDate = formatoISO.substring(0, 10);
 
 		clientePago.value = datos.value._idCliente;

@@ -18,21 +18,21 @@
 
 		<q-drawer v-model="leftDrawerOpen" side="left" overlay>
             <q-list>
-                <q-item clickable tag="router-link" to="/main/clientes">
-                    <q-item-section>
-                        <q-item-label>Clientes</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="groups" />
-                    </q-item-section>
-                </q-item>
-
                 <q-item clickable tag="router-link" to="/main/hogar">
                     <q-item-section>
                         <q-item-label>Home</q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
                         <q-icon name="home" />
+                    </q-item-section>
+                </q-item>
+                
+                <q-item clickable tag="router-link" to="/main/clientes">
+                    <q-item-section>
+                        <q-item-label>Clientes</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="groups" />
                     </q-item-section>
                 </q-item>
 
