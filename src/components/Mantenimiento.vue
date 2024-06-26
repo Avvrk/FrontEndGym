@@ -152,6 +152,8 @@ async function listarDatos() {
 
 async function listarMantenimientos() {
 	try {
+		estadoBuscar.value = "ninguno";
+        botonBuscar.value = false;
 		const res = await useMantenimiento.getMantenimientos();
 		rows.value = res.data.mantenimientos;
 	} catch (error) {

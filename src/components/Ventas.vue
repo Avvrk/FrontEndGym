@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useStoreVenta } from "../stores/ventas.js";
 import { useStoreInventario } from "../stores/inventario.js";
 import { useQuasar } from "quasar";
@@ -40,12 +40,12 @@ let columns = ref([
         field: "valorTotal",
         align: "center",
     },
-	{
-		name: "opciones",
-		label: "Opciones",
-		field: "opciones",
-		align: "center",
-	},
+    {
+        name: "opciones",
+        label: "Opciones",
+        field: "opciones",
+        align: "center",
+    },
 ]);
 
 // Variables que contienen los datos ingresados en el formulario
@@ -64,6 +64,44 @@ const codigoValor = ref([]);
 const mostrarFormularioVenta = ref(false);
 const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
+
+const opcionBusqueda = ref("todos");
+const estadoBuscar = ref("ninguno");
+const botonBuscar = ref(false);
+const botonEstado = ref("ninguno");
+
+const fecha1Abuscar = ref("");
+const fecha2Abuscar = ref("");
+
+const fecC = () => {
+	estadoBuscar.value = "fecha";
+	botonBuscar.value = true;
+	botonEstado.value = "fecha";
+};
+
+const estadoTabla = () => {
+	switch (opcionBusqueda.value) {
+		case "fecha":
+			fecC();
+			break;
+		default:
+			listarVentas();
+			break;
+	}
+};
+
+const tipoBoton = () => {
+	switch (botonEstado.value) {
+		case "fecha":
+			listarVentasFecha();
+			break;
+		default:
+			console.log("sali");
+			break;
+	}
+};
+
+watch(opcionBusqueda, estadoTabla);
 
 const orgranizarInvetario = () => {
     codigoValor.value = inventarioTodo.value.map((element) => ({
@@ -108,11 +146,23 @@ async function listarDatos() {
 
 async function listarVentas() {
     try {
+		estadoBuscar.value = "ninguno";
+        botonBuscar.value = false;
+        botonEstado.value = "ninguno";
         const res = await useVentas.getVentas();
         rows.value = res.data.ventas;
     } catch (error) {
         console.error("Error al listar ventas:", error);
     }
+}
+
+async function listarVentasFecha() {
+	try {
+		const res = await useVentas.getVentasFechas(fecha1Abuscar.value, fecha2Abuscar.value);
+		rows.value = res.data.ventas;
+	} catch (error) {
+		console.error("Error al listar los pagos por fecha:", error);
+	}
 }
 
 async function listarInventario() {
@@ -272,6 +322,17 @@ onMounted(() => {
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
             </div>
+			<q-option-group
+			v-if="!loading"
+			v-model="opcionBusqueda"
+			inline
+			class="q-mb-md"
+			:options="[
+				{ label: 'Todos (predeterminado)', value: 'todos' },
+				{ label: 'Por fecha', value: 'fecha' },
+			]" />
+            <q-input v-if="estadoBuscar == 'fecha'" standout="bg-green text-white" type="date" label="Fecha Final" v-model="fecha2Abuscar" style="width: 200px" />
+            <q-btn v-if="botonBuscar" @click="tipoBoton"> 🔎 </q-btn>
             <q-table v-if="!loading" flat bordered title="Lista de Ventas" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">

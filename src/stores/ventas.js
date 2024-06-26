@@ -37,6 +37,21 @@ export const useStoreVenta = defineStore("Venta", () => {
         }
     };
 
+    const getVentasFechas = async (fechainicio, fechafin) => {
+		try {
+			const res = await axios.get(`${url}/ventas/fechainicio/${fechainicio}/fechafin/${fechafin}`, {
+				headers: {
+					token: useUsuarios.token,
+				}
+			})
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
+
     const postVentas = async (info) => {
         try {
             const res = await axios.post(`${url}/ventas`,info,{
@@ -52,50 +67,23 @@ export const useStoreVenta = defineStore("Venta", () => {
         }
     };
 
-    const putVentas = async ()=>{ //Nueva peticion agregada
+    const putVentas = async (id, info)=>{ //Nueva peticion agregada
         try {
-            const { id } = req.params;
-            const { ...info } = req.body;
-            const ventas = await Venta.findByIdAndUpdate(id, info, { new: true });
-            res.json({ ventas });
+            const res = await axios.put(`${url}/ventas/${id}`, info, {
+                headers: {
+                    token: useUsuarios.token
+                }
+            })
+            console.log(res.data);
+            return res;
         } catch (error){
             console.log(error)
             return error;
         }
     };
 
-    const putVentasActivar = async (codigo) => {
-        try {
-            const res = await axios.put(`${url}/ventas/activar/${codigo}`, null, {
-                headers: {
-                    token: token.value
-                }
-            });
-            console.log(res);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    };
-    
-    const putVentasInactivar = async (codigo) => {
-        try {
-            const res = await axios.put(`${url}/ventas/inactivar/${codigo}`, null, {
-                headers: {
-                    token: token.value
-                }
-            });
-            console.log(res);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    }; 
-
     return {
-        getVentas, getVentasID, postVentas, putVentas, putVentasInactivar, putVentasActivar
+        getVentas, getVentasID, getVentasFechas, postVentas, putVentas
     };
 });
 

@@ -194,6 +194,9 @@ async function listarDatos() {
 // Funcion que se encarga de traer todas las sedes
 async function listarPagos() {
 	try {
+		estadoBuscar.value = "ninguno";
+        botonBuscar.value = false;
+        botonEstado.value = "ninguno";
 		const res = await usePago.getPagos();
 		rows.value = res.data.pagos;
 	} catch (error) {
@@ -223,6 +226,9 @@ async function listarClientes() {
 
 async function listarPagosActivos() {
 	try {
+		estadoBuscar.value = "ninguno";
+        botonBuscar.value = false;
+        botonEstado.value = "ninguno";
 		const res = await usePago.getPagosActivos();
 		rows.value = res.data.pagos;
 	} catch (error) {
@@ -232,6 +238,9 @@ async function listarPagosActivos() {
 
 async function listarPagosInactivos() {
 	try {
+		estadoBuscar.value = "ninguno";
+        botonBuscar.value = false;
+        botonEstado.value = "ninguno";
 		const res = await usePago.getPagosInactivos();
 		rows.value = res.data.pagos;
 	} catch (error) {
