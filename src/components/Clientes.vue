@@ -595,6 +595,7 @@ function editarVistaFondo(boolean, extra, boton) {
     }
 
     mostrarBotonEnviar.value = boton;
+    console.log(mostrarBotonEnviar.value);
     mostrarFormularioCliente.value = boolean;
 }
 
@@ -781,12 +782,8 @@ onMounted(() => {
                 <!-- <q-input standout="bg-green text-white" type="text" label="Observaciones" v-model="observacionesCliente" /> -->
                 <q-select standout="bg-green text-white" :options="organizarPlanes()" option-value="valor" option-label="label" label="Plan" v-model="planCliente" />
                 <div>
-                    <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" :loading="useCliente.loading">
-                        <template v-slot:loading>
-                            <q-spinner color="secondary" size="1em" />
-                        </template>
-                    </q-btn>
-                    <q-btn v-else label="Actualizar" type="button" color="primary" />
+                    <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" />
+                    <q-btn v-else label="Actualizar" type="submit" color="primary" />
                     <q-btn label="Cerrar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
