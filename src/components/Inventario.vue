@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useStoreInventario } from "../stores/inventario.js";
 import { useQuasar } from "quasar";
 
@@ -37,6 +37,13 @@ let columns = ref([
         align: "center",
     },
     {
+        name: "estado",
+        sortable: true,
+        label: "Estado",
+        field: "estado",
+        align: "center",
+    },
+    {
         name: "opciones",
         label: "Opciones",
         field: "opciones",
@@ -59,19 +66,23 @@ const mostrarFormularioInventario = ref(false);
 const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
+const opcionBusqueda = ref("todos");
+
 const estadoTabla = () => {
     switch (opcionBusqueda.value) {
         case "activas":
             listarInventarioActivos();
             break;
         case "inactivos":
-            listarClientesInactivos();
+            listarInventarioInactivos();
             break;
         default:
-            listarClientes();
+            listarInventario();
             break;
     }
 };
+
+watch(opcionBusqueda, estadoTabla);
 
 function formatoNumerico(numero) {
     if (typeof numero === "number") {
@@ -90,7 +101,7 @@ function formatoNumerico(numero) {
 }
 
 async function listarDatos() {
-    await Promise.all([listarInventario(), listarTotal()]);
+    await Promise.all([listarInventario()]);
     loading.value = false; // Datos cargados
 }
 
@@ -109,6 +120,15 @@ async function listarInventarioActivos() {
 		rows.value = res.data.inventarios;
 	} catch (error) {
 		console.log("Error al listar el inventario activos:", error);
+	}
+}
+
+async function listarInventarioInactivos() {
+	try {
+		const res = await useInventario.getInventariosInactivos();
+		rows.value = res.data.inventarios;
+	} catch (error) {
+		console.log("Error al listar el inventario inactivos:", error);
 	}
 }
 
@@ -278,27 +298,37 @@ onMounted(() => {
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
             </div>
+            <q-option-group
+                v-if="!loading"
+                v-model="opcionBusqueda"
+                inline
+                class="q-mb-md"
+                :options="[
+                    { label: 'Todos (predeterminado)', value: 'todos' },
+                    { label: 'Activos', value: 'activas' },
+                    { label: 'Inactivos', value: 'inactivos' },
+                ]" />
             <q-table v-if="!loading" flat bordered title="Lista de Inventario" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
                         <q-btn @click="editarVistaFondo(true, props.row, false)"> ✏️ </q-btn>
-                        <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)" :loading="useCliente.loading">
+                        <q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)" >
                             ❌
-                            <template v-slot:loading>
-                                <q-spinner color="secondary" size="1em" />
-                            </template>
                         </q-btn>
-                        <q-btn v-else @click="editarEstado(props.row)" :loading="useCliente.loading">
+                        <q-btn v-else @click="editarEstado(props.row)" >
                             ✅
-                            <template v-slot:loading>
-                                <q-spinner color="secondary" size="1em" />
-                            </template>
                         </q-btn>
                     </q-td>
                 </template>
                 <template v-slot:body-cell-valor="props">
                     <q-td :props="props">
                         <p>$ {{ formatoNumerico(props.row.valor) }}</p>
+                    </q-td>
+                </template>
+                <template v-slot:body-cell-estado="props">
+                    <q-td :props="props">
+                        <p v-if="props.row.estado == 1" style="color: green">Activo</p>
+                        <p v-else style="color: red">Inactivo</p>
                     </q-td>
                 </template>
             </q-table>

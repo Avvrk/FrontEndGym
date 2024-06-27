@@ -6,6 +6,7 @@ import axios from "axios";
 export const useStoreInventario = defineStore("Inventario", () => {
 	const useUsuarios = useStoreUsuarios();
 	const url = "https://avvrk-vyktor23-backendgym.onrender.com";
+	const loading = ref(false);
 
 	const getInventario = async () => {
 		try {

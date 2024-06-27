@@ -11,7 +11,14 @@
 					</q-avatar>
 					Forza Gym
 				</q-toolbar-title>
-
+                <q-item clickable tag="router-link" to="/">
+                    <q-item-section>
+                        <q-item-label></q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                        <q-icon name="login" />
+                    </q-item-section>
+                </q-item>
 				<!-- <q-btn dense flat round icon="menu" @click="toggleRightDrawer" /> -->
 			</q-toolbar>
 		</q-header>
