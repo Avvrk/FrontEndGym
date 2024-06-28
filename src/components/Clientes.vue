@@ -613,6 +613,10 @@ function cerrarSeguimiento() {
     mostrarSeguimientoCliente.value = false;
 };
 
+function cerrarFc() {
+    
+}
+
 function calcularEstadoIMC(imc) {
     if (imc < 18.5) {
         return "Bajo peso";

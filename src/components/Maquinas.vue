@@ -420,7 +420,7 @@ onMounted(() => {
         </div>
 
         <div id="formularioMaquina" v-if="mostrarFormularioMaquina == true">
-            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="resetear()" class="q-gutter-md">
+            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="editarVistaFondo(false, null, true)" class="q-gutter-md">
                 <q-input standout="bg-green text-white" v-model="codigoMaquinas" label="Código" />
                 <q-select standout="bg-green text-white" v-model="sedeMaquinas" :options="organizarSedes()" option-value="valor" option-label="label" label="Sede" color="black" />
                 <q-input standout="bg-green text-white" v-model="descripcionMaquinas" label="Descripción" color="black" />
@@ -429,7 +429,7 @@ onMounted(() => {
                 <div>
                     <q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" />
                     <q-btn v-else label="Actualizar" type="submit" color="primary" />
-                    <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
+                    <q-btn label="Cerrar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
             <button id="botonF" @click="editarVistaFondo(false, null, false)"></button>

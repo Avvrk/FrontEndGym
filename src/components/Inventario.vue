@@ -340,14 +340,14 @@ onMounted(() => {
             <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         </div>
         <div id="formularioInventario" v-if="mostrarFormularioInventario == true">
-            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="resetear()" class="q-gutter-md">
+            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="editarVistaFondo(false, null, true)" class="q-gutter-md">
                 <q-input standout="bg-green text-white" v-model="codigoProducto" label="Código" />
                 <q-input standout="bg-green text-white" v-model="descripcionProducto" label="Descripción" color="black" />
                 <q-input standout="bg-green text-white" v-model="valorProducto" label="Valor" color="black" />
                 <q-input standout="bg-green text-white" v-model="cantidadProducto" label="Cantidad" color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
-                    <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
+                    <q-btn label="Cerrar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
             <button id="botonF" @click="editarVistaFondo(false, null, false)"></button>

@@ -363,14 +363,14 @@ onMounted(() => {
             <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         </div>
         <div id="formularioVentas" v-if="mostrarFormularioVenta == true">
-            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="resetear()" class="q-gutter-md">
+            <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="editarVistaFondo(false, null, true)" class="q-gutter-md">
                 <q-select standout="bg-green text-white" :option="orgranizarInvetario()" option-value="valor" option-label="label" v-model="inventarioVentas" label="Código" />
                 <q-input standout="bg-green text-white" v-model="valorUVentas" label="Valor Unitario" color="black" />
                 <q-input standout="bg-green text-white" v-model="fechaVentas" type="date" label="Fecha" color="black" />
                 <q-input standout="bg-green text-white" v-model="valorTVentas" label="Valor Total" color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
-                    <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
+                    <q-btn label="Cerrar" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
             </q-form>
             <button id="botonF" @click="editarVistaFondo(false, null, false)"></button>

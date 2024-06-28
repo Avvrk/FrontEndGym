@@ -546,7 +546,7 @@ onMounted(() => {
 		<div id="formularioPago" v-if="mostrarFormularioPago">
 			<q-form
 				@submit="mostrarBotonEnviar ? registrar() : editar()"
-				@reset="resetear"
+				@reset="editarVistaFondo(false, null, true)"
 				class="q-gutter-md">
 				<q-select
 					standout="bg-green text-white"
@@ -584,7 +584,7 @@ onMounted(() => {
 						type="submit"
 						color="primary" />
 					<q-btn
-						label="Limpiar"
+						label="Cerrar"
 						type="reset"
 						color="primary"
 						flat
