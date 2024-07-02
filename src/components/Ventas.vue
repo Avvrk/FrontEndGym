@@ -199,6 +199,7 @@ async function registrar() {
                     position: "bottom-right",
                 });
                 listarVentas();
+                mostrarFormularioVenta.value = false;
             }
         } catch (error) {
             console.error("Error al registrar ventas:", error);
@@ -229,6 +230,7 @@ async function editar() {
                     position: "bottom-right",
                 });
                 listarVentas();
+                mostrarFormularioVenta.value = false;
             }
         } catch (error) {
             console.error("Error al editar ventas:", error);
@@ -246,7 +248,7 @@ function resetear() {
 async function validarDatos() {
     let verificado = true;
 
-    if (!inventarioVentas.value || !valorUVentas.value || !fechaVentas.value || !valorTVentas.value) {
+    if (!inventarioVentas.value && !valorUVentas.value.trim() && !fechaVentas.value && !valorTVentas.value.trim()) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -262,7 +264,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!valorUVentas.value) {
+        if (!valorUVentas.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "El valor unitario no puede estar vacio",
@@ -278,7 +280,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!valorTVentas.value) {
+        if (!valorTVentas.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "El valor total no puede estar vacio",
@@ -322,6 +324,10 @@ onMounted(() => {
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
             </div>
+            <div v-if="!loading" class="text-h2 text-center">
+                Ventas
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
 			<q-option-group
 			v-if="!loading"
 			v-model="opcionBusqueda"

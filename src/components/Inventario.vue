@@ -178,6 +178,7 @@ async function registrar() {
                     position: "bottom-right",
                 });
                 listarInventario();
+                mostrarFormularioInventario.value = false;
             }
         } catch (error) {
             console.error("Error al registrar el inventario:", error);
@@ -208,6 +209,7 @@ async function editar() {
                     position: "bottom-right",
                 });
                 listarInventario();
+                mostrarFormularioInventario.value = false;
             }
         } catch (error) {
             console.error("Error al actualizar el inventario:", error);
@@ -225,7 +227,7 @@ function resetear() {
 async function validarDatos() {
     let verificado = true;
 
-    if (!codigoProducto.value && !descripcionProducto.value && !valorProducto.value && !cantidadProducto.value) {
+    if (!codigoProducto.value.trim() && !descripcionProducto.value.trim() && !valorProducto.value.trim() && !cantidadProducto.value.trim()) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -233,7 +235,7 @@ async function validarDatos() {
         });
         verificado = false;
     } else {
-        if (!codigoProducto.value) {
+        if (!codigoProducto.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "El codigo no puede estar vacio",
@@ -241,7 +243,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!descripcionProducto) {
+        if (!descripcionProducto.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "La descripcion no puede estar vacia",
@@ -249,7 +251,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!valorProducto) {
+        if (!valorProducto.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "El valor no puede estar vacia",
@@ -257,7 +259,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!cantidadProducto) {
+        if (!cantidadProducto.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "La cantidad no puede estar vacia",
@@ -298,6 +300,10 @@ onMounted(() => {
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
             </div>
+            <div v-if="!loading"  class="text-h2 text-center">
+                Inventarios
+            </div>
+            <hr v-if="!loading"  class="bg-primary no-border" style="height: 4px;">
             <q-option-group
                 v-if="!loading"
                 v-model="opcionBusqueda"

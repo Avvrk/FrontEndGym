@@ -135,6 +135,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarSedes();
+				mostrarFormularioSede.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
@@ -169,6 +170,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarSedes();
+				mostrarFormularioSede.value = false;
 			}
 		} catch (error) {
 			console.error("Error al editar usuario:", error);
@@ -192,13 +194,12 @@ async function validarDatos() {
 	let verificado = true;
 
 	if (
-		!ciudadSede.value &&
-		!codigoSede.value &&
-		!direccionSede.value &&
-		!estadoSede.value &&
-		!horarioSede.value &&
-		!nombreSede.value &&
-		!telefonoSede.value
+		!ciudadSede.value.trim() &&
+		!codigoSede.value.trim() &&
+		!direccionSede.value.trim() &&
+		!horarioSede.value.trim() &&
+		!nombreSede.value.trim() &&
+		!telefonoSede.value.trim()
 	) {
 		$q.notify({
 			type: "negative",
@@ -231,7 +232,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!horarioSede.value) {
+		if (!horarioSede.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El horario está vacío",
@@ -239,7 +240,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!telefonoSede.value) {
+		if (!telefonoSede.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El telefono está vacío",
@@ -247,7 +248,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!codigoSede.value) {
+		if (!codigoSede.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El codigo está vacío",
@@ -275,7 +276,6 @@ function editarVistaFondo(boolean, extra, boton) {
 		ciudadSede.value = "";
 		codigoSede.value = "";
 		direccionSede.value = "";
-		estadoSede.value = "";
 		horarioSede.value = "";
 		nombreSede.value = "";
 		telefonoSede.value = "";
@@ -298,6 +298,10 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
+			<div v-if="!loading" class="text-h2 text-center">
+                Sedes
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
 			<q-table v-if="!loading"
 				flat
 				bordered

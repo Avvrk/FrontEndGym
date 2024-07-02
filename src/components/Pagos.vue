@@ -132,6 +132,13 @@ const tipoBoton = () => {
 
 watch(opcionBusqueda, estadoTabla);
 
+const valorP = () => {
+	const buscarValor = planesTodo.value.find(item => item._id === planPago.value.valor)
+	valorPago.value = buscarValor.valor;
+}
+
+watch(planPago, valorP);
+
 const organizarPlanes = () => {
 	codigoValor.value = planesTodo.value.map((element) => ({
 		label: `${element.codigo} / ${element.valor}`,
@@ -304,6 +311,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarPagos();
+				mostrarFormularioPago.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar el pago:", error);
@@ -335,6 +343,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarPagos();
+				mostrarFormularioPago.value = false;
 			}
 		} catch (error) {
 			console.error("Error al editar el pago:", error);
@@ -358,7 +367,7 @@ async function validarDatos() {
 		!clientePago.value &&
 		!planPago.value &&
 		!fechaPago.value &&
-		!valorPago.value
+		!valorPago.value.trim()
 	) {
 		$q.notify({
 			type: "negative",
@@ -391,7 +400,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!valorPago.value) {
+		if (!valorPago.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El valor del pago está vacío",
@@ -445,6 +454,10 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
+			<div v-if="!loading" class="text-h2 text-center">
+                Pagos
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
 			<q-option-group
 				v-if="!loading"
 				v-model="opcionBusqueda"

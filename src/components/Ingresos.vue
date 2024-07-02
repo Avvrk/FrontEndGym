@@ -159,6 +159,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarIngresos();
+				mostrarFormularioIngreso.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar el ingreso:", error);
@@ -188,6 +189,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarIngresos();
+				mostrarFormularioIngreso.value = false;
 			}
 		} catch (error) {
 			console.error("Error al actualizar el ingreso:", error);
@@ -284,6 +286,10 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
+			<div v-if="!loading"  class="text-h2 text-center">
+                Ingresos
+            </div>
+            <hr v-if="!loading"  class="bg-primary no-border" style="height: 4px;">
 			<q-table
 				v-if="!loading"
 				flat

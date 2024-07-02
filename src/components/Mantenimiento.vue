@@ -241,6 +241,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarMantenimientos();
+				mostrarFormularioMantenimiento.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar el mantenimiento:", error);
@@ -275,6 +276,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarMantenimientos();
+				mostrarFormularioMantenimiento.value = false;
 			}
 		} catch (error) {
 			console.error("Error al editar el mantenimiento:", error);
@@ -296,9 +298,9 @@ async function validarDatos() {
 	if (
 		!idMaquinaMantenimiento.value &&
 		!fechaMantenimiento.value &&
-		!descripcionMantenimiento.value &&
-		!responsableMantenimiento.value &&
-		!precioMantenimiento.value
+		!descripcionMantenimiento.value.trim() &&
+		!responsableMantenimiento.value.trim() &&
+		!precioMantenimiento.value.trim()
 	) {
 		$q.notify({
 			type: "negative",
@@ -323,7 +325,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!descripcionMantenimiento.value) {
+		if (!descripcionMantenimiento.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "La descripcion no puede estar vacia",
@@ -331,7 +333,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!fechaMantenimiento.value) {
+		if (!responsableMantenimiento.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El responsable no puede estar vacio",
@@ -339,7 +341,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!precioMantenimiento.value) {
+		if (!precioMantenimiento.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El precio no puede estar vacio",
@@ -401,6 +403,10 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
+			<div v-if="!loading" class="text-h2 text-center">
+                Mantenimientos
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
 			<q-option-group
 				v-if="!loading"
 				v-model="opcionBusqueda"

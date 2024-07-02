@@ -187,6 +187,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarUsuarios();
+				mostrarFormularioUsuario.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
@@ -221,6 +222,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarUsuarios();
+				mostrarFormularioUsuario.value = false;
 			}
 		} catch (error) {
 			console.error("Error al editar usuario:", error);
@@ -244,10 +246,10 @@ async function validarDatos(indicador) {
 	const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
 	if (
-		!nombreUsuario.value &&
-		!correoUsuario.value &&
-		!telefonoUsuario.value &&
-		!contraseñaUsuario.value &&
+		!nombreUsuario.value.trim() &&
+		!correoUsuario.value.trim() &&
+		!telefonoUsuario.value.trim() &&
+		!contraseñaUsuario.value.trim() &&
 		!rolUsuario.value &&
 		!sedeUsuario.value
 	) {
@@ -258,7 +260,7 @@ async function validarDatos(indicador) {
 		});
 		verificado = false;
 	} else {
-		if (!nombreUsuario.value) {
+		if (!nombreUsuario.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El nombre está vacío",
@@ -266,7 +268,7 @@ async function validarDatos(indicador) {
 			});
 			verificado = false;
 		}
-		if (!correoUsuario.value) {
+		if (!correoUsuario.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El correo no puede estar vacío",
@@ -281,7 +283,7 @@ async function validarDatos(indicador) {
 			});
 			verificado = false;
 		}
-		if (!telefonoUsuario.value) {
+		if (!telefonoUsuario.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El teléfono no puede estar vacío",
@@ -300,7 +302,7 @@ async function validarDatos(indicador) {
 			verificado = false;
 		}
 		if (indicador == undefined) {
-			if (!contraseñaUsuario.value) {
+			if (!contraseñaUsuario.value.trim()) {
 				$q.notify({
 					type: "negative",
 					message: "La contraseña no puede estar vacía",
@@ -394,6 +396,10 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
+			<div v-if="!loading" class="text-h2 text-center">
+                Usuarios
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
 			<q-option-group
 				v-if="!loading"
 				v-model="opcionBusqueda"

@@ -172,6 +172,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarPlanes();
+				mostrarFormularioPlan.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
@@ -203,6 +204,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarPlanes();
+				mostrarFormularioPlan.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
@@ -223,10 +225,10 @@ async function validarDatos() {
 	let verificado = true;
 
 	if (
-		!codigoPlanes.value ||
-		!descripcionPlanes.value ||
-		!valorPlanes.value ||
-		!diasPlanes.value
+		!codigoPlanes.value.trim() &&
+		!descripcionPlanes.value.trim() &&
+		!valorPlanes.value.trim() &&
+		!diasPlanes.value.trim()
 	) {
 		$q.notify({
 			type: "negative",
@@ -235,7 +237,7 @@ async function validarDatos() {
 		});
 		verificado = false;
 	} else {
-		if (!codigoPlanes.value) {
+		if (!codigoPlanes.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El codigo esta vacio",
@@ -243,7 +245,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!descripcionPlanes.value) {
+		if (!descripcionPlanes.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "La descripcion esta vacia",
@@ -251,7 +253,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!valorPlanes.value) {
+		if (!valorPlanes.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El valor esta vacio",
@@ -266,7 +268,7 @@ async function validarDatos() {
 			});
 			verificado = false;
 		}
-		if (!diasPlanes.value) {
+		if (!diasPlanes.value.trim()) {
 			$q.notify({
 				type: "negative",
 				message: "El dia esta vacio",
@@ -314,6 +316,10 @@ onMounted(() => {
 			<div>
 				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
 			</div>
+			<div v-if="!loading" class="text-h2 text-center">
+                Planes
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
 			<q-option-group
 				v-if="!loading"
 				v-model="opcionBusqueda"

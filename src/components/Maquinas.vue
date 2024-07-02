@@ -207,6 +207,7 @@ async function registrar() {
                     position: "bottom-right",
                 });
                 listarMaquinas();
+                mostrarFormularioMaquina.value = false;
             }
         } catch (error) {
             console.error("Error al registrar la maquina:", error);
@@ -239,6 +240,7 @@ async function editar() {
                     position: "bottom-right",
                 });
                 listarMaquinas();
+                mostrarFormularioMaquina.value = false;
             }
         } catch (error) {
             console.error("Error al editar la maquina:", error);
@@ -259,7 +261,7 @@ async function validarDatos() {
     fsDateI = new Date(fechaIngresoMaquinas.value + "T00:00:00");
     fsDateUM = new Date(fechaUltMantMaquinas.value + "T00:00:00");
 
-    if (codigoMaquinas.value == "" || sedeMaquinas.value == "" || descripcionMaquinas.value == "" || fechaIngresoMaquinas.value == "" || fechaUltMantMaquinas.value == "") {
+    if (!codigoMaquinas.value.trim() && !sedeMaquinas.value && !descripcionMaquinas.value.trim() && !fechaIngresoMaquinas.value && !fechaUltMantMaquinas.value) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -267,7 +269,7 @@ async function validarDatos() {
         });
         verificado = false;
     } else {
-        if (codigoMaquinas.value == "") {
+        if (!codigoMaquinas.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "El codigo no puede estar vacio",
@@ -275,7 +277,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (sedeMaquinas.value == "") {
+        if (!sedeMaquinas.value) {
             $q.notify({
                 type: "negative",
                 message: "La sede no puede estar vacio",
@@ -283,7 +285,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (descripcionMaquinas.value == "") {
+        if (!descripcionMaquinas.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "la descripcion no puede estar vacio",
@@ -291,7 +293,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (fechaIngresoMaquinas.value == "") {
+        if (!fechaIngresoMaquinas.value) {
             $q.notify({
                 type: "negative",
                 message: "La fecha de ingreso no puede estar vacio",
@@ -306,7 +308,7 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (fechaUltMantMaquinas.value == "") {
+        if (!fechaUltMantMaquinas.value) {
             $q.notify({
                 type: "negative",
                 message: "La fecha de ultimo mantenimiento no puede estar vacio",
@@ -367,6 +369,10 @@ onMounted(() => {
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
             </div>
+            <div v-if="!loading" class="text-h2 text-center">
+                Maquinas
+            </div>
+            <hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
             <q-option-group
                 v-if="!loading"
                 v-model="opcionBusqueda"

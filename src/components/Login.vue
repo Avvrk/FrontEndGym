@@ -45,7 +45,7 @@ async function login() {
 
 function validarDatos() {
     let verificado = true;
-    if (!email.value && !password.value) {
+    if (!email.value.trim() && !password.value.trim()) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -53,7 +53,7 @@ function validarDatos() {
         });
         verificado = false;
     } else {
-        if (!email.value) {
+        if (!email.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "El correo no puede estar vacio",
@@ -61,7 +61,7 @@ function validarDatos() {
             });
             verificado = false;
         }
-        if (!password.value) {
+        if (!password.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "la contraseña no puede estar vacia",
