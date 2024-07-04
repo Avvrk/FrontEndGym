@@ -22,7 +22,7 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 	};
 
 	const getMaquinasId = async (id) => {
-		try{
+		try {
 			const res = await axios.get(`${url}/maquinas/id/${id}`, {
 				headers: {
 					token: useUsuario.token,
@@ -30,14 +30,14 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 			});
 			console.log(res.data);
 			return res;
-		}catch (error){
+		} catch (error) {
 			console.log(error);
 			return error;
 		}
 	};
 
-	const getMaquinasActivos = async () =>{
-		try{
+	const getMaquinasActivos = async () => {
+		try {
 			const res = await axios.get(`${url}/maquinas/activos`, {
 				headers: {
 					token: useUsuario.token,
@@ -45,14 +45,14 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 			});
 			console.log(res.data);
 			return res;
-		}catch (error){
+		} catch (error) {
 			console.log(error);
 			return error;
 		}
 	};
 
-	const getMaquinasInactivos = async () =>{
-		try{
+	const getMaquinasInactivos = async () => {
+		try {
 			const res = await axios.get(`${url}/maquinas/inactivos`, {
 				headers: {
 					token: useUsuario.token,
@@ -60,7 +60,7 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 			});
 			console.log(res.data);
 			return res;
-		}catch (error){
+		} catch (error) {
 			console.log(error);
 			return error;
 		}
@@ -83,21 +83,17 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 
 	const putMaquinas = async (id, info) => {
 		try {
-			const res = await axios.put(
-				`${url}/maquinas/${id}`,
-				info,
-				{
-					headers: {
-						token: useUsuario.token,
-					},
-				}
-			);
-            console.log(res.data);
-            return res;
+			const res = await axios.put(`${url}/maquinas/${id}`, info, {
+				headers: {
+					token: useUsuario.token,
+				},
+			});
+			console.log(res.data);
+			return res;
 		} catch (error) {
-            console.log(error);
+			console.log(error);
 			return error;
-        }
+		}
 	};
 
 	const putMaquinasInactivar = async (id) => {
@@ -140,7 +136,7 @@ export const useStoreMaquinas = defineStore("Maquina", () => {
 		getMaquinasActivos,
 		getMaquinasInactivos,
 		postMaquinas,
-        putMaquinas,
+		putMaquinas,
 		putMaquinasInactivar,
 		putMaquinasActivar,
 	};

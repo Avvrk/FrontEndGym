@@ -39,40 +39,40 @@ export const useStoreInventario = defineStore("Inventario", () => {
 	};
 
 	const getInventariosActivos = async () => {
-        loading.value = true;
-        try {
-            const res = await axios.get(`${url}/inventarios/activos`, {
-                headers: {
-                    token: useUsuarios.token,
-                },
-            });
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        } finally {
-            loading.value = false;
-        }
-    };
+		loading.value = true;
+		try {
+			const res = await axios.get(`${url}/inventarios/activos`, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		} finally {
+			loading.value = false;
+		}
+	};
 
-    const getInventariosInactivos = async () => {
-        loading.value = true;
-        try {
-            const res = await axios.get(`${url}/inventarios/inactivos`, {
-                headers: {
-                    token: useUsuarios.token,
-                },
-            });
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        } finally {
-            loading.value = false;
-        }
-    };
+	const getInventariosInactivos = async () => {
+		loading.value = true;
+		try {
+			const res = await axios.get(`${url}/inventarios/inactivos`, {
+				headers: {
+					token: useUsuarios.token,
+				},
+			});
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		} finally {
+			loading.value = false;
+		}
+	};
 
 	const getInventariosTotal = async () => {
 		try {
@@ -120,48 +120,48 @@ export const useStoreInventario = defineStore("Inventario", () => {
 	};
 
 	const putInventariosActivar = async (id) => {
-        loading.value = true;
-        try {
-            const res = await axios.put(
-                `${url}/inventarios/activar/${id}`,
-                {},
-                {
-                    headers: {
-                        token: useUsuarios.token,
-                    },
-                }
-            );
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        } finally {
-            loading.value = false;
-        }
-    };
+		loading.value = true;
+		try {
+			const res = await axios.put(
+				`${url}/inventarios/activar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		} finally {
+			loading.value = false;
+		}
+	};
 
-    const putInventariosInactivar = async (id) => {
-        loading.value = true;
-        try {
-            const res = await axios.put(
-                `${url}/inventarios/inactivar/${id}`,
-                {},
-                {
-                    headers: {
-                        token: useUsuarios.token,
-                    },
-                }
-            );
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        } finally {
-            loading.value = false;
-        }
-    };
+	const putInventariosInactivar = async (id) => {
+		loading.value = true;
+		try {
+			const res = await axios.put(
+				`${url}/inventarios/inactivar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		} finally {
+			loading.value = false;
+		}
+	};
 
 	return {
 		getInventario,

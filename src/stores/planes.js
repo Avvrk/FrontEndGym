@@ -97,35 +97,42 @@ export const useStorePlanes = defineStore("Planes", () => {
 	};
 
 	const putPlanesActivar = async (id) => {
-        try {
-            const res = await axios.put(`${url}/planes/activar/${id}`, {}, {
-                headers: {
-                    token: useUsuarios.token,
-                },
-            });
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    };
+		try {
+			const res = await axios.put(
+				`${url}/planes/activar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
-    const putPlanesInactivar = async (id) => {
-        try {
-            const res = await axios.put(`${url}/planes/inactivar/${id}`, {}, {
-                headers: {
-                    token: useUsuarios.token,
-                },
-            });
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    };
-
+	const putPlanesInactivar = async (id) => {
+		try {
+			const res = await axios.put(
+				`${url}/planes/inactivar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
 	return {
 		getPlanes,

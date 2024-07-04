@@ -11,7 +11,7 @@
 					</q-avatar>
 					Forza Gym
 				</q-toolbar-title>
-                <q-item clickable tag="router-link" to="/">
+                <q-item clickable tag="router-link" to="/" @click="cerrar()">
                     <q-item-section>
                         <q-item-label></q-item-label>
                     </q-item-section>
@@ -34,7 +34,7 @@
                     </q-item-section>
                 </q-item>
                 
-                <q-item clickable tag="router-link" to="/main/clientes">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista' || rol == 'instructor'" tag="router-link" to="/main/clientes">
                     <q-item-section>
                         <q-item-label>Clientes</q-item-label>
                     </q-item-section>
@@ -43,7 +43,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/ingresos">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/ingresos">
                     <q-item-section>
                         <q-item-label>Ingresos</q-item-label>
                     </q-item-section>
@@ -52,7 +52,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/inventario">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/inventario">
                     <q-item-section>
                         <q-item-label>Inventario</q-item-label>
                     </q-item-section>
@@ -61,16 +61,16 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/">
+                <!-- <q-item clickable tag="router-link" to="/">
                     <q-item-section>
                         <q-item-label>Login</q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
                         <q-icon name="login" />
                     </q-item-section>
-                </q-item>
+                </q-item> -->
 
-                <q-item clickable tag="router-link" to="/main/maquinas">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista' || rol == 'instructor'" tag="router-link" to="/main/maquinas">
                     <q-item-section>
                         <q-item-label>Máquinas</q-item-label>
                     </q-item-section>
@@ -79,7 +79,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/mantenimiento">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/mantenimiento">
                     <q-item-section>
                         <q-item-label>Mantenimiento</q-item-label>
                     </q-item-section>
@@ -88,7 +88,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/pagos">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/pagos">
                     <q-item-section>
                         <q-item-label>Pagos</q-item-label>
                     </q-item-section>
@@ -97,7 +97,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/planes">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista' || rol == 'instructor'" tag="router-link" to="/main/planes">
                     <q-item-section>
                         <q-item-label>Planes</q-item-label>
                     </q-item-section>
@@ -106,7 +106,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/sedes">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/sedes">
                     <q-item-section>
                         <q-item-label>Sedes</q-item-label>
                     </q-item-section>
@@ -115,7 +115,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/usuarios">
+                <q-item clickable v-if="rol == 'administrador'" tag="router-link" to="/main/usuarios">
                     <q-item-section>
                         <q-item-label>Usuarios</q-item-label>
                     </q-item-section>
@@ -124,7 +124,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable tag="router-link" to="/main/ventas">
+                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/ventas">
                     <q-item-section>
                         <q-item-label>Ventas</q-item-label>
                     </q-item-section>
@@ -147,6 +147,10 @@
 
 <script setup>
 import { ref } from "vue";
+import { useStoreUsuarios } from "../stores/usuarios.js";
+
+const useUsuarios = useStoreUsuarios();
+const rol = useUsuarios.user.rol;
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 
@@ -156,6 +160,10 @@ function toggleLeftDrawer() {
 
 function toggleRightDrawer() {
 	rightDrawerOpen.value = !rightDrawerOpen.value;
+}
+
+function cerrar(){
+    const hola = useUsuarios.cerrarSecion();
 }
 </script>
 

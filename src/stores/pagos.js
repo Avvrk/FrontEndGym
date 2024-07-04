@@ -21,14 +21,16 @@ export const useStorePagos = defineStore("Pagos", () => {
 		}
 	};
 
-
 	const getPagosFechas = async (fechainicio, fechafin) => {
 		try {
-			const res = await axios.get(`${url}/pagos/fechainicio/${fechainicio}/fechafin/${fechafin}`, {
-				headers: {
-					token: useUsuarios.token,
+			const res = await axios.get(
+				`${url}/pagos/fechainicio/${fechainicio}/fechafin/${fechafin}`,
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
 				}
-			})
+			);
 			console.log(res.data);
 			return res;
 		} catch (error) {
@@ -42,8 +44,8 @@ export const useStorePagos = defineStore("Pagos", () => {
 			const res = await axios.get(`${url}/pagos/plan/${plan}`, {
 				headers: {
 					token: useUsuarios.token,
-				}
-			})
+				},
+			});
 			console.log(res.data);
 			return res;
 		} catch (error) {
@@ -52,17 +54,16 @@ export const useStorePagos = defineStore("Pagos", () => {
 		}
 	};
 
-	const getPagosCliente = async () =>{
-		try{
+	const getPagosCliente = async () => {
+		try {
 			const { id } = req.params;
-            const pagos = await Pago.findById(id);
-            res.json({ pagos });
-		} catch (error){
-		console.log(error);
+			const pagos = await Pago.findById(id);
+			res.json({ pagos });
+		} catch (error) {
+			console.log(error);
 			return error;
-	}
-};
-
+		}
+	};
 
 	const getPagosId = async (id) => {
 		try {
@@ -140,35 +141,42 @@ export const useStorePagos = defineStore("Pagos", () => {
 	};
 
 	const putPagosActivar = async (id) => {
-        try {
-            const res = await axios.put(`${url}/pagos/activar/${id}`, {}, {
-                headers: {
-                    token: useUsuarios.token,
-                },
-            });
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    };
+		try {
+			const res = await axios.put(
+				`${url}/pagos/activar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
-    const putPagosInactivar = async (id) => {
-        try {
-            const res = await axios.put(`${url}/pagos/inactivar/${id}`, {}, {
-                headers: {
-                    token: useUsuarios.token,
-                },
-            });
-            console.log(res.data);
-            return res;
-        } catch (error) {
-            console.log(error);
-            return error;
-        }
-    };
-
+	const putPagosInactivar = async (id) => {
+		try {
+			const res = await axios.put(
+				`${url}/pagos/inactivar/${id}`,
+				{},
+				{
+					headers: {
+						token: useUsuarios.token,
+					},
+				}
+			);
+			console.log(res.data);
+			return res;
+		} catch (error) {
+			console.log(error);
+			return error;
+		}
+	};
 
 	return {
 		getPagos,

@@ -45,7 +45,7 @@ const routes = [
         children: [
             { path: "hogar", component: Home, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
             { path: "clientes", component: Cliente, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
-            { path: "sedes", component: Sedes, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "sedes", component: Sedes, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
             { path: "ingresos", component: Ingresos, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
             { path: "inventario", component: Inventario, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
             { path: "mantenimiento", component: Mantenimiento, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
