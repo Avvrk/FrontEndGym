@@ -370,6 +370,12 @@ async function registrar() {
 	}
 }
 
+async function registrarSeguimiento() {
+	if (await validarDatosSeguimiento()) {
+
+	}
+}
+
 async function editar() {
 	if (await validarDatos()) {
 		try {
@@ -936,6 +942,79 @@ onMounted(() => {
 				id="botonF"
 				@click="editarVistaFondo(false, null, true)"></button>
 		</div>
+		<!-- <div id="formularioSeguimiento" v-if="mostrarFormularioCSeguimiento == true">
+			<q-form
+				@submit="mostrarBotonEnviar ? registrarSeguimiento() : editarSeguimiento()"
+				@button="actualizar()"
+				@reset="editarVistaFondoSeguimiento(false, null, true)"
+				class="q-gutter-md">
+				<q-input
+					standout="bg-green text-white"
+					type="date"
+					label="Fecha del seguimiento"
+					v-model="fechaSeguimiento" />
+				<q-input
+					standout="bg-green text-white"
+					type="text"
+					label="Peso"
+					v-model="pesoSeguimiento"
+					hint="en Kilogramos" />
+				<q-input
+					standout="bg-green text-white"
+					type="text"
+					label="Brazo"
+					v-model="ingresoCliente" />
+				<q-input
+					standout="bg-green text-white"
+					type="date"
+					label="Fecha de Nacimiento"
+					v-model="nacimientoCliente" />
+				<q-input
+					standout="bg-green text-white"
+					type="text"
+					label="Direccion"
+					v-model="residenciaCliente" />
+				<q-input
+					standout="bg-green text-white"
+					type="tel"
+					label="Telefono"
+					v-model="telefonoCliente" />
+				<q-input
+					standout="bg-green text-white"
+					type="text"
+					label="Objetivo"
+					v-model="objetivoCliente" />
+				77 <q-input standout="bg-green text-white" type="text" label="Observaciones" v-model="observacionesCliente" />
+				<q-select
+					standout="bg-green text-white"
+					:options="organizarPlanes()"
+					option-value="valor"
+					option-label="label"
+					label="Plan"
+					v-model="planCliente" />
+				<div>
+					<q-btn
+						v-if="mostrarBotonEnviar"
+						label="Enviar"
+						type="submit"
+						color="primary" />
+					<q-btn
+						v-else
+						label="Actualizar"
+						type="submit"
+						color="primary" />
+					<q-btn
+						label="Cerrar"
+						type="reset"
+						color="primary"
+						flat
+						class="q-ml-sm" />
+				</div>
+			</q-form>
+			<button
+				id="botonF"
+				@click="editarVistaFondo(false, null, true)"></button>
+		</div> -->
 	</div>
 </template>
 
