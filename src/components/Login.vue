@@ -131,7 +131,7 @@ function validarDatos() {
 						<label for="remember">Recordarme</label>
 					</div>
 					<div class="forgot-password">
-						<a href="#">¿Olvidaste la contraseña?</a>
+						<a href="/#/password">¿Olvidaste la contraseña?</a>
 					</div>
 				</form>
 			</div>

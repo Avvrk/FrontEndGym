@@ -362,7 +362,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarClientes();
-                mostrarFormularioCliente.value = false;
+				mostrarFormularioCliente.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar cliente:", error);
@@ -415,7 +415,7 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarClientes();
-                mostrarFormularioCliente.value = false;
+				mostrarFormularioCliente.value = false;
 			}
 		} catch (error) {
 			console.error("Error al editar cliente:", error);
@@ -639,7 +639,7 @@ function cerrarSeguimiento() {
 	mostrarSeguimientoCliente.value = false;
 }
 
-function cerrarFc() {}
+function cerrarFc() { }
 
 function calcularEstadoIMC(imc) {
 	if (imc < 18.5) {
@@ -669,63 +669,32 @@ onMounted(() => {
 	<div>
 		<div class="q-pa-md">
 			<div>
-				<q-btn
-					v-if="!loading"
-					@click="editarVistaFondo(true, null, true)">
+				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
 					agregar
 				</q-btn>
 			</div>
-            <div v-if="!loading"  class="text-h2 text-center">
-                Clientes
-            </div>
-            <hr v-if="!loading"  class="bg-primary no-border" style="height: 4px;">
-			<q-option-group
-				v-if="!loading"
-				v-model="opcionBusqueda"
-				inline
-				class="q-mb-md"
-				:options="[
-					{ label: 'Todos (predeterminado)', value: 'todos' },
-					{ label: 'Activos', value: 'activas' },
-					{ label: 'Inactivos', value: 'inactivos' },
-					{ label: 'Por plan', value: 'plan' },
-					{ label: 'Por cumpleaños', value: 'cumpleanios' },
-					{ label: 'Por ingreso', value: 'ingresos' },
-				]" />
+			<div v-if="!loading" class="text-h2 text-center">
+				Clientes
+			</div>
+			<hr v-if="!loading" class="bg-primary no-border" style="height: 4px;">
+			<q-option-group v-if="!loading" v-model="opcionBusqueda" inline class="q-mb-md" :options="[
+				{ label: 'Todos (predeterminado)', value: 'todos' },
+				{ label: 'Activos', value: 'activas' },
+				{ label: 'Inactivos', value: 'inactivos' },
+				{ label: 'Por plan', value: 'plan' },
+				{ label: 'Por cumpleaños', value: 'cumpleanios' },
+				{ label: 'Por ingreso', value: 'ingresos' },
+			]" />
 			<div class="row">
-				<q-select
-					v-if="estadoBuscar == 'plan'"
-					standout="bg-green text-white"
-					:options="organizarPlanes()"
-					option-value="valor"
-					option-label="label"
-					label="Plan"
-					v-model="planAbuscar"
-					style="width: 200px" />
-				<q-input
-					v-if="estadoBuscar == 'cumpleanios'"
-					standout="bg-green text-white"
-					type="date"
-					label="Cumpleaños"
-					v-model="cumpleanioAbuscar"
-					style="width: 200px" />
-				<q-input
-					v-if="estadoBuscar == 'ingresos'"
-					standout="bg-green text-white"
-					type="date"
-					label="Ingresaron"
-					v-model="ingresoAbuscar"
-					style="width: 200px" />
+				<q-select v-if="estadoBuscar == 'plan'" standout="bg-green text-white" :options="organizarPlanes()"
+					option-value="valor" option-label="label" label="Plan" v-model="planAbuscar" style="width: 200px" />
+				<q-input v-if="estadoBuscar == 'cumpleanios'" standout="bg-green text-white" type="date"
+					label="Cumpleaños" v-model="cumpleanioAbuscar" style="width: 200px" />
+				<q-input v-if="estadoBuscar == 'ingresos'" standout="bg-green text-white" type="date" label="Ingresaron"
+					v-model="ingresoAbuscar" style="width: 200px" />
 				<q-btn v-if="botonBuscar" @click="tipoBoton"> 🔎 </q-btn>
 			</div>
-			<q-table
-				v-if="!loading"
-				flat
-				bordered
-				title="Clientes"
-				:rows="rows"
-				:columns="columns"
-				row-key="id">
+			<q-table v-if="!loading" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
 				<template v-slot:body-cell-fechaIngreso="props">
 					<q-td :props="props">
 						<p>{{ fechaBonita(props.row.fechaIngreso) }}</p>
@@ -743,23 +712,17 @@ onMounted(() => {
 				</template>
 				<template v-slot:body-cell-opciones="props">
 					<q-td :props="props">
-						<q-btn
-							@click="editarVistaFondo(true, props.row, false)">
+						<q-btn @click="editarVistaFondo(true, props.row, false)">
 							✏️
 						</q-btn>
-						<q-btn
-							v-if="props.row.estado == 1"
-							@click="editarEstado(props.row)"
+						<q-btn v-if="props.row.estado == 1" @click="editarEstado(props.row)"
 							:loading="useCliente.loading">
 							❌
 							<template v-slot:loading>
 								<q-spinner color="secondary" size="1em" />
 							</template>
 						</q-btn>
-						<q-btn
-							v-else
-							@click="editarEstado(props.row)"
-							:loading="useCliente.loading">
+						<q-btn v-else @click="editarEstado(props.row)" :loading="useCliente.loading">
 							✅
 							<template v-slot:loading>
 								<q-spinner color="secondary" size="1em" />
@@ -784,10 +747,7 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading
-				:showing="loading"
-				label="Please wait..."
-				label-class="text-teal"
+			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal"
 				label-style="font-size: 1.1em" />
 		</div>
 		<div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true">
@@ -840,7 +800,12 @@ onMounted(() => {
 									{{ item.imc.toFixed(2) }}
 								</td>
 							</tr>
-							<tr>
+							<tr v-bind:style="{ backgroundColor: calcularEstadoIMC(item.imc) === 'Bajo peso' ? 'rgb(52, 152, 219)' :
+                                      calcularEstadoIMC(item.imc) === 'Peso Normal' ? 'rgb(46, 204, 113)' :
+                                      calcularEstadoIMC(item.imc) === 'Sobrepeso' ? 'rgb(241, 196, 15)' :
+                                      calcularEstadoIMC(item.imc) === 'Obesidad I' ? 'rgb(230, 126, 34)' :
+                                      calcularEstadoIMC(item.imc) === 'Obesidad II' ? 'rgb(231, 76, 60)' :
+                                      calcularEstadoIMC(item.imc) === 'Obesidad III' ? 'rgb(192, 57, 43)' : 'inherit' }">
 								<td class="text-center">Estado:</td>
 								<td class="text-center">
 									{{ calcularEstadoIMC(item.imc) }}
@@ -857,90 +822,35 @@ onMounted(() => {
 						</tbody>
 					</q-markup-table>
 					<button class="botonSeguimiento">Editar</button>
-					<button
-						@click="cerrarSeguimiento()"
-						class="botonSeguimiento">
+					<button @click="cerrarSeguimiento()" class="botonSeguimiento">
 						Cerrar
 					</button>
 				</q-card>
 			</section>
 		</div>
 		<div id="formularioCliente" v-if="mostrarFormularioCliente == true">
-			<q-form
-				@submit="mostrarBotonEnviar ? registrar() : editar()"
-				@button="actualizar()"
-				@reset="editarVistaFondo(false, null, true)"
-				class="q-gutter-md">
-				<q-input
-					standout="bg-green text-white"
-					type="text"
-					label="Nombre"
-					v-model="nombreCliente" />
-				<q-select
-					standout="bg-green text-white"
-					:options="tipoD"
-					label="Tipo de Documento"
+			<q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @button="actualizar()"
+				@reset="editarVistaFondo(false, null, true)" class="q-gutter-md">
+				<q-input standout="bg-green text-white" type="text" label="Nombre" v-model="nombreCliente" />
+				<q-select standout="bg-green text-white" :options="tipoD" label="Tipo de Documento"
 					v-model="tipoDocumento" />
-				<q-input
-					standout="bg-green text-white"
-					type="text"
-					label="Documento"
-					v-model="documentoCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="date"
-					label="Fecha de ingreso"
-					v-model="ingresoCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="date"
-					label="Fecha de Nacimiento"
+				<q-input standout="bg-green text-white" type="text" label="Documento" v-model="documentoCliente" />
+				<q-input standout="bg-green text-white" type="date" label="Fecha de ingreso" v-model="ingresoCliente" />
+				<q-input standout="bg-green text-white" type="date" label="Fecha de Nacimiento"
 					v-model="nacimientoCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="text"
-					label="Direccion"
-					v-model="residenciaCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="tel"
-					label="Telefono"
-					v-model="telefonoCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="text"
-					label="Objetivo"
-					v-model="objetivoCliente" />
+				<q-input standout="bg-green text-white" type="text" label="Direccion" v-model="residenciaCliente" />
+				<q-input standout="bg-green text-white" type="tel" label="Telefono" v-model="telefonoCliente" />
+				<q-input standout="bg-green text-white" type="text" label="Objetivo" v-model="objetivoCliente" />
 				<!-- <q-input standout="bg-green text-white" type="text" label="Observaciones" v-model="observacionesCliente" /> -->
-				<q-select
-					standout="bg-green text-white"
-					:options="organizarPlanes()"
-					option-value="valor"
-					option-label="label"
-					label="Plan"
-					v-model="planCliente" />
+				<q-select standout="bg-green text-white" :options="organizarPlanes()" option-value="valor"
+					option-label="label" label="Plan" v-model="planCliente" />
 				<div>
-					<q-btn
-						v-if="mostrarBotonEnviar"
-						label="Enviar"
-						type="submit"
-						color="primary" />
-					<q-btn
-						v-else
-						label="Actualizar"
-						type="submit"
-						color="primary" />
-					<q-btn
-						label="Cerrar"
-						type="reset"
-						color="primary"
-						flat
-						class="q-ml-sm" />
+					<q-btn v-if="mostrarBotonEnviar" label="Enviar" type="submit" color="primary" />
+					<q-btn v-else label="Actualizar" type="submit" color="primary" />
+					<q-btn label="Cerrar" type="reset" color="primary" flat class="q-ml-sm" />
 				</div>
 			</q-form>
-			<button
-				id="botonF"
-				@click="editarVistaFondo(false, null, true)"></button>
+			<button id="botonF" @click="editarVistaFondo(false, null, true)"></button>
 		</div>
 		<!-- <div id="formularioSeguimiento" v-if="mostrarFormularioCSeguimiento == true">
 			<q-form
@@ -1020,7 +930,7 @@ onMounted(() => {
 
 <style scoped>
 hr {
-  height: 2px;
+	height: 2px;
 }
 
 #seguimientoCliente {

@@ -11,6 +11,7 @@ import Mantenimiento from "../components/Mantenimiento.vue";
 import Usuario from "../components/Usuarios.vue";
 import Maquina from "../components/Maquinas.vue";
 import Pago from "../components/Pagos.vue";
+import password from "../components/forgot-password.vue";
 import Plan from "../components/Planes.vue";
 import Venta from "../components/Ventas.vue";
 import { useStoreUsuarios } from "../stores/usuarios.js";
@@ -56,6 +57,7 @@ const routes = [
             { path: "ventas", component: Venta, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
         ],
     },
+    { path: "/password", component: password },
 ];
 
 export const router = createRouter({
