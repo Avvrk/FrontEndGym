@@ -82,11 +82,12 @@ let planesTodo = ref([]);
 
 // Variable que contendra el id del cliente a editar, se actualiza cada vez que le den al boton de actualizar en la tabla
 const datos = ref("");
+const datosSeguimiento = ref("");
 
 const segui = ref([]);
 const mostrarSeguimientoCliente = ref(false);
 
-// Variables que contiene los datos ingresados en el formulario
+// Variables que contiene los datos ingresados en el formulario cliente
 let nombreCliente = ref("");
 let tipoDocumento = ref("");
 let documentoCliente = ref("");
@@ -98,11 +99,21 @@ let objetivoCliente = ref("");
 let planCliente = ref("");
 /* let observacionesCliente = ref(""); */
 
+// Variables que contiene los datos ingresados en el formulario seguimiento
+let fechaSeguimiento = ref("");
+let pesoSeguimiento = ref("");
+let brazoSeguimiento = ref("");
+let piernaSeguimiento = ref("");
+let cinturaSeguimiento = ref("");
+let estaturaSeguimiento = ref("");
+let clienteSeguimiento = ref("");
+
 // Variable para controlar el dato que se mostrara en la tabla
 const opcionBusqueda = ref("todos");
 
 //Variables para administrar lo que se ve en la pantalla
 const mostrarFormularioCliente = ref(false);
+const mostrarFormularioSeguimiento = ref(false);
 const mostrarBotonEnviar = ref(false);
 const loading = ref(true); // Agregar estado de carga
 
@@ -127,6 +138,15 @@ const organizarPlanes = () => {
 		nombre: `${element.descripcion}`,
 	}));
 	return codigoValor.value;
+};
+
+const organizarClientes = () => {
+	documentoNombre.value = rows.value.map((element) => ({
+		label: `${element.documento} / ${element.nombre}`,
+		valor: `${element._id}`,
+		nombre: `${element.nombre}`,
+	}));
+	return documentoNombre.value;
 };
 
 const fechaBonita = (info) => {
@@ -232,6 +252,7 @@ async function listarClientes() {
 		botonEstado.value = "ninguno";
 		const res = await useCliente.getClientes();
 		rows.value = res.data.clientes;
+		organizarClientes();
 	} catch (error) {
 		console.error("Error al listar los clientes:", error);
 	}
@@ -362,7 +383,7 @@ async function registrar() {
 					position: "bottom-right",
 				});
 				listarClientes();
-                mostrarFormularioCliente.value = false;
+				mostrarFormularioCliente.value = false;
 			}
 		} catch (error) {
 			console.error("Error al registrar cliente:", error);
@@ -372,7 +393,39 @@ async function registrar() {
 
 async function registrarSeguimiento() {
 	if (await validarDatosSeguimiento()) {
+		try {
+			const a = estaturaSeguimiento / 100;
+			let imcCalculado = pesoSeguimiento / (a * a);
 
+			const info = {
+				fecha: fechaSeguimiento.value,
+				peso: pesoSeguimiento.value,
+				brazo: brazoSeguimiento.value,
+				pierna: piernaSeguimiento.value,
+				cintura: cinturaSeguimiento.value,
+				estatura: estaturaSeguimiento.value,
+				imc: imcCalculado,
+			};
+
+			const res = await useCliente.postClientesSeguimiento(clienteSeguimiento.value.valor, info)
+			if (res.status !== 200) {
+				$q.notify({
+					type: "negative",
+					message: "Parece que hubo un error en el registro",
+					position: "bottom-right",
+				});
+			} else {
+				$q.notify({
+					type: "positive",
+					message: "El registro se ha realizado correctamente",
+					position: "bottom-right",
+				});
+				listarClientes();
+				mostrarFormularioSeguimiento.value = false;
+			}
+		} catch (error) {
+			console.error("Error al registrar seguimiento:", error);
+		}
 	}
 }
 
@@ -415,10 +468,48 @@ async function editar() {
 					position: "bottom-right",
 				});
 				listarClientes();
-                mostrarFormularioCliente.value = false;
+				mostrarFormularioCliente.value = false;
 			}
 		} catch (error) {
 			console.error("Error al editar cliente:", error);
+		}
+	}
+}
+
+async function editarSeguimiento() {
+	if (await validarDatosSeguimiento()) {
+		try {
+			const a = estaturaSeguimiento / 100;
+			let imcCalculado = pesoSeguimiento / (a * a);
+
+			const info = {
+				fecha: fechaSeguimiento.value,
+				peso: pesoSeguimiento.value,
+				brazo: brazoSeguimiento.value,
+				pierna: piernaSeguimiento.value,
+				cintura: cinturaSeguimiento.value,
+				estatura: estaturaSeguimiento.value,
+				imc: imcCalculado,
+			};
+
+			const res = await useCliente.postClientesSeguimiento(clienteSeguimiento.value.valor, info)
+			if (res.status !== 200) {
+				$q.notify({
+					type: "negative",
+					message: "Parece que hubo un error en la edicion",
+					position: "bottom-right",
+				});
+			} else {
+				$q.notify({
+					type: "positive",
+					message: "El seguimiento se a editado correctamente",
+					position: "bottom-right",
+				});
+				listarClientes();
+				mostrarFormularioSeguimiento.value = false;
+			}
+		} catch (error) {
+			console.error("Error al editar seguimiento:", error);
 		}
 	}
 }
@@ -584,6 +675,76 @@ async function validarDatos() {
 	return verificado;
 }
 
+async function validarDatosSeguimiento() {
+	let verificado = true;
+
+	if (
+		!fechaSeguimiento.value &&
+		!pesoSeguimiento.value.trim() &&
+		!brazoSeguimiento.value.trim() &&
+		!piernaSeguimiento.value.trim() &&
+		!cinturaSeguimiento.value.trim() &&
+		!estaturaSeguimiento.value.trim()
+	) {
+		$q.notify({
+			type: "negative",
+			message: "LLena todos los campos",
+			position: "bottom-right",
+		});
+		verificado = false;
+	} else {
+		if (!fechaSeguimiento.value) {
+			$q.notify({
+				type: "negative",
+				message: "La fecha esta vacia",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!pesoSeguimiento.value.trim()) {
+			$q.notify({
+				type: "negative",
+				message: "El peso esta vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!brazoSeguimiento.value.trim()) {
+			$q.notify({
+				type: "negative",
+				message: "El brazo esta vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!piernaSeguimiento.value.trim()) {
+			$q.notify({
+				type: "negative",
+				message: "La pierna esta vacio",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!cinturaSeguimiento.value.trim()) {
+			$q.notify({
+				type: "negative",
+				message: "La cintura esta vacia",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!estaturaSeguimiento.value.trim()) {
+			$q.notify({
+				type: "negative",
+				message: "La estatura esta vacia",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+	}
+	return verificado;
+}
+
 function editarVistaFondo(boolean, extra, boton) {
 	datos.value = extra;
 	console.log(datos.value);
@@ -624,6 +785,31 @@ function editarVistaFondo(boolean, extra, boton) {
 	mostrarBotonEnviar.value = boton;
 	console.log(mostrarBotonEnviar.value);
 	mostrarFormularioCliente.value = boolean;
+}
+
+function editarVistaFondoSeguimiento(boolean, extra, boton) {
+	datosSeguimiento.value = extra;
+	console.log(datosSeguimiento.value);
+	if (boton == false && extra != null) {
+
+		fechaSeguimiento.value = "";
+		pesoSeguimiento.value = datosSeguimiento.value.peso
+		brazoSeguimiento.value = datosSeguimiento.value.brazo
+		piernaSeguimiento.value = datosSeguimiento.value.pierna
+		cinturaSeguimiento.value = datosSeguimiento.value.cintura
+		estaturaSeguimiento.value = datosSeguimiento.value.estatura
+	} else {
+		fechaSeguimiento.value = "";
+		pesoSeguimiento.value = ""
+		brazoSeguimiento.value = ""
+		piernaSeguimiento.value = ""
+		cinturaSeguimiento.value = ""
+		estaturaSeguimiento.value = ""
+	}
+
+	mostrarBotonEnviarSeguimiento.value = boton;
+	console.log(mostrarBotonEnviar.value);
+	mostrarFormularioSeguimiento.value = boolean;
 }
 
 function verSeguimiento(seguimiento) {
@@ -675,10 +861,11 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
-            <div v-if="!loading"  class="text-h2 text-center">
-                Clientes
-            </div>
-            <hr v-if="!loading"  class="bg-primary no-border" style="height: 4px;">
+			<div v-if="!loading" class="text-h2 text-center">Clientes</div>
+			<hr
+				v-if="!loading"
+				class="bg-primary no-border"
+				style="height: 4px" />
 			<q-option-group
 				v-if="!loading"
 				v-model="opcionBusqueda"
@@ -868,7 +1055,6 @@ onMounted(() => {
 		<div id="formularioCliente" v-if="mostrarFormularioCliente == true">
 			<q-form
 				@submit="mostrarBotonEnviar ? registrar() : editar()"
-				@button="actualizar()"
 				@reset="editarVistaFondo(false, null, true)"
 				class="q-gutter-md">
 				<q-input
@@ -942,12 +1128,24 @@ onMounted(() => {
 				id="botonF"
 				@click="editarVistaFondo(false, null, true)"></button>
 		</div>
-		<!-- <div id="formularioSeguimiento" v-if="mostrarFormularioCSeguimiento == true">
+		<div
+			id="formularioSeguimiento"
+			v-if="mostrarFormularioSeguimiento == true">
 			<q-form
-				@submit="mostrarBotonEnviar ? registrarSeguimiento() : editarSeguimiento()"
-				@button="actualizar()"
+				@submit="
+					mostrarBotonEnviarSeguimiento
+						? registrarSeguimiento()
+						: editarSeguimiento()
+				"
 				@reset="editarVistaFondoSeguimiento(false, null, true)"
 				class="q-gutter-md">
+				<q-select
+					standout="bg-green text-white"
+					:options="organizarClientes()"
+					option-value="valor"
+					option-label="label"
+					label="Cliente"
+					v-model="clienteSeguimiento" />
 				<q-input
 					standout="bg-green text-white"
 					type="date"
@@ -963,38 +1161,29 @@ onMounted(() => {
 					standout="bg-green text-white"
 					type="text"
 					label="Brazo"
-					v-model="ingresoCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="date"
-					label="Fecha de Nacimiento"
-					v-model="nacimientoCliente" />
+					v-model="brazoSeguimiento"
+					hint="en Centimetros" />
 				<q-input
 					standout="bg-green text-white"
 					type="text"
-					label="Direccion"
-					v-model="residenciaCliente" />
-				<q-input
-					standout="bg-green text-white"
-					type="tel"
-					label="Telefono"
-					v-model="telefonoCliente" />
+					label="Pierna"
+					v-model="piernaSeguimiento"
+					hint="en Centimetros" />
 				<q-input
 					standout="bg-green text-white"
 					type="text"
-					label="Objetivo"
-					v-model="objetivoCliente" />
-				77 <q-input standout="bg-green text-white" type="text" label="Observaciones" v-model="observacionesCliente" />
-				<q-select
+					label="Cintura"
+					v-model="cinturaSeguimiento"
+					hint="en Centimetros" />
+				<q-input
 					standout="bg-green text-white"
-					:options="organizarPlanes()"
-					option-value="valor"
-					option-label="label"
-					label="Plan"
-					v-model="planCliente" />
+					type="text"
+					label="Estatura"
+					v-model="estaturaSeguimiento"
+					hint="en Centimetros" />
 				<div>
 					<q-btn
-						v-if="mostrarBotonEnviar"
+						v-if="mostrarBotonEnviarSeguimiento"
 						label="Enviar"
 						type="submit"
 						color="primary" />
@@ -1013,14 +1202,16 @@ onMounted(() => {
 			</q-form>
 			<button
 				id="botonF"
-				@click="editarVistaFondo(false, null, true)"></button>
-		</div> -->
+				@click="
+					editarVistaFondoSeguimiento(false, null, true)
+				"></button>
+		</div>
 	</div>
 </template>
 
 <style scoped>
 hr {
-  height: 2px;
+	height: 2px;
 }
 
 #seguimientoCliente {
