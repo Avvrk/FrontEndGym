@@ -13,7 +13,7 @@
 				</q-toolbar-title>
                 <q-item clickable tag="router-link" to="/" @click="cerrar()">
                     <q-item-section>
-                        <q-item-label></q-item-label>
+                        <q-item-label>Cerrar Sesión</q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
                         <q-icon name="login" />

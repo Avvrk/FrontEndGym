@@ -407,7 +407,10 @@ async function registrarSeguimiento() {
 				imc: imcCalculado,
 			};
 
-			const res = await useCliente.postClientesSeguimiento(clienteSeguimiento.value.valor, info)
+			const res = await useCliente.postClientesSeguimiento(
+				clienteSeguimiento.value.valor,
+				info
+			);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -492,7 +495,10 @@ async function editarSeguimiento() {
 				imc: imcCalculado,
 			};
 
-			const res = await useCliente.postClientesSeguimiento(clienteSeguimiento.value.valor, info)
+			const res = await useCliente.postClientesSeguimiento(
+				clienteSeguimiento.value.valor,
+				info
+			);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -791,20 +797,19 @@ function editarVistaFondoSeguimiento(boolean, extra, boton) {
 	datosSeguimiento.value = extra;
 	console.log(datosSeguimiento.value);
 	if (boton == false && extra != null) {
-
 		fechaSeguimiento.value = "";
-		pesoSeguimiento.value = datosSeguimiento.value.peso
-		brazoSeguimiento.value = datosSeguimiento.value.brazo
-		piernaSeguimiento.value = datosSeguimiento.value.pierna
-		cinturaSeguimiento.value = datosSeguimiento.value.cintura
-		estaturaSeguimiento.value = datosSeguimiento.value.estatura
+		pesoSeguimiento.value = datosSeguimiento.value.peso;
+		brazoSeguimiento.value = datosSeguimiento.value.brazo;
+		piernaSeguimiento.value = datosSeguimiento.value.pierna;
+		cinturaSeguimiento.value = datosSeguimiento.value.cintura;
+		estaturaSeguimiento.value = datosSeguimiento.value.estatura;
 	} else {
 		fechaSeguimiento.value = "";
-		pesoSeguimiento.value = ""
-		brazoSeguimiento.value = ""
-		piernaSeguimiento.value = ""
-		cinturaSeguimiento.value = ""
-		estaturaSeguimiento.value = ""
+		pesoSeguimiento.value = "";
+		brazoSeguimiento.value = "";
+		piernaSeguimiento.value = "";
+		cinturaSeguimiento.value = "";
+		estaturaSeguimiento.value = "";
 	}
 
 	mostrarBotonEnviarSeguimiento.value = boton;
@@ -1027,7 +1032,29 @@ onMounted(() => {
 									{{ item.imc.toFixed(2) }}
 								</td>
 							</tr>
-							<tr>
+							<tr
+								v-bind:style="{
+									backgroundColor:
+										calcularEstadoIMC(item.imc) ===
+										'Bajo peso'
+											? 'rgb(52, 152, 219)'
+											: calcularEstadoIMC(item.imc) ===
+											  'Peso Normal'
+											? 'rgb(46, 204, 113)'
+											: calcularEstadoIMC(item.imc) ===
+											  'Sobrepeso'
+											? 'rgb(241, 196, 15)'
+											: calcularEstadoIMC(item.imc) ===
+											  'Obesidad I'
+											? 'rgb(230, 126, 34)'
+											: calcularEstadoIMC(item.imc) ===
+											  'Obesidad II'
+											? 'rgb(231, 76, 60)'
+											: calcularEstadoIMC(item.imc) ===
+											  'Obesidad III'
+											? 'rgb(192, 57, 43)'
+											: 'inherit',
+								}">
 								<td class="text-center">Estado:</td>
 								<td class="text-center">
 									{{ calcularEstadoIMC(item.imc) }}
