@@ -866,6 +866,13 @@ onMounted(() => {
 					agregar
 				</q-btn>
 			</div>
+			<div>
+				<q-btn
+					v-if="!loading"
+					@click="editarVistaFondoSeguimiento(true, null, true)">
+					agregar seguimiento
+				</q-btn>
+			</div>
 			<div v-if="!loading" class="text-h2 text-center">Clientes</div>
 			<hr
 				v-if="!loading"
