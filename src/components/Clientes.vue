@@ -115,12 +115,14 @@ const opcionBusqueda = ref("todos");
 const mostrarFormularioCliente = ref(false);
 const mostrarFormularioSeguimiento = ref(false);
 const mostrarBotonEnviar = ref(false);
+const mostrarBotonEnviarSeguimiento = ref(false);
 const loading = ref(true); // Agregar estado de carga
 
 // Variables que se usan en el formulario
 // CC = Cedula de Ciudadania, TI = Tarjeta de Identidad, CE = Cedula Extranjera, PS = Pasaporte, TE = Tarjeta Estudiantil, Otro = Documento que no este en la lista
 const tipoD = ["CC", "TI", "CE", "PS", "TE", "Otro"];
 const codigoValor = ref([]);
+const documentoNombre = ref([]);
 
 const estadoBuscar = ref("ninguno");
 
@@ -990,7 +992,7 @@ onMounted(() => {
 				label-style="font-size: 1.1em" />
 		</div>
 		<div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true">
-			<section v-for="item in segui" :key="item._id">
+			<section >
 				<q-card class="my-card" flat bordered>
 					<q-card-section>
 						<div class="text-h4" style="text-align: center">
@@ -998,7 +1000,7 @@ onMounted(() => {
 						</div>
 					</q-card-section>
 
-					<q-markup-table>
+					<q-markup-table class="column" v-for="item in segui" :key="item._id">
 						<thead></thead>
 						<tbody>
 							<tr>
@@ -1288,7 +1290,8 @@ hr {
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#formularioCliente {
+#formularioCliente, 
+#formularioSeguimiento {
 	position: absolute;
 	top: 0;
 	width: 100%;
