@@ -294,5 +294,6 @@ export const useStoreClientes = defineStore("Clientes", () => {
 		putClientesSeguimiento,
 		putClientesActivar,
 		putClientesInactivar,
+		loading,
 	};
 });

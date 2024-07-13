@@ -320,6 +320,17 @@ async function listarClientesIngresaron() {
 	}
 }
 
+async function listarClientesSeguimiento(id) {
+	try {
+		const res = await useCliente.getClientesSeguimiento(id);
+		console.log(res.data.clientes.seguimiento);
+		segui.value = res.data.clientes.seguimiento;
+		mostrarSeguimientoCliente.value = true;
+	} catch (error) {
+		console.error("Error al listar el seguimiento:", error);
+	}
+}
+
 //Funcion que se encarga de traer todos los clientes
 async function listarPlanes() {
 	try {
@@ -832,8 +843,6 @@ function cerrarSeguimiento() {
 	mostrarSeguimientoCliente.value = false;
 }
 
-function cerrarFc() {}
-
 function calcularEstadoIMC(imc) {
 	if (imc < 18.5) {
 		return "Bajo peso";
@@ -850,7 +859,6 @@ function calcularEstadoIMC(imc) {
 	}
 }
 
-// const configuracionTabla =
 watch(opcionBusqueda, estadoTabla);
 
 onMounted(() => {
@@ -971,8 +979,11 @@ onMounted(() => {
 				<template v-slot:body-cell-seguimiento="props">
 					<!--Linea añadida-->
 					<q-td :props="props">
-						<q-btn @click="verSeguimiento(props.row.seguimiento)">
+						<q-btn @click="listarClientesSeguimiento(props.row._id)" :loading="useCliente.loading">
 							📋
+							<template v-slot:loading>
+								<q-spinner color="secondary" size="1em" />
+							</template>
 						</q-btn>
 					</q-td>
 				</template>
@@ -993,98 +1004,99 @@ onMounted(() => {
 		</div>
 		<div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true">
 			<section >
-				<q-card class="my-card" flat bordered>
+				<q-card class="my-card column relative-position" flat bordered>
 					<q-card-section>
-						<div class="text-h4" style="text-align: center">
+						<div class="row text-h4" style="text-align: center">
 							Seguimiento
 						</div>
+						<button id="botonCerrarS"
+							@click="cerrarSeguimiento()"
+							class="botonSeguimiento">
+							Cerrar
+						</button>
 					</q-card-section>
 
-					<q-markup-table class="column" v-for="item in segui" :key="item._id">
-						<thead></thead>
-						<tbody>
-							<tr>
-								<td></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td class="text-center">Fecha:</td>
-								<td class="text-center">
-									{{ fechaBonita(item.fecha) }}
-								</td>
-							</tr>
-							<tr>
-								<td class="text-center">Brazo:</td>
-								<td class="text-center">{{ item.brazo }} cm</td>
-							</tr>
-							<tr>
-								<td class="text-center">Cintura:</td>
-								<td class="text-center">
-									{{ item.cintura }} cm
-								</td>
-							</tr>
-							<tr>
-								<td class="text-center">Pierna:</td>
-								<td class="text-center">
-									{{ item.pierna }} cm
-								</td>
-							</tr>
-							<tr>
-								<td class="text-center">Estatura:</td>
-								<td class="text-center">
-									{{ item.estatura }} cm
-								</td>
-							</tr>
-							<tr>
-								<td class="text-center">IMC:</td>
-								<td class="text-center">
-									{{ item.imc.toFixed(2) }}
-								</td>
-							</tr>
-							<tr
-								v-bind:style="{
-									backgroundColor:
-										calcularEstadoIMC(item.imc) ===
-										'Bajo peso'
-											? 'rgb(52, 152, 219)'
-											: calcularEstadoIMC(item.imc) ===
-											  'Peso Normal'
-											? 'rgb(46, 204, 113)'
-											: calcularEstadoIMC(item.imc) ===
-											  'Sobrepeso'
-											? 'rgb(241, 196, 15)'
-											: calcularEstadoIMC(item.imc) ===
-											  'Obesidad I'
-											? 'rgb(230, 126, 34)'
-											: calcularEstadoIMC(item.imc) ===
-											  'Obesidad II'
-											? 'rgb(231, 76, 60)'
-											: calcularEstadoIMC(item.imc) ===
-											  'Obesidad III'
-											? 'rgb(192, 57, 43)'
-											: 'inherit',
-								}">
-								<td class="text-center">Estado:</td>
-								<td class="text-center">
-									{{ calcularEstadoIMC(item.imc) }}
-								</td>
-							</tr>
-							<tr>
-								<td class="text-center">Peso:</td>
-								<td class="text-center">{{ item.peso }} kg</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-							</tr>
-						</tbody>
-					</q-markup-table>
-					<button class="botonSeguimiento">Editar</button>
-					<button
-						@click="cerrarSeguimiento()"
-						class="botonSeguimiento">
-						Cerrar
-					</button>
+					<div class="row">
+						<q-markup-table  v-for="item in segui" :key="item._id">
+							<tbody>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td class="text-center">Fecha:</td>
+									<td class="text-center">
+										{{ fechaBonita(item.fecha) }}
+									</td>
+								</tr>
+								<tr>
+									<td class="text-center">Brazo:</td>
+									<td class="text-center">{{ item.brazo }} cm</td>
+								</tr>
+								<tr>
+									<td class="text-center">Cintura:</td>
+									<td class="text-center">
+										{{ item.cintura }} cm
+									</td>
+								</tr>
+								<tr>
+									<td class="text-center">Pierna:</td>
+									<td class="text-center">
+										{{ item.pierna }} cm
+									</td>
+								</tr>
+								<tr>
+									<td class="text-center">Estatura:</td>
+									<td class="text-center">
+										{{ item.estatura }} cm
+									</td>
+								</tr>
+								<tr>
+									<td class="text-center">IMC:</td>
+									<td class="text-center">
+										{{ item.imc }}
+									</td>
+								</tr>
+								<tr
+									v-bind:style="{
+										backgroundColor:
+											calcularEstadoIMC(item.imc) ===
+											'Bajo peso'
+												? 'rgb(52, 152, 219)'
+												: calcularEstadoIMC(item.imc) ===
+												  'Peso Normal'
+												? 'rgb(46, 204, 113)'
+												: calcularEstadoIMC(item.imc) ===
+												  'Sobrepeso'
+												? 'rgb(241, 196, 15)'
+												: calcularEstadoIMC(item.imc) ===
+												  'Obesidad I'
+												? 'rgb(230, 126, 34)'
+												: calcularEstadoIMC(item.imc) ===
+												  'Obesidad II'
+												? 'rgb(231, 76, 60)'
+												: calcularEstadoIMC(item.imc) ===
+												  'Obesidad III'
+												? 'rgb(192, 57, 43)'
+												: 'inherit',
+									}">
+									<td class="text-center">Estado:</td>
+									<td class="text-center">
+										{{ calcularEstadoIMC(item.imc) }}
+									</td>
+								</tr>
+								<tr>
+									<td class="text-center">Peso:</td>
+									<td class="text-center">{{ item.peso }} kg</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+							<button class="botonSeguimiento">Editar</button>
+						</q-markup-table>
+					</div>
 				</q-card>
 			</section>
 		</div>
@@ -1246,6 +1258,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
+#botonCerrarS {
+	position: absolute;
+	top: -30px;
+	right: 0;
+}
+
 hr {
 	height: 2px;
 }
