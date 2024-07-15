@@ -126,10 +126,6 @@ function validarDatos() {
 							<q-spinner color="secondary" size="1em" />
 						</template>
 					</q-btn>
-					<div class="remember-me">
-						<input type="checkbox" id="remember" />
-						<label for="remember">Recordarme</label>
-					</div>
 					<div class="forgot-password">
 						<a href="/#/password">¿Olvidaste la contraseña?</a>
 					</div>

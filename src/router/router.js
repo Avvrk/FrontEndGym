@@ -1,5 +1,4 @@
 import { createWebHashHistory, createRouter } from "vue-router";
-
 import Login from "../components/Login.vue";
 import Main from "../components/Main.vue";
 import Home from "../components/Home.vue";
@@ -11,8 +10,9 @@ import Mantenimiento from "../components/Mantenimiento.vue";
 import Usuario from "../components/Usuarios.vue";
 import Maquina from "../components/Maquinas.vue";
 import Pago from "../components/Pagos.vue";
-import password from "../components/forgot-password.vue";
+import ForgotPassword from "../components/forgot-password.vue";
 import Plan from "../components/Planes.vue";
+import ResetPassword from "../components/Reset-password.vue";
 import Venta from "../components/Ventas.vue";
 import { useStoreUsuarios } from "../stores/usuarios.js";
 
@@ -57,7 +57,8 @@ const routes = [
             { path: "ventas", component: Venta, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
         ],
     },
-    { path: "/password", component: password },
+    { path: "/password", component: ForgotPassword },
+    { path: "/reset-password", component: ResetPassword },
 ];
 
 export const router = createRouter({
