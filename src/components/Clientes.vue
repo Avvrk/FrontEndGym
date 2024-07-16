@@ -407,8 +407,10 @@ async function registrar() {
 async function registrarSeguimiento() {
     if (await validarDatosSeguimiento()) {
         try {
-            const a = estaturaSeguimiento / 100;
-            let imcCalculado = pesoSeguimiento / (a * a);
+            const a = estaturaSeguimiento.value / 100;
+            let imcCalculado = pesoSeguimiento.value / (a * a);
+
+            console.log(imcCalculado);
 
             const info = {
                 fecha: fechaSeguimiento.value,
@@ -1006,7 +1008,7 @@ onMounted(() => {
         </div>
         <div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true">
             <section>
-                <div class="row text-h4" style="text-align: center">
+                <div class="row text-h4" style="text-align: center; margin: 15px">
                     Seguimiento
                 </div>
 
@@ -1051,7 +1053,7 @@ onMounted(() => {
                             <tr>
                                 <td class="text-center">IMC:</td>
                                 <td class="text-center">
-                                    {{ item.imc }}
+                                    {{ item.imc.toFixed(2) }}
                                 </td>
                             </tr>
                             <tr
@@ -1252,27 +1254,31 @@ onMounted(() => {
 <style scoped>
 #botonCerrarS {
     position: absolute;
-    top: -30px;
+    top: 0;
     right: 0;
+}
+
+td {
+    text-align: left;
 }
 
 hr {
     height: 2px;
 }
 
-#seguimientoCliente {
-    width: 100%;
-    height: 100vh;
+#seguimientoCliente section {
+    width: 80%;
     position: absolute;
-    box-sizing: inherit;
-    top: 0;
-    background-color: rgba(8, 8, 8, 0.305);
-    font-size: 15px;
+    top: 6rem;
+    left: 50%;
+    transform: translate(-50% );
+    padding-bottom: 35px;
+    background-color: #e7e7e7;
+    border-radius: 6;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 0;
-    z-index: 1;
 }
 
 .botonSeguimiento {
@@ -1301,7 +1307,8 @@ hr {
 }
 
 #formularioCliente,
-#formularioSeguimiento {
+#formularioSeguimiento,
+#seguimientoCliente {
     position: absolute;
     top: 0;
     width: 100%;
@@ -1310,6 +1317,7 @@ hr {
     justify-content: center;
     align-items: center;
     border: 0;
+    overflow: auto;
 }
 
 #botonF {
@@ -1389,5 +1397,33 @@ input[type="submit"]:hover {
 
 .q-btn[aria-label="✏️"] {
     color: #0000ff;
+}
+
+@media (max-width: 1550px) {
+    #formularioCliente,
+    #formularioSeguimiento {
+        height: auto;
+        padding: 50px;
+        box-sizing: border-box;
+        top: 50px; /* Ajusta la posición para asegurar visibilidad */
+    }
+
+    .q-form {
+        width: 100%;
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 768px) {
+    #formularioCliente,
+    #formularioSeguimiento {
+        width: 95%;
+        padding: 10px;
+        top: 10px; /* Asegura que se vea bien en pantallas pequeñas */
+    }
+
+    .q-form {
+        max-width: 100%;
+    }
 }
 </style>
