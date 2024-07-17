@@ -131,7 +131,7 @@ export const useStoreUsuarios = defineStore(
 				this.loading = true;
 				try {
 					const res = await axios.put(
-						`${this.url}/usuarios/contrasenia`,
+						`${this.url}/usuarios/reset/password`,
 						{email},
 					);
 					console.log(res);
