@@ -3,6 +3,7 @@
 	import { useRouter } from 'vue-router';
 	import { useQuasar } from 'quasar';
 	import { useStoreUsuarios } from '../stores/usuarios';
+	import axios from 'axios';
 
 	const $q = useQuasar();
 	const router = useRouter();
@@ -11,29 +12,40 @@
 	let email = ref('');
 
 	async function solicitarRestablecimiento() {
-		if (!email.value.trim()) {
-			$q.notify({
-				type: 'negative',
-				message: 'El correo no puede estar vacío',
-				position: 'bottom-right',
-			});
-			return;
-		}
+		try {
+			if (email.value === '') {
+				$q.notify({
+					type: 'negative',
+					message: 'El correo no puede estar vacío',
+					position: 'bottom-right',
+				});
+				return;
+			}
 
-		const res = await useUsuario.solicitarRestablecimiento(email.value);
-		if (res.code === 'ERR_BAD_REQUEST') {
+			const res = await useUsuario.putUsuariosPassword(email);
+
+			if (res.status == 200) {
+				$q.notify({
+					type: 'positive',
+					message: 'Correo de restablecimiento enviado',
+					position: 'bottom-right',
+				});
+				router.push('/');
+				// vifRecontrasena.value = false;
+			} else {
+				$q.notify({
+					type: 'negative',
+					message: 'Correo no encontrado',
+					position: 'bottom-right',
+				});
+			}
+		} catch (error) {
 			$q.notify({
 				type: 'negative',
-				message: 'Correo no encontrado',
+				message: 'Error en el servidor',
 				position: 'bottom-right',
 			});
-		} else {
-			$q.notify({
-				type: 'positive',
-				message: 'Correo de restablecimiento enviado',
-				position: 'bottom-right',
-			});
-			router.push('/login');
+			console.log(error);
 		}
 	}
 </script>

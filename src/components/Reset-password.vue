@@ -1,61 +1,88 @@
 					<script setup>
-					import { ref } from 'vue';
+					import { ref, computed } from 'vue';
 					import { useRoute, useRouter } from 'vue-router';
 					import { useQuasar } from 'quasar';
 					import { useStoreUsuarios } from '../stores/usuarios';
-					
+
+					let nuevaContrasenia = ref('');
+					let confirmarContrasenia = ref('');
 					const $q = useQuasar();
 					const router = useRouter();
 					const route = useRoute();
 					const useUsuario = useStoreUsuarios();
-					
-					let nuevaContrasenia = ref('');
-					let confirmarContrasenia = ref('');
-					
+					const token = ref(route.query.token || '');
+					const _id = ref('');
+
+
 					const passwordFieldType = ref('password');
-					
+
 					function togglePasswordVisibility() {
 						passwordFieldType.value =
 							passwordFieldType.value === 'password' ? 'text' : 'password';
 					}
-					
-					async function restablecerContrasenia() {
-						if (!nuevaContrasenia.value.trim() || !confirmarContrasenia.value.trim()) {
+
+					const restablecerContrasenia = async () => {
+						try {
+							if (!nuevaContrasenia.value.trim() || !confirmarContrasenia.value.trim()) {
+								$q.notify({
+									type: 'negative',
+									message: 'Llenar todos los campos',
+									position: 'bottom-right',
+								});
+								return;
+							}
+
+							if (nuevaContrasenia.value !== confirmarContrasenia.value) {
+								$q.notify({
+									type: 'negative',
+									message: 'Las contraseñas no coinciden',
+									position: 'bottom-right',
+								});
+								return;
+							}
+							if (!token.value) {
+								$q.notify({
+									type: 'negative',
+									message: 'Token no válido',
+									position: 'bottom-right',
+								});
+								return;
+							}
+
+							const decoded = JSON.parse(atob(token.value.split('.')[1]));
+							_id.value = decoded.id;
+
+							const data = {
+								password: nuevaContrasenia.value,
+							};
+
+							const response = await useStoreUsuarios().putUsuariosPassword(_id.value, data);
+
+							if (response.status === 200) {
+								$q.notify({
+									type: 'negative',
+									message: 'Contraseña restablecida exitosamente',
+									position: 'bottom-right',
+								});
+								router.push('/')
+							} else {
+								$q.notify({
+									type: 'negative',
+									message: 'Error al restablecer la contraseña.',
+									position: 'bottom-right',
+								});
+							}
+						}
+						catch (error) {
 							$q.notify({
 								type: 'negative',
-								message: 'Llenar todos los campos',
+								message: 'Error en el servidor.',
 								position: 'bottom-right',
 							});
-							return;
+							console.log(error)
 						}
-					
-						if (nuevaContrasenia.value !== confirmarContrasenia.value) {
-							$q.notify({
-								type: 'negative',
-								message: 'Las contraseñas no coinciden',
-								position: 'bottom-right',
-							});
-							return;
-						}
-					
-						const token = route.query.token;
-						const res = await useUsuario.restablecerContrasenia(token, nuevaContrasenia.value);
-						if (res.code === 'ERR_BAD_REQUEST') {
-							$q.notify({
-								type: 'negative',
-								message: 'Error al restablecer la contraseña',
-								position: 'bottom-right',
-							});
-						} else {
-							$q.notify({
-								type: 'positive',
-								message: 'Contraseña restablecida con éxito',
-								position: 'bottom-right',
-							});
-							router.push('/login');
-						}
-					}
-					</script>
+					};
+</script>
 <template>
 	<div class="login-container">
 		<div class="login-card">
@@ -65,33 +92,20 @@
 			</div>
 			<form @submit.prevent="restablecerContrasenia">
 				<div class="input-field">
-					<input
-						:type="passwordFieldType"
-						class="input"
-						placeholder="Nueva contraseña"
+					<input :type="passwordFieldType" class="input" placeholder="Nueva contraseña"
 						v-model="nuevaContrasenia" />
 					<button type="button" @click="togglePasswordVisibility">
-						<q-icon
-							:name="passwordFieldType === 'password' ? 'visibility_off' : 'visibility'"
-						/>
+						<q-icon :name="passwordFieldType === 'password' ? 'visibility_off' : 'visibility'" />
 					</button>
 				</div>
 				<div class="input-field">
-					<input
-						:type="passwordFieldType"
-						class="input"
-						placeholder="Confirmar contraseña"
+					<input :type="passwordFieldType" class="input" placeholder="Confirmar contraseña"
 						v-model="confirmarContrasenia" />
 					<button type="button" @click="togglePasswordVisibility">
-						<q-icon
-							:name="passwordFieldType === 'password' ? 'visibility_off' : 'visibility'"
-						/>
+						<q-icon :name="passwordFieldType === 'password' ? 'visibility_off' : 'visibility'" />
 					</button>
 				</div>
-				<q-btn
-					class="submit bg-primary"
-					type="submit"
-					:loading="useUsuario.loading">
+				<q-btn class="submit bg-primary" type="submit" :loading="useUsuario.loading">
 					Restablecer
 					<template v-slot:loading>
 						<q-spinner color="secondary" size="1em" />

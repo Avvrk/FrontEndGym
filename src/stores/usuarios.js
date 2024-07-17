@@ -127,6 +127,27 @@ export const useStoreUsuarios = defineStore(
 					this.loading = false;
 				}
 			},
+			async putUsuariosPassword(email) {
+				this.loading = true;
+				try {
+					const res = await axios.put(
+						`${this.url}/usuarios/reset-password/${email}`,
+						{},
+						{
+							headers: {
+								token: this.token,
+							},
+						}
+					);
+					console.log(res);
+					return res;
+				} catch (error) {
+					console.error(error);
+					return error;
+				} finally {
+					this.loading = false;
+				}
+			},
 			async putUsuariosActivar(id) {
 				this.loading = true;
 				try {
