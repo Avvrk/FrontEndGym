@@ -960,21 +960,13 @@ onMounted(() => {
                         </q-btn>
                         <q-btn
                             v-if="props.row.estado == 1"
-                            @click="editarEstado(props.row)"
-                            :loading="useCliente.loading">
+                            @click="editarEstado(props.row)">
                             ❌
-                            <template v-slot:loading>
-                                <q-spinner color="secondary" size="1em" />
-                            </template>
                         </q-btn>
                         <q-btn
                             v-else
-                            @click="editarEstado(props.row)"
-                            :loading="useCliente.loading">
+                            @click="editarEstado(props.row)">
                             ✅
-                            <template v-slot:loading>
-                                <q-spinner color="secondary" size="1em" />
-                            </template>
                         </q-btn>
                     </q-td>
                 </template>
@@ -982,12 +974,8 @@ onMounted(() => {
                     <!--Linea añadida-->
                     <q-td :props="props">
                         <q-btn
-                            @click="listarClientesSeguimiento(props.row._id)"
-                            :loading="useCliente.loading">
+                            @click="listarClientesSeguimiento(props.row._id)">
                             📋
-                            <template v-slot:loading>
-                                <q-spinner color="secondary" size="1em" />
-                            </template>
                         </q-btn>
                     </q-td>
                 </template>
