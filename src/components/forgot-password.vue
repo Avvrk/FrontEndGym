@@ -1,12 +1,9 @@
 	<script setup>
 	import { ref } from 'vue';
-	import { useRouter } from 'vue-router';
 	import { useQuasar } from 'quasar';
 	import { useStoreUsuarios } from '../stores/usuarios';
-	import axios from 'axios';
 
 	const $q = useQuasar();
-	const router = useRouter();
 	const useUsuario = useStoreUsuarios();
 
 	let email = ref('');
