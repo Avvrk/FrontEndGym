@@ -55,7 +55,7 @@
 			</div>
 			<form @submit.prevent="solicitarRestablecimiento">
 				<div class="input-field">
-					<input type="email" class="input" placeholder="Correo electrónico" v-model="email" />
+					<input type="text" class="input" placeholder="Correo electrónico" v-model="email" />
 				</div>
 				<q-btn class="submit bg-primary" type="submit" :loading="useUsuario.loading">
 					Enviar Código
