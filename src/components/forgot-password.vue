@@ -1,51 +1,57 @@
-	<script setup>
-	import { ref } from 'vue';
-	import { useQuasar } from 'quasar';
-	import { useStoreUsuarios } from '../stores/usuarios';
+			<script setup>
+			import { ref } from 'vue';
+			import { useQuasar } from 'quasar';
+			import { useStoreUsuarios } from '../stores/usuarios';
+			import { useRouter } from 'vue-router';
 
-	const $q = useQuasar();
-	const useUsuario = useStoreUsuarios();
+			const $q = useQuasar();
+			const useUsuario = useStoreUsuarios();
+			const router = useRouter();
 
-	let email = ref('');
+			let email = ref('');
 
-	async function solicitarRestablecimiento() {
-		try {
-			if (email.value === '') {
-				$q.notify({
-					type: 'negative',
-					message: 'El correo no puede estar vacío',
-					position: 'bottom-right',
-				});
-				return;
+			async function solicitarRestablecimiento() {
+				try {
+					if (email.value === '') {
+						$q.notify({
+							type: 'negative',
+							message: 'El correo no puede estar vacío',
+							position: 'bottom-right',
+						});
+						return;
+					}
+
+					const res = await useUsuario.putUsuariosPassword(email);
+
+					if (res.status == 200) {
+						$q.notify({
+							type: 'positive',
+							message: 'Correo de restablecimiento enviado',
+							position: 'bottom-right',
+						});
+						router.push('/');
+					} else {
+						$q.notify({
+							type: 'negative',
+							message: 'Correo no encontrado',
+							position: 'bottom-right',
+						});
+					}
+				} catch (error) {
+					$q.notify({
+						type: 'negative',
+						message: 'Error en el servidor',
+						position: 'bottom-right',
+					});
+					console.log(error);
+				}
 			}
 
-			const res = await useUsuario.putUsuariosPassword(email);
-
-			if (res.status == 200) {
-				$q.notify({
-					type: 'positive',
-					message: 'Correo de restablecimiento enviado',
-					position: 'bottom-right',
-				});
+			function regresar() {
 				router.push('/');
-				// vifRecontrasena.value = false;
-			} else {
-				$q.notify({
-					type: 'negative',
-					message: 'Correo no encontrado',
-					position: 'bottom-right',
-				});
 			}
-		} catch (error) {
-			$q.notify({
-				type: 'negative',
-				message: 'Error en el servidor',
-				position: 'bottom-right',
-			});
-			console.log(error);
-		}
-	}
 </script>
+
 <template>
 	<div class="login-container">
 		<div class="login-card">
@@ -59,6 +65,14 @@
 				</div>
 				<q-btn class="submit bg-primary" type="submit" :loading="useUsuario.loading">
 					Enviar Código
+					<template v-slot:loading>
+						<q-spinner color="secondary" size="1em" />
+					</template>
+				</q-btn>
+				<br>
+				<br>
+				<q-btn class="submit bg-primary" :loading="useUsuario.loading" @click="regresar()">
+					Regresar
 					<template v-slot:loading>
 						<q-spinner color="secondary" size="1em" />
 					</template>
