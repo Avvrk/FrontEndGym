@@ -97,7 +97,7 @@ let residenciaCliente = ref("");
 let telefonoCliente = ref("");
 let objetivoCliente = ref("");
 let planCliente = ref("");
-/* let observacionesCliente = ref(""); */
+let observacionesCliente = ref("");
 
 // Variables que contiene los datos ingresados en el formulario seguimiento
 let fechaSeguimiento = ref("");
@@ -135,7 +135,7 @@ const botonEstado = ref("ninguno");
 
 const organizarPlanes = () => {
     codigoValor.value = planesTodo.value.map((element) => ({
-        label: `${element.codigo} / ${element.valor}`,
+        label: `${element.descripcion} / ${element.valor}`,
         valor: `${element._id}`,
         nombre: `${element.descripcion}`,
     }));
@@ -380,7 +380,7 @@ async function registrar() {
                 objetivo: objetivoCliente.value,
                 plan: planCliente.value.nombre,
                 _idPlan: planCliente.value.valor,
-                /* observaciones: observacionesCliente.value, */
+                observaciones: observacionesCliente.value,
             };
             const res = await useCliente.postClientes(info);
             if (res.status !== 200) {
@@ -470,7 +470,7 @@ async function editar() {
                 objetivo: objetivoCliente.value,
                 plan: planCliente.value.nombre,
                 _idPlan: planCliente.value.valor,
-                /*                 observaciones: observacionesCliente.value, */
+                observaciones: observacionesCliente.value,
             };
             const res = await useCliente.putClientes(datos.value._id, info);
             if (res.status !== 200) {
@@ -557,6 +557,8 @@ async function validarDatos() {
     let hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
+    console.log(nombreCliente.value, tipoDocumento.value, documentoCliente.value, residenciaCliente.value, telefonoCliente.value, objetivoCliente.value, planCliente.value);
+
     if (
         !nombreCliente.value.trim() &&
         !tipoDocumento.value &&
@@ -564,7 +566,8 @@ async function validarDatos() {
         !residenciaCliente.value.trim() &&
         !telefonoCliente.value.trim() &&
         !objetivoCliente.value.trim() &&
-        !planCliente.value /*  && !objetivoCliente */
+        !planCliente.value &&
+        !observacionesCliente.value.trim()/*  && !objetivoCliente */
     ) {
         $q.notify({
             type: "negative",
@@ -610,7 +613,7 @@ async function validarDatos() {
         if (!ingresoCliente.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "La edad está vacía",
+                message: "El ingreso está vacío",
                 position: "bottom-right",
             });
             verificado = false;
@@ -671,6 +674,14 @@ async function validarDatos() {
             $q.notify({
                 type: "negative",
                 message: "El objetivo está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!objetivoCliente.value.trim()) {
+            $q.notify({
+                type: "negative",
+                message: "La observacion está vacía",
                 position: "bottom-right",
             });
             verificado = false;
@@ -782,15 +793,18 @@ function editarVistaFondo(boolean, extra, boton) {
             (element) => element == datos.value.tipoDocumento
         );
 
+        console.log(datos.value.documento);
+
         nombreCliente.value = datos.value.nombre;
         tipoDocumento.value = tipoDoc;
-        documentoCliente.value = datos.value.documento;
+        documentoCliente.value = String(datos.value.documento);
         nacimientoCliente.value = formatoDatefn;
         ingresoCliente.value = formatoDatefi;
         residenciaCliente.value = datos.value.direccion;
-        telefonoCliente.value = datos.value.telefono;
+        telefonoCliente.value = String(datos.value.telefono);
         objetivoCliente.value = datos.value.objetivo;
         planCliente.value = plan;
+        observacionesCliente.value = datos.value.observaciones;
     } else {
         nombreCliente.value = "";
         tipoDocumento.value = "";
@@ -801,10 +815,10 @@ function editarVistaFondo(boolean, extra, boton) {
         telefonoCliente.value = "";
         objetivoCliente.value = "";
         planCliente.value = "";
+        observacionesCliente.value = ""
     }
 
     mostrarBotonEnviar.value = boton;
-    console.log(mostrarBotonEnviar.value);
     mostrarFormularioCliente.value = boolean;
 }
 
@@ -1127,6 +1141,11 @@ onMounted(() => {
                     type="text"
                     label="Objetivo"
                     v-model="objetivoCliente" />
+                <q-input
+                    standout="bg-green text-white"
+                    type="text"
+                    label="Observaciones"
+                    v-model="observacionesCliente" />
                 <!-- <q-input standout="bg-green text-white" type="text" label="Observaciones" v-model="observacionesCliente" /> -->
                 <q-select
                     standout="bg-green text-white"

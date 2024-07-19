@@ -118,7 +118,9 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const getClientesCumpleanios = async (fecha) => {
 		loading.value = true;
+		console.log("holaaaaaaaaaaaaaaaaaaaaa");
 		try {
+			console.log("holaaaaaaaaaaaaaaaaaaaaa");
 			const res = await axios.get(
 				`${url}/clientes/cumpleanios/${fecha}`,
 				{
