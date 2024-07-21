@@ -141,7 +141,7 @@ watch(planPago, valorP);
 
 const organizarPlanes = () => {
 	codigoValor.value = planesTodo.value.map((element) => ({
-		label: `${element.codigo} / ${element.valor}`,
+		label: `${element.descripcion} / ${element.valor}`,
 		valor: `${element._id}`,
 		nombre: `${element.descripcion}`,
 	}));

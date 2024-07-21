@@ -105,7 +105,7 @@ watch(opcionBusqueda, estadoTabla);
 
 const orgranizarInvetario = () => {
     codigoValor.value = inventarioTodo.value.map((element) => ({
-        label: `${element.codigo} / ${element.valor}`,
+        label: `${element.descripcion} / ${element.valor}`,
         valor: `${element._id}`,
     }));
     return codigoValor.value;

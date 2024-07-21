@@ -89,7 +89,7 @@ const fecha2Abuscar = ref("");
 
 const organizarMaquinas = () => {
 	codigoSede.value = maquinasTodo.value.map((element) => ({
-		label: `${element.codigo} / ${element.sede}`,
+		label: `${element.descripcion} / ${element.sede}`,
 		valor: `${element._id}`,
 		nombre: `${element.codigo}`,
 	}));

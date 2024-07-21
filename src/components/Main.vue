@@ -7,9 +7,9 @@
 				<q-toolbar-title>
 					<q-avatar>
 						<img
-							src="../img/logo1.jpg" />
+							src="../img/logo.png" />
 					</q-avatar>
-					Forza Gym
+					FORZA GYM
 				</q-toolbar-title>
                 <q-item clickable tag="router-link" to="/" @click="cerrar()">
                     <q-item-section>
