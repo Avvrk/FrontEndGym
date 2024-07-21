@@ -1,171 +1,167 @@
-<template>
-	<q-layout view="hHh lpR fFf">
-		<q-header class="bg-primary text-white">
-			<q-toolbar>
-				<q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-
-				<q-toolbar-title>
-					<q-avatar>
-						<img
-							src="../img/logo.png" />
-					</q-avatar>
-					FORZA GYM
-				</q-toolbar-title>
-                <q-item clickable tag="router-link" to="/" @click="cerrar()">
-                    <q-item-section>
-                        <q-item-label>Cerrar Sesión</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="login" />
-                    </q-item-section>
-                </q-item>
-				<!-- <q-btn dense flat round icon="menu" @click="toggleRightDrawer" /> -->
-			</q-toolbar>
-		</q-header>
-
-		<q-drawer v-model="leftDrawerOpen" side="left" overlay>
-            <q-list>
-                <q-item clickable tag="router-link" to="/main/hogar">
-                    <q-item-section>
-                        <q-item-label>Home</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="home" />
-                    </q-item-section>
-                </q-item>
+                <script setup>
+                import { ref } from "vue";
+                import { useStoreUsuarios } from "../stores/usuarios.js";
                 
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista' || rol == 'instructor'" tag="router-link" to="/main/clientes">
-                    <q-item-section>
-                        <q-item-label>Clientes</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="groups" />
-                    </q-item-section>
-                </q-item>
+                const useUsuarios = useStoreUsuarios();
+                const rol = useUsuarios.user.rol;
+                const leftDrawerOpen = ref(false);
+                const rightDrawerOpen = ref(false);
 
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/ingresos">
-                    <q-item-section>
-                        <q-item-label>Ingresos</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="how_to_reg" />
-                    </q-item-section>
-                </q-item>
+                const ROLES = {
+                                ADMINISTRADOR: 'administrador',
+                                RECEPCIONISTA: 'recepcionista',
+                                INSTRUCTOR: 'instructor'
+                            };
+                
+                function toggleLeftDrawer() {
+                    leftDrawerOpen.value = !leftDrawerOpen.value;
+                }
+                
+                function toggleRightDrawer() {
+                    rightDrawerOpen.value = !rightDrawerOpen.value;
+                }
+                
+                function cerrar(){
+                    const hola = useUsuarios.cerrarSecion();
+                }
 
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/inventario">
-                    <q-item-section>
-                        <q-item-label>Inventario</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="inventory_2" />
-                    </q-item-section>
-                </q-item>
+                function hasAccess(...roles) { return roles.includes(rol);}
+                </script>
+<template>
+    <q-layout view="hHh lpR fFf">
+      <q-header class="bg-primary text-white">
+        <q-toolbar>
+          <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+          <q-toolbar-title>
+            <q-avatar>
+              <img src="../img/logo.png" />
+            </q-avatar>
+            FORZA GYM
+          </q-toolbar-title>
+          <q-item clickable tag="router-link" to="/" @click="cerrar()">
+            <q-item-section>
+              <q-item-label>Cerrar Sesión</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="login" />
+            </q-item-section>
+          </q-item>
+        </q-toolbar>
+      </q-header>
+  
+      <q-drawer v-model="leftDrawerOpen" side="left" overlay>
+        <q-list>
+          <q-item clickable tag="router-link" to="/main/hogar">
+            <q-item-section>
+              <q-item-label>Home</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="home" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA, ROLES.INSTRUCTOR)" clickable tag="router-link" to="/main/clientes">
+            <q-item-section>
+              <q-item-label>Clientes</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="groups" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/ingresos">
+            <q-item-section>
+              <q-item-label>Ingresos</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="how_to_reg" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/inventario">
+            <q-item-section>
+              <q-item-label>Inventario</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="inventory_2" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA, ROLES.INSTRUCTOR)" clickable tag="router-link" to="/main/maquinas">
+            <q-item-section>
+              <q-item-label>Máquinas</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="fitness_center" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/mantenimiento">
+            <q-item-section>
+              <q-item-label>Mantenimiento</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="build" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/pagos">
+            <q-item-section>
+              <q-item-label>Pagos</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="credit_card" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA, ROLES.INSTRUCTOR)" clickable tag="router-link" to="/main/planes">
+            <q-item-section>
+              <q-item-label>Planes</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="assignment" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/sedes">
+            <q-item-section>
+              <q-item-label>Sedes</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="apartment" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR)" clickable tag="router-link" to="/main/usuarios">
+            <q-item-section>
+              <q-item-label>Usuarios</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="assignment_ind" />
+            </q-item-section>
+          </q-item>
+  
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/ventas">
+            <q-item-section>
+              <q-item-label>Ventas</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="attach_money" />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-drawer>
+  
+      <q-drawer v-model="rightDrawerOpen" side="right" overlay>
+        <!-- drawer content -->
+      </q-drawer>
+  
+      <q-page-container>
+        <router-view />
+      </q-page-container>
+    </q-layout>
+  </template>
 
-                <!-- <q-item clickable tag="router-link" to="/">
-                    <q-item-section>
-                        <q-item-label>Login</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="login" />
-                    </q-item-section>
-                </q-item> -->
-
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista' || rol == 'instructor'" tag="router-link" to="/main/maquinas">
-                    <q-item-section>
-                        <q-item-label>Máquinas</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="fitness_center" />
-                    </q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/mantenimiento">
-                    <q-item-section>
-                        <q-item-label>Mantenimiento</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="build" />
-                    </q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/pagos">
-                    <q-item-section>
-                        <q-item-label>Pagos</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="credit_card" />
-                    </q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista' || rol == 'instructor'" tag="router-link" to="/main/planes">
-                    <q-item-section>
-                        <q-item-label>Planes</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="assignment" />
-                    </q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/sedes">
-                    <q-item-section>
-                        <q-item-label>Sedes</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="apartment" />
-                    </q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="rol == 'administrador'" tag="router-link" to="/main/usuarios">
-                    <q-item-section>
-                        <q-item-label>Usuarios</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="assignment_ind" />
-                    </q-item-section>
-                </q-item>
-
-                <q-item clickable v-if="rol == 'administrador' || rol == 'recepcionista'" tag="router-link" to="/main/ventas">
-                    <q-item-section>
-                        <q-item-label>Ventas</q-item-label>
-                    </q-item-section>
-                    <q-item-section avatar>
-                        <q-icon name="attach_money" />
-                    </q-item-section>
-                </q-item>
-            </q-list>
-        </q-drawer>
-
-		<q-drawer v-model="rightDrawerOpen" side="right" overlay>
-			<!-- drawer content -->
-		</q-drawer>
-
-		<q-page-container>
-			<router-view />
-		</q-page-container>
-	</q-layout>
-</template>
-
-<script setup>
-import { ref } from "vue";
-import { useStoreUsuarios } from "../stores/usuarios.js";
-
-const useUsuarios = useStoreUsuarios();
-const rol = useUsuarios.user.rol;
-const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false);
-
-function toggleLeftDrawer() {
-	leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-
-function toggleRightDrawer() {
-	rightDrawerOpen.value = !rightDrawerOpen.value;
-}
-
-function cerrar(){
-    const hola = useUsuarios.cerrarSecion();
-}
-</script>
 
 <style scoped>
 .logo {
