@@ -105,7 +105,7 @@ export default {
         <div class="cards-container">
             <div class="card servicio-1">
                 <i class="fa-solid fa-person-walking"></i>
-                <h4><span class="txtRojo">Clases </span> de Fitness</h4>
+                <h4><span class="txtRojo">Clases </span> Personalizadas</h4>
                 <p>Entrenamientos diseñados para mejorar tu condición física general.</p>
             </div>
             <div class="card servicio-2">
