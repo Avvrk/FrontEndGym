@@ -125,8 +125,15 @@ const buscarMaquina = (id) => {
 };
 
 const fechaBonita = (info) => {
-    const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-    return nuevoFormato;
+	const fecha = new Date(info);
+    
+    // Obtener la parte de la fecha antes de la 'T'
+    const fechaSolo = fecha.toISOString().split('T')[0];
+    
+    // Reemplazar los guiones por barras
+    const fechaFormateada = fechaSolo.replace(/-/g, '/');
+    
+    return fechaFormateada;
 };
 
 function formatoNumerico(numero) {
@@ -221,7 +228,7 @@ async function registrar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				idMaquina: idMaquinaMantenimiento.value,
+				idMaquina: idMaquinaMantenimiento.value.valor,
 				fecha: fechaMantenimiento.value,
 				descripcion: descripcionMantenimiento.value,
 				responsable: responsableMantenimiento.value,
@@ -253,7 +260,7 @@ async function editar() {
 	if (await validarDatos()) {
 		try {
 			const info = {
-				idMaquina: idMaquinaMantenimiento.value,
+				idMaquina: idMaquinaMantenimiento.value.valor,
 				fecha: fechaMantenimiento.value,
 				descripcion: descripcionMantenimiento.value,
 				responsable: responsableMantenimiento.value,
@@ -371,9 +378,9 @@ function editarVistaFondo(boolean, extra, boton) {
 		);
 		idMaquinaMantenimiento.value = maquina;
 		fechaMantenimiento.value = formatoDate;
-		descripcionMantenimiento.value = datos.value.descripcion;
-		responsableMantenimiento.value = datos.value.responsable;
-		precioMantenimiento.value = datos.value.precio;
+		descripcionMantenimiento.value = String(datos.value.descripcion);
+		responsableMantenimiento.value = String(datos.value.responsable);
+		precioMantenimiento.value = String(datos.value.precio);
 	} else {
 		idMaquinaMantenimiento.value = "";
 		fechaMantenimiento.value = "";

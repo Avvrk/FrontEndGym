@@ -121,7 +121,7 @@ async function registrar() {
 				nombre: nombreSede.value,
 				telefono: telefonoSede.value,
 			};
-			const res = await useSede.log(info);
+			const res = await useSede.postSedes(info);
 			if (res.status !== 200) {
 				$q.notify({
 					type: "negative",
@@ -247,6 +247,13 @@ async function validarDatos() {
 				position: "bottom-right",
 			});
 			verificado = false;
+		} else if (isNaN(Number(telefonoSede.value))) {
+			$q.notify({
+				type: "negative",
+				message: "El telefono debe ser un numero",
+				position: "bottom-right",
+			});
+			verificado = false;
 		}
 		if (!codigoSede.value.trim()) {
 			$q.notify({
@@ -270,8 +277,8 @@ function editarVistaFondo(boolean, extra, boton) {
 		ciudadSede.value = datos.value.ciudad;
 		direccionSede.value = datos.value.direccion;
 		horarioSede.value = datos.value.horario;
-		telefonoSede.value = datos.value.telefono;
-		codigoSede.value = datos.value.codigo;
+		telefonoSede.value = String(datos.value.telefono);
+		codigoSede.value = String(datos.value.codigo);
 	} else {
 		ciudadSede.value = "";
 		codigoSede.value = "";

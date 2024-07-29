@@ -53,6 +53,7 @@ let inventarioVentas = ref("");
 let valorUVentas = ref("");
 let fechaVentas = ref("");
 let valorTVentas = ref("");
+let cantidadVentas = ref("");
 
 const datos = ref("");
 
@@ -72,6 +73,15 @@ const botonEstado = ref("ninguno");
 
 const fecha1Abuscar = ref("");
 const fecha2Abuscar = ref("");
+
+const valorP = () => {
+	const buscarValor = inventarioTodo.value.find(item => item._id === inventarioVentas.value.valor)
+    if (buscarValor) {
+        valorUVentas.value = String(buscarValor.valor);
+    }
+}
+
+watch(inventarioVentas, valorP);
 
 const fecC = () => {
 	estadoBuscar.value = "fecha";
@@ -108,19 +118,25 @@ const orgranizarInvetario = () => {
         label: `${element.descripcion} / ${element.valor}`,
         valor: `${element._id}`,
     }));
+    console.log(codigoValor.value);
     return codigoValor.value;
 };
 
 const buscarInvetario = (id) => {
-    console.log(inventarioTodo.value, id);
     const codigoI = inventarioTodo.value.find((element) => element._id == id);
-    console.log(codigoI);
     return codigoI.codigo;
 };
 
 const fechaBonita = (info) => {
-    const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-    return nuevoFormato;
+	const fecha = new Date(info);
+    
+    // Obtener la parte de la fecha antes de la 'T'
+    const fechaSolo = fecha.toISOString().split('T')[0];
+    
+    // Reemplazar los guiones por barras
+    const fechaFormateada = fechaSolo.replace(/-/g, '/');
+    
+    return fechaFormateada;
 };
 
 function formatoNumerico(numero) {
@@ -180,11 +196,13 @@ async function registrar() {
     if (await validarDatos()) {
         try {
             const info = {
-                idInventario: inventarioVentas.value,
+                idInventario: inventarioVentas.value.valor,
                 valorUnitario: valorUVentas.value,
                 fecha: fechaVentas.value,
                 valorTotal: valorTVentas.value,
+                cantidad: cantidadVentas.value,
             };
+            console.log(inventarioVentas.value, inventarioVentas.value.valor);
             const res = await useVentas.postVentas(info);
             if (res.status !== 200) {
                 $q.notify({
@@ -211,10 +229,10 @@ async function editar() {
     if (await validarDatos()) {
         try {
             const info = {
-                codigoProducto: codigo.value,
                 valorUnitario: valorUnitario.value,
                 fecha: fecha.value,
                 valorTotal: valorTotal.value,
+                cantidad: cantidadVentas,
             };
             const res = await useVentas.putVentas(datos.value._id, info);
             if (res.status !== 200) {
@@ -248,7 +266,7 @@ function resetear() {
 async function validarDatos() {
     let verificado = true;
 
-    if (!inventarioVentas.value && !valorUVentas.value.trim() && !fechaVentas.value && !valorTVentas.value.trim()) {
+    if (!inventarioVentas.value && !valorUVentas.value.trim() && !fechaVentas.value && !valorTVentas.value.trim() && !cantidadVentas.value.trim()) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -271,6 +289,13 @@ async function validarDatos() {
                 position: "bottom-right",
             });
             verificado = false;
+        } else if (isNaN(Number(valorUVentas.value))) {
+            $q.notify({
+                type: "negative",
+                message: "El valor unitario debe ser numeros",
+                position: "bottom-right",
+            });
+            verificado = false;
         }
         if (!fechaVentas.value) {
             $q.notify({
@@ -287,6 +312,28 @@ async function validarDatos() {
                 position: "bottom-right",
             });
             verificado = false;
+        } else if (isNaN(Number(valorTVentas.value))) {
+            $q.notify({
+                type: "negative",
+                message: "El valor total debe ser numeros",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (!cantidadVentas.value.trim()) {
+            $q.notify({
+                type: "negative",
+                message: "La cantidad no puede estar vacia",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (isNaN(Number(cantidadVentas.value))) {
+            $q.notify({
+                type: "negative",
+                message: "La cantidad debe ser numeros",
+                position: "bottom-right",
+            });
+            verificado = false;
         }
     }
     return verificado;
@@ -300,14 +347,16 @@ function editarVistaFondo(boolean, extra, boton) {
         const formatoDate = formatoISO.substring(0, 10);
 
         inventarioVentas.value = inventario;
-        valorUVentas.value = datos.value.valorUnitario;
+        valorUVentas.value = String(datos.value.valorUnitario);
         fechaVentas.value = formatoDate;
-        valorTVentas.value = datos.value.valorTotal;
+        valorTVentas.value = String(datos.value.valorTotal);
+        cantidadVentas.value = String(datos.value.cantidad);
     } else {
         inventarioVentas.value = "";
         valorUVentas.value = "";
         fechaVentas.value = "";
         valorTVentas.value = "";
+        cantidadVentas.value = "";
     }
     mostrarBotonEnviar.value = boton;
     mostrarFormularioVenta.value = boolean;
@@ -337,7 +386,20 @@ onMounted(() => {
 				{ label: 'Todos (predeterminado)', value: 'todos' },
 				{ label: 'Por fecha', value: 'fecha' },
 			]" />
-            <q-input v-if="estadoBuscar == 'fecha'" standout="bg-green text-white" type="date" label="Fecha Final" v-model="fecha2Abuscar" style="width: 200px" />
+            <q-input
+					v-if="estadoBuscar == 'fecha'"
+					standout="bg-green text-white"
+					type="date"
+					label="Fecha de Inicio"
+					v-model="fecha1Abuscar"
+					style="width: 200px" />
+				<q-input
+					v-if="estadoBuscar == 'fecha'"
+					standout="bg-green text-white"
+					type="date"
+					label="Fecha Final"
+					v-model="fecha2Abuscar"
+					style="width: 200px" />
             <q-btn v-if="botonBuscar" @click="tipoBoton"> 🔎 </q-btn>
             <q-table v-if="!loading" flat bordered title="Lista de Ventas" :rows="rows" :columns="columns" row-key="id">
                 <template v-slot:body-cell-opciones="props">
@@ -370,9 +432,17 @@ onMounted(() => {
         </div>
         <div id="formularioVentas" v-if="mostrarFormularioVenta == true">
             <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="editarVistaFondo(false, null, true)" class="q-gutter-md">
-                <q-select standout="bg-green text-white" :option="orgranizarInvetario()" option-value="valor" option-label="label" v-model="inventarioVentas" label="Código" />
+                <q-select
+					standout="bg-green text-white"
+					v-model="inventarioVentas"
+					:options="orgranizarInvetario()"
+					option-value="valor"
+					option-label="label"
+					label="Codigo"
+					color="black" />
                 <q-input standout="bg-green text-white" v-model="valorUVentas" label="Valor Unitario" color="black" />
                 <q-input standout="bg-green text-white" v-model="fechaVentas" type="date" label="Fecha" color="black" />
+                <q-input standout="bg-green text-white" v-model="cantidadVentas" label="Cantidad" color="black" />
                 <q-input standout="bg-green text-white" v-model="valorTVentas" label="Valor Total" color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />

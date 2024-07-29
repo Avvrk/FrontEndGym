@@ -91,9 +91,15 @@ const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
 const fechaBonita = (info) => {
-    console.log(info);
-    const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-    return nuevoFormato;
+	const fecha = new Date(info);
+    
+    // Obtener la parte de la fecha antes de la 'T'
+    const fechaSolo = fecha.toISOString().split('T')[0];
+    
+    // Reemplazar los guiones por barras
+    const fechaFormateada = fechaSolo.replace(/-/g, '/');
+    
+    return fechaFormateada;
 };
 
 const organizarSedes = () => {

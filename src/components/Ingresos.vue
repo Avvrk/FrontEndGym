@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useStoreIngresos } from "../stores/ingresos.js";
 import { useStoreSedes } from "../stores/sedes";
 import { useStoreClientes } from "../stores/clientes.js";
 import { useQuasar } from "quasar";
-import { format } from "date-fns";
 
 const $q = useQuasar();
 
@@ -97,9 +96,17 @@ const clienteBuscar = (id) => {
 	return cliente;
 };
 
+// Función para mostrar la fecha de manera bonita
 const fechaBonita = (info) => {
-	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-	return nuevoFormato;
+	const fecha = new Date(info);
+    
+    // Obtener la parte de la fecha antes de la 'T'
+    const fechaSolo = fecha.toISOString().split('T')[0];
+    
+    // Reemplazar los guiones por barras
+    const fechaFormateada = fechaSolo.replace(/-/g, '/');
+    
+    return fechaFormateada;
 };
 
 async function listarIngresos() {

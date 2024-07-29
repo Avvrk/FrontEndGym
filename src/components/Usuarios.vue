@@ -292,11 +292,11 @@ async function validarDatos(indicador) {
 			verificado = false;
 		} else if (
 			isNaN(telefonoUsuario.value) ||
-			telefonoUsuario.value.length < 10
+			telefonoUsuario.value.length < 8
 		) {
 			$q.notify({
 				type: "negative",
-				message: "El teléfono no puede tener menos de 10 caracteres",
+				message: "El teléfono no puede tener menos de 8 caracteres",
 				position: "bottom-right",
 			});
 			verificado = false;
@@ -365,7 +365,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		);
 		nombreUsuario.value = datos.value.nombre;
 		correoUsuario.value = datos.value.email;
-		telefonoUsuario.value = datos.value.telefono;
+		telefonoUsuario.value = String(datos.value.telefono);
 		sedeUsuario.value = sede;
 		rolUsuario.value = datos.value.rol;
 	} else {

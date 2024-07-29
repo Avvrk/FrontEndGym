@@ -41,7 +41,7 @@ export const useStorePagos = defineStore("Pagos", () => {
 
 	const getPagosPlan = async (plan) => {
 		try {
-			const res = await axios.get(`${url}/pagos/plan/${plan}`, {
+			const res = await axios.get(`${url}/pagos/pago/${plan}`, {
 				headers: {
 					token: useUsuarios.token,
 				},

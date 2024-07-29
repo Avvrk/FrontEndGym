@@ -65,7 +65,7 @@ export const useStoreVenta = defineStore("Venta", () => {
 			console.log(res.data);
 			return res;
 		} catch (error) {
-			console.log(r);
+			console.log(error);
 			return error;
 		}
 	};

@@ -133,6 +133,10 @@ const ingresoAbuscar = ref("");
 const botonBuscar = ref(false);
 const botonEstado = ref("ninguno");
 
+const today = new Date();
+const formattedToday = today.toISOString().split('T')[0];
+const maxDate = ref(formattedToday);
+
 const organizarPlanes = () => {
     codigoValor.value = planesTodo.value.map((element) => ({
         label: `${element.descripcion} / ${element.valor}`,
@@ -152,8 +156,15 @@ const organizarClientes = () => {
 };
 
 const fechaBonita = (info) => {
-    const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-    return nuevoFormato;
+	const fecha = new Date(info);
+    
+    // Obtener la parte de la fecha antes de la 'T'
+    const fechaSolo = fecha.toISOString().split('T')[0];
+    
+    // Reemplazar los guiones por barras
+    const fechaFormateada = fechaSolo.replace(/-/g, '/');
+    
+    return fechaFormateada;
 };
 
 const planC = () => {
@@ -551,13 +562,16 @@ function resetear() {
 //Funcion que se encarga de validar los datos que se resgistrarán.
 async function validarDatos() {
     let verificado = true;
-    let ncDate = new Date(nacimientoCliente.value + "T00:00:00");
-    let icDate = new Date(ingresoCliente.value + "T00:00:00");
-
     let hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
+    let nacimientoDate = new Date(nacimientoCliente.value + "T00:00:00");
+    let edad = hoy.getFullYear() - nacimientoDate.getFullYear();
+    let mes = hoy.getMonth() - nacimientoDate.getMonth();
 
-    console.log(nombreCliente.value, tipoDocumento.value, documentoCliente.value, residenciaCliente.value, telefonoCliente.value, objetivoCliente.value, planCliente.value);
+    // Ajuste por si el mes actual es antes del mes de nacimiento
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimientoDate.getDate())) {
+        edad--;
+    }
 
     if (
         !nombreCliente.value.trim() &&
@@ -565,13 +579,15 @@ async function validarDatos() {
         !documentoCliente.value.trim() &&
         !residenciaCliente.value.trim() &&
         !telefonoCliente.value.trim() &&
+        !nacimientoCliente.value &&
+        !ingresoCliente.value &&
         !objetivoCliente.value.trim() &&
         !planCliente.value &&
-        !observacionesCliente.value.trim()/*  && !objetivoCliente */
+        !observacionesCliente.value.trim()
     ) {
         $q.notify({
             type: "negative",
-            message: "LLena todos los campos",
+            message: "Llena todos los campos",
             position: "bottom-right",
         });
         verificado = false;
@@ -610,32 +626,25 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!ingresoCliente.value.trim()) {
+        if (!ingresoCliente.value) {
             $q.notify({
                 type: "negative",
                 message: "El ingreso está vacío",
                 position: "bottom-right",
             });
             verificado = false;
-        } else if (icDate > hoy) {
-            $q.notify({
-                type: "negative",
-                message: "Ingrese una fecha de valida valida",
-                position: "bottom-right",
-            });
-            verificado = false;
         }
-        if (!nacimientoCliente.value.trim()) {
+        if (!nacimientoCliente.value) {
             $q.notify({
                 type: "negative",
-                message: "La edad está vacía",
+                message: "La fecha de nacimiento está vacía",
                 position: "bottom-right",
             });
             verificado = false;
-        } else if (ncDate > hoy) {
+        } else if (edad < 15) {
             $q.notify({
                 type: "negative",
-                message: "Ingrese una fecha de nacimiento valida",
+                message: "La edad mínima para registro es 15 años.",
                 position: "bottom-right",
             });
             verificado = false;
@@ -651,21 +660,21 @@ async function validarDatos() {
         if (!telefonoCliente.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "El telefono está vacía",
+                message: "El teléfono está vacío",
                 position: "bottom-right",
             });
             verificado = false;
         } else if (isNaN(telefonoCliente.value) || telefonoCliente.value < 0) {
             $q.notify({
                 type: "negative",
-                message: "El telefono debe ser un numero valido",
+                message: "El teléfono debe ser un número válido",
                 position: "bottom-right",
             });
             verificado = false;
-        } else if (telefonoCliente.value < 10) {
+        } else if (telefonoCliente.value.length < 8) {
             $q.notify({
                 type: "negative",
-                message: "El telefono debe tener minimo 10 caracteres",
+                message: "El teléfono debe tener mínimo 8 caracteres",
                 position: "bottom-right",
             });
             verificado = false;
@@ -678,10 +687,10 @@ async function validarDatos() {
             });
             verificado = false;
         }
-        if (!objetivoCliente.value.trim()) {
+        if (!observacionesCliente.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "La observacion está vacía",
+                message: "La observación está vacía",
                 position: "bottom-right",
             });
             verificado = false;
@@ -693,15 +702,6 @@ async function validarDatos() {
                 position: "bottom-right",
             });
             verificado = false;
-        } else {
-            const res = await usePlan.getPlanesId(planCliente.value.valor);
-            if (res.status != 200) {
-                $q.notify({
-                    type: "negative",
-                    message: `Hubo un error con el plan con codigo ${planCliente.value.codigo}`,
-                    position: "bottom-right",
-                });
-            }
         }
     }
     return verificado;
@@ -710,6 +710,7 @@ async function validarDatos() {
 async function validarDatosSeguimiento() {
     let verificado = true;
 
+    // Verifica si todos los campos están vacíos
     if (
         !fechaSeguimiento.value &&
         !pesoSeguimiento.value.trim() &&
@@ -725,50 +726,96 @@ async function validarDatosSeguimiento() {
         });
         verificado = false;
     } else {
+        // Validación de fecha
         if (!fechaSeguimiento.value) {
             $q.notify({
                 type: "negative",
-                message: "La fecha esta vacia",
+                message: "La fecha está vacía",
                 position: "bottom-right",
             });
             verificado = false;
         }
+
+        // Validación de peso
         if (!pesoSeguimiento.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "El peso esta vacio",
+                message: "El peso está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (isNaN(Number(pesoSeguimiento.value))) {
+            $q.notify({
+                type: "negative",
+                message: "El peso debe ser un número",
                 position: "bottom-right",
             });
             verificado = false;
         }
+
+        // Validación de brazo
         if (!brazoSeguimiento.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "El brazo esta vacio",
+                message: "El brazo está vacío",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (isNaN(Number(brazoSeguimiento.value))) {
+            $q.notify({
+                type: "negative",
+                message: "El brazo debe ser un número",
                 position: "bottom-right",
             });
             verificado = false;
         }
+
+        // Validación de pierna
         if (!piernaSeguimiento.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "La pierna esta vacio",
+                message: "La pierna está vacía",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (isNaN(Number(piernaSeguimiento.value))) {
+            $q.notify({
+                type: "negative",
+                message: "La pierna debe ser un número",
                 position: "bottom-right",
             });
             verificado = false;
         }
+
+        // Validación de cintura
         if (!cinturaSeguimiento.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "La cintura esta vacia",
+                message: "La cintura está vacía",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (isNaN(Number(cinturaSeguimiento.value))) {
+            $q.notify({
+                type: "negative",
+                message: "La cintura debe ser un número",
                 position: "bottom-right",
             });
             verificado = false;
         }
+
+        // Validación de estatura
         if (!estaturaSeguimiento.value.trim()) {
             $q.notify({
                 type: "negative",
-                message: "La estatura esta vacia",
+                message: "La estatura está vacía",
+                position: "bottom-right",
+            });
+            verificado = false;
+        } else if (isNaN(Number(estaturaSeguimiento.value))) {
+            $q.notify({
+                type: "negative",
+                message: "La estatura debe ser un número",
                 position: "bottom-right",
             });
             verificado = false;
@@ -795,16 +842,16 @@ function editarVistaFondo(boolean, extra, boton) {
 
         console.log(datos.value.documento);
 
-        nombreCliente.value = datos.value.nombre;
+        nombreCliente.value = String(datos.value.nombre);
         tipoDocumento.value = tipoDoc;
         documentoCliente.value = String(datos.value.documento);
         nacimientoCliente.value = formatoDatefn;
         ingresoCliente.value = formatoDatefi;
-        residenciaCliente.value = datos.value.direccion;
+        residenciaCliente.value = String(datos.value.direccion);
         telefonoCliente.value = String(datos.value.telefono);
-        objetivoCliente.value = datos.value.objetivo;
+        objetivoCliente.value = String(datos.value.objetivo);
         planCliente.value = plan;
-        observacionesCliente.value = datos.value.observaciones;
+        observacionesCliente.value = String(datos.value.observaciones);
     } else {
         nombreCliente.value = "";
         tipoDocumento.value = "";
@@ -827,11 +874,11 @@ function editarVistaFondoSeguimiento(boolean, extra, boton) {
     console.log(datosSeguimiento.value);
     if (boton == false && extra != null) {
         fechaSeguimiento.value = "";
-        pesoSeguimiento.value = datosSeguimiento.value.peso;
-        brazoSeguimiento.value = datosSeguimiento.value.brazo;
-        piernaSeguimiento.value = datosSeguimiento.value.pierna;
-        cinturaSeguimiento.value = datosSeguimiento.value.cintura;
-        estaturaSeguimiento.value = datosSeguimiento.value.estatura;
+        pesoSeguimiento.value = String(datosSeguimiento.value.peso);
+        brazoSeguimiento.value = String(datosSeguimiento.value.brazo);
+        piernaSeguimiento.value = String(datosSeguimiento.value.pierna);
+        cinturaSeguimiento.value = String(datosSeguimiento.value.cintura);
+        estaturaSeguimiento.value = String(datosSeguimiento.value.estatura);
     } else {
         fechaSeguimiento.value = "";
         pesoSeguimiento.value = "";
@@ -1120,12 +1167,14 @@ onMounted(() => {
                     standout="bg-green text-white"
                     type="date"
                     label="Fecha de ingreso"
-                    v-model="ingresoCliente" />
+                    v-model="ingresoCliente"
+                    :max="maxDate" />
                 <q-input
                     standout="bg-green text-white"
                     type="date"
                     label="Fecha de Nacimiento"
-                    v-model="nacimientoCliente" />
+                    v-model="nacimientoCliente"
+                    :max="maxDate" />
                 <q-input
                     standout="bg-green text-white"
                     type="text"

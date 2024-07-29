@@ -134,7 +134,9 @@ watch(opcionBusqueda, estadoTabla);
 
 const valorP = () => {
 	const buscarValor = planesTodo.value.find(item => item._id === planPago.value.valor)
-	valorPago.value = buscarValor.valor;
+	if (buscarValor) {
+		valorPago.value = String(buscarValor.valor);
+	}
 }
 
 watch(planPago, valorP);
@@ -173,8 +175,15 @@ const buscarNombre = (idCliente) => {
 };
 
 const fechaBonita = (info) => {
-	const nuevoFormato = format(new Date(info), "dd/MM/yyyy");
-	return nuevoFormato;
+	const fecha = new Date(info);
+    
+    // Obtener la parte de la fecha antes de la 'T'
+    const fechaSolo = fecha.toISOString().split('T')[0];
+    
+    // Reemplazar los guiones por barras
+    const fechaFormateada = fechaSolo.replace(/-/g, '/');
+    
+    return fechaFormateada;
 };
 
 function formatoNumerico(numero) {
@@ -258,6 +267,7 @@ async function listarPagosInactivos() {
 async function listarPagosPlan() {
 	try {
 		const res = await usePago.getPagosPlan(planAbuscar.value.valor);
+		console.log(res.data.pagos);
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.error("Error al listar los pagos por plan:", error);

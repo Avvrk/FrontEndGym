@@ -258,11 +258,25 @@ async function validarDatos() {
                 position: "bottom-right",
             });
             verificado = false;
+        } else if (isNaN(Number(valorProducto.value))) {
+            $q.notify({
+                type: "negative",
+                message: "El valor debe ser un numero",
+                position: "bottom-right",
+            });
+            verificado = false;
         }
         if (!cantidadProducto.value.trim()) {
             $q.notify({
                 type: "negative",
                 message: "La cantidad no puede estar vacia",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }else if (isNaN(Number(cantidadProducto.value))) {
+            $q.notify({
+                type: "negative",
+                message: "La cantidad debe ser un numero",
                 position: "bottom-right",
             });
             verificado = false;
@@ -274,10 +288,10 @@ async function validarDatos() {
 function editarVistaFondo(boolean, extra, boton) {
     datos.value = extra;
     if (boton == false && extra != null) {
-        codigoProducto.value = datos.value.codigo;
-        descripcionProducto.value = datos.value.descripcion;
-        valorProducto.value = datos.value.valor;
-        cantidadProducto.value = datos.value.cantidad;
+        codigoProducto.value = String(datos.value.codigo);
+        descripcionProducto.value = String(datos.value.descripcion);
+        valorProducto.value = String(datos.value.valor);
+        cantidadProducto.value = String(datos.value.cantidad);
     } else {
         codigoProducto.value = "";
         descripcionProducto.value = "";

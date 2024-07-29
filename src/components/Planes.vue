@@ -292,8 +292,8 @@ function editarVistaFondo(boolean, extra, boton) {
 	if (boton == false && extra != null) {
 		codigoPlanes.value = datos.value.codigo;
 		descripcionPlanes.value = datos.value.descripcion;
-		valorPlanes.value = datos.value.valor;
-		diasPlanes.value = datos.value.dias;
+		valorPlanes.value = String(datos.value.valor);
+		diasPlanes.value = String(datos.value.dias);
 	} else {
 		codigoPlanes.value = "";
 		descripcionPlanes.value = "";
