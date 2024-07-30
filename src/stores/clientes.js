@@ -7,6 +7,10 @@ export const useStoreClientes = defineStore("Clientes", () => {
 	const useUsuario = useStoreUsuarios();
 	const url = "https://avvrk-vyktor23-backendgym.onrender.com";
 	const loading = ref(false);
+	const loadingA = ref(false);
+	const loadingI = ref(false);
+	const loadingS = ref(false);
+	const loadingP = ref(false);
 
 	const getClientes = async () => {
 		loading.value = true;
@@ -27,7 +31,6 @@ export const useStoreClientes = defineStore("Clientes", () => {
 	};
 
 	const getClientesId = async (id) => {
-		loading.value = true;
 		try {
 			const res = await axios.get(`${url}/clientes/id/${id}`, {
 				headers: {
@@ -39,8 +42,6 @@ export const useStoreClientes = defineStore("Clientes", () => {
 		} catch (error) {
 			console.log(error);
 			return error;
-		} finally {
-			loading.value = false;
 		}
 	};
 
@@ -118,7 +119,6 @@ export const useStoreClientes = defineStore("Clientes", () => {
 
 	const getClientesCumpleanios = async (fecha) => {
 		loading.value = true;
-		console.log("holaaaaaaaaaaaaaaaaaaaaa");
 		try {
 			console.log("holaaaaaaaaaaaaaaaaaaaaa");
 			const res = await axios.get(
@@ -297,5 +297,9 @@ export const useStoreClientes = defineStore("Clientes", () => {
 		putClientesActivar,
 		putClientesInactivar,
 		loading,
+		loadingA,
+		loadingI,
+		loadingP,
+		loadingS,
 	};
 });
