@@ -1139,7 +1139,7 @@ onMounted(() => {
 					Cerrar
 				</button>
 
-				<div class="row">
+				<div id="aa" class="row">
 					<q-markup-table v-for="item in segui" :key="item._id">
 						<tbody>
 							<tr>
@@ -1446,6 +1446,13 @@ hr {
 	align-items: center;
 	border: 0;
 	overflow: auto;
+}
+
+#seguimientoCliente section #aa {
+	display: flex;
+	flex-direction: row;
+	gap: 40px;
+	padding-top: 50px;
 }
 
 #botonF {
