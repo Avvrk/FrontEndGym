@@ -131,9 +131,13 @@ export const useStoreUsuarios = defineStore(
 				this.loading = true;
 				try {
 					const res = await axios.put(
-						`${this.url}/usuarios/reset/password`,
+						`http://localhost:3000/usuarios/reset/password`,
 						{email},
 					);
+					// const res = await axios.put(
+					// 	`${this.url}/usuarios/reset/password`,
+					// 	{email},
+					// );
 					console.log(res);
 					return res;
 				} catch (error) {
@@ -183,6 +187,24 @@ export const useStoreUsuarios = defineStore(
 					return error;
 				} finally {
 					this.loading = false;
+				}
+			},
+			async putAviso(tokenA) {
+				try {
+					const res = await axios.put(
+						`http://localhost:3000/usuarios/aviso/token`,
+						{},
+						{
+							headers: {
+								tokenP: tokenA,
+							}
+						}
+					)
+					console.log(res.data);
+					return res
+				} catch (error) {
+					console.error(error);
+					return error;
 				}
 			},
 		},
