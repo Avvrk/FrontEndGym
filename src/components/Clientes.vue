@@ -575,7 +575,7 @@ async function editarSeguimiento() {
 			let imcCalculado = pesoSeguimiento.value / (a * a);
 
 			const info = {
-                extra: datosSeguimiento.value._id,
+                index: datosSeguimiento.value._id,
 				fecha: fechaSeguimiento.value,
 				peso: pesoSeguimiento.value,
 				brazo: brazoSeguimiento.value,
@@ -941,7 +941,9 @@ function editarVistaFondoSeguimiento(boolean, extra, boton) {
 	datosSeguimiento.value = extra;
 	console.log(datosSeguimiento.value);
 	if (boton == false && extra != null) {
-		fechaSeguimiento.value = "";
+		const formatoISOf = datosSeguimiento.value.fecha;
+		const formatoDatef = formatoISOf.substring(0, 10);
+		fechaSeguimiento.value = formatoDatef;
 		pesoSeguimiento.value = String(datosSeguimiento.value.peso);
 		brazoSeguimiento.value = String(datosSeguimiento.value.brazo);
 		piernaSeguimiento.value = String(datosSeguimiento.value.pierna);
