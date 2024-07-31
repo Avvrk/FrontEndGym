@@ -219,7 +219,6 @@ async function editar() {
 				nombre: nombreUsuario.value,
 				email: correoUsuario.value,
 				telefono: telefonoUsuario.value,
-				password: contraseñaUsuario.value,
 				sede: sedeUsuario.value.nombre,
 				idSede: sedeUsuario.value.valor,
 				rol: rolUsuario.value,
@@ -489,6 +488,7 @@ onMounted(() => {
 					label="Telefono"
 					color="black" />
 				<q-input
+					v-if="mostrarBotonEnviar"
 					standout="bg-green text-white"
 					v-model="contraseñaUsuario"
 					type="password"
