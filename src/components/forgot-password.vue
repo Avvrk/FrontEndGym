@@ -21,7 +21,7 @@
 						return;
 					}
 
-					const res = await useUsuario.putUsuariosPassword(email);
+					const res = await useUsuario.putUsuariosPassword(email.value);
 
 					if (res.status == 200) {
 						$q.notify({
