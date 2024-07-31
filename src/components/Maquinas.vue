@@ -137,28 +137,37 @@ async function listarDatos() {
 
 async function listarMaquinas() {
     try {
+        loading.value = true;
         const res = await useMaquina.getMaquinas();
         rows.value = res.data.maquinas;
     } catch (error) {
         console.error("Error al listar maquinas:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
 async function listarMaquinasActivos() {
     try {
+        loading.value = true;
         const res = await useMaquina.getMaquinasActivos();
         rows.value = res.data.maquinas;
     } catch (error) {
         console.error("Error al listar maquinas activas:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
 async function listarMaquinasInactivos() {
     try {
+        loading.value = true;
         const res = await useMaquina.getMaquinasInactivos();
         rows.value = res.data.maquinas;
     } catch (error) {
         console.error("Error al listar maquinas inactivas:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
@@ -175,6 +184,7 @@ async function sedes() {
 // Funcion que se encarga de cambiar el estado de una Maquina
 async function editarEstado(elemento) {
     try {
+        loading.value = true;
         if (elemento.estado === 1) {
             const res = await useMaquina.putMaquinasInactivar(elemento._id);
         } else if (elemento.estado === 0) {
@@ -183,6 +193,8 @@ async function editarEstado(elemento) {
         listarMaquinas();
     } catch (error) {
         console.error("Error al editar estado de la maquina:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
@@ -190,6 +202,7 @@ async function editarEstado(elemento) {
 async function registrar() {
     if (await validarDatos()) {
         try {
+            loading.value = true;
             const info = {
                 codigo: codigoMaquinas.value,
                 sede: sedeMaquinas.value.nombre,
@@ -217,6 +230,8 @@ async function registrar() {
             }
         } catch (error) {
             console.error("Error al registrar la maquina:", error);
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -224,6 +239,7 @@ async function registrar() {
 async function editar() {
     if (await validarDatos()) {
         try {
+            loading.value = true;
             const info = {
                 codigo: codigoMaquinas.value,
                 sede: sedeMaquinas.value.nombre,
@@ -250,6 +266,8 @@ async function editar() {
             }
         } catch (error) {
             console.error("Error al editar la maquina:", error);
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -371,6 +389,7 @@ onMounted(() => {
 
 <template>
     <div>
+        <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         <div class="q-pa-md">
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
@@ -428,7 +447,6 @@ onMounted(() => {
                     </q-td>
                 </template>
             </q-table>
-            <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         </div>
 
         <div id="formularioMaquina" v-if="mostrarFormularioMaquina == true">

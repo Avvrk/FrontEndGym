@@ -111,10 +111,13 @@ const fechaBonita = (info) => {
 
 async function listarIngresos() {
 	try {
+		loading.value = true;
 		const res = await useIngreso.getIngresos();
 		rows.value = res.data.ingresos;
 	} catch (error) {
 		console.error("Error al listar los ingresos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -147,6 +150,7 @@ async function listarDatos() {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				fecha: fechaIngreso.value,
 				sede: sedeIngreso.value.nombre,
@@ -170,6 +174,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar el ingreso:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -177,6 +183,7 @@ async function registrar() {
 async function editar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				fecha: fechaIngreso.value,
 				sede: sedeIngreso.value.nombre,
@@ -200,6 +207,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al actualizar el ingreso:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -287,6 +296,7 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		<div class="q-pa-md">
 			<div>
 				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
@@ -329,7 +339,6 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 			<!-- Indicador de carga -->
 		</div>
 

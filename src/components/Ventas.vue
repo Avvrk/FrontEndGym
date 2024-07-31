@@ -162,6 +162,7 @@ async function listarDatos() {
 
 async function listarVentas() {
     try {
+        loading.value = true;
 		estadoBuscar.value = "ninguno";
         botonBuscar.value = false;
         botonEstado.value = "ninguno";
@@ -169,16 +170,21 @@ async function listarVentas() {
         rows.value = res.data.ventas;
     } catch (error) {
         console.error("Error al listar ventas:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
 async function listarVentasFecha() {
 	try {
+        loading.value = true;
 		const res = await useVentas.getVentasFechas(fecha1Abuscar.value, fecha2Abuscar.value);
 		rows.value = res.data.ventas;
 	} catch (error) {
 		console.error("Error al listar los pagos por fecha:", error);
-	}
+	} finally {
+        loading.value = false;
+    }
 }
 
 async function listarInventario() {
@@ -195,6 +201,7 @@ async function listarInventario() {
 async function registrar() {
     if (await validarDatos()) {
         try {
+            loading.value = true;
             const info = {
                 idInventario: inventarioVentas.value.valor,
                 valorUnitario: valorUVentas.value,
@@ -221,6 +228,8 @@ async function registrar() {
             }
         } catch (error) {
             console.error("Error al registrar ventas:", error);
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -228,6 +237,7 @@ async function registrar() {
 async function editar() {
     if (await validarDatos()) {
         try {
+            loading.value = true;
             const info = {
                 valorUnitario: valorUnitario.value,
                 fecha: fecha.value,
@@ -252,6 +262,8 @@ async function editar() {
             }
         } catch (error) {
             console.error("Error al editar ventas:", error);
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -369,6 +381,7 @@ onMounted(() => {
 
 <template>
     <div>
+        <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         <div class="q-pa-md">
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
@@ -428,7 +441,6 @@ onMounted(() => {
                     </q-td>
                 </template>
             </q-table>
-            <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         </div>
         <div id="formularioVentas" v-if="mostrarFormularioVenta == true">
             <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="editarVistaFondo(false, null, true)" class="q-gutter-md">

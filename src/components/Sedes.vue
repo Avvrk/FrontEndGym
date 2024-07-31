@@ -87,16 +87,20 @@ async function listarDatos() {
 // Funcion que se encarga de traer todas las sedes
 async function listarSedes() {
 	try {
+		loading.value = true;
 		const res = await useSede.getSedes();
 		rows.value = res.data.sedes;
 	} catch (error) {
 		console.log("Error al listar sedes:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 // Funcion que se encarga de cambiar el estado de una sede
 async function editarEstado(elemento) {
 	try {
+		loading.value = true;
 		if (elemento.estado === 1) {
 			const res = await useSede.putSedeInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
@@ -105,6 +109,8 @@ async function editarEstado(elemento) {
 		listarSedes();
 	} catch (error) {
 		console.log("Error al editar estado de la sede:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -112,6 +118,7 @@ async function editarEstado(elemento) {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				ciudad: ciudadSede.value,
 				codigo: codigoSede.value,
@@ -139,6 +146,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -147,6 +156,7 @@ async function registrar() {
 async function editar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				ciudad: ciudadSede.value,
 				codigo: codigoSede.value,
@@ -174,6 +184,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al editar usuario:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -299,6 +311,7 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		<div class="q-pa-md">
 			<div>
 				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)">
@@ -341,7 +354,6 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 		<div id="formularioSede" v-if="mostrarFormularioSede">
 			<q-form

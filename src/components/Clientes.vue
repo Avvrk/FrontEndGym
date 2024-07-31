@@ -10,6 +10,21 @@ const $q = useQuasar();
 const useCliente = useStoreClientes();
 const usePlan = useStorePlanes();
 
+// Observa el estado loading y muestra un spinner global cuando está true
+// watch(
+//   () => useCliente.loading,
+//   (loading) => {
+//     if (loading) {
+//       $q.loading.show({
+//         message: 'Cargando...',
+//         spinner: true,
+//       });
+//     } else {
+//       $q.loading.hide();
+//     }
+//   }
+// );
+
 // Variables para el funcionamiento de la tabla
 let rows = ref([]);
 let columns = ref([
@@ -273,6 +288,7 @@ async function listarDatos() {
 //Funcion que se encarga de traer todos los clientes
 async function listarClientes() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
 		botonBuscar.value = false;
 		botonEstado.value = "ninguno";
@@ -281,12 +297,15 @@ async function listarClientes() {
 		organizarClientes();
 	} catch (error) {
 		console.error("Error al listar los clientes:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 //Funcion que se encarga de traer todos los clientes activos
 async function listarClientesActivos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
 		botonBuscar.value = false;
 		botonEstado.value = "ninguno";
@@ -294,12 +313,15 @@ async function listarClientesActivos() {
 		rows.value = res.data.clientes;
 	} catch (error) {
 		console.error("Error al listar los clientes activos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 //Funcion que se encarga de traer todos los clientes inactivos
 async function listarClientesInactivos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
 		botonBuscar.value = false;
 		botonEstado.value = "ninguno";
@@ -307,21 +329,27 @@ async function listarClientesInactivos() {
 		rows.value = res.data.clientes;
 	} catch (error) {
 		console.error("Error al listar los clientes inactivos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarClientesPlan() {
 	try {
+		loading.value = true;
 		const res = await useCliente.getClientesPlan(planAbuscar.value.valor);
 		rows.value = res.data.clientes;
 	} catch (error) {
 		console.error("Error al listar los clientes por plan:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 //Funcion que se encarga de traer todos los clientes por su fecha de cumpleaños
 async function listarClientesCumpleanios() {
 	try {
+		loading.value = true;
 		const res = await useCliente.getClientesCumpleanios(
 			cumpleanioAbuscar.value
 		);
@@ -329,23 +357,29 @@ async function listarClientesCumpleanios() {
 		rows.value = res.data.clientes;
 	} catch (error) {
 		console.error("Error al listar los clientes por cumpleaños:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 //Funcion que se encarga de traer todos los clientes por su fecha de ingreso
 async function listarClientesIngresaron() {
 	try {
+		loading.value = true;
 		const res = await useCliente.getClientesIngresaron(
 			ingresoAbuscar.value
 		);
 		rows.value = res.data.clientes;
 	} catch (error) {
 		console.error("Error al listar los clientes por ingreso:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarClientesSeguimiento(id) {
 	try {
+		loading.value = true;
 		const res = await useCliente.getClientesSeguimiento(id);
 		console.log(res.data.clientes.seguimiento);
 		segui.value = res.data.clientes.seguimiento;
@@ -353,6 +387,8 @@ async function listarClientesSeguimiento(id) {
 		mostrarSeguimientoCliente.value = true;
 	} catch (error) {
 		console.error("Error al listar el seguimiento:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -370,6 +406,7 @@ async function listarPlanes() {
 //Funcion que se encarga de cambiar el estado de un cliente
 async function editarEstado(elemento) {
 	try {
+		loading.value = true;
 		if (elemento.estado === 1) {
 			const res = await useCliente.putClientesInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
@@ -378,6 +415,8 @@ async function editarEstado(elemento) {
 		listarClientes();
 	} catch (error) {
 		console.error("Error al editar el estado del cliente:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -385,6 +424,7 @@ async function editarEstado(elemento) {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			let hoy = new Date();
 			hoy.setHours(0, 0, 0, 0);
 			const fNacimiento = new Date(nacimientoCliente.value);
@@ -425,6 +465,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar cliente:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -432,6 +474,7 @@ async function registrar() {
 async function registrarSeguimiento() {
 	if (await validarDatosSeguimiento()) {
 		try {
+			loading.value = true;
 			const a = estaturaSeguimiento.value / 100;
 			let imcCalculado = pesoSeguimiento.value / (a * a);
 
@@ -468,6 +511,8 @@ async function registrarSeguimiento() {
 			}
 		} catch (error) {
 			console.error("Error al registrar seguimiento:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -475,6 +520,7 @@ async function registrarSeguimiento() {
 async function editar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			let hoy = new Date();
 			hoy.setHours(0, 0, 0, 0);
 			const fNacimiento = new Date(nacimientoCliente.value);
@@ -515,6 +561,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al editar cliente:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -522,6 +570,7 @@ async function editar() {
 async function editarSeguimiento() {
 	if (await validarDatosSeguimiento()) {
 		try {
+			loading.value = true;
 			const a = estaturaSeguimiento.value / 100;
 			let imcCalculado = pesoSeguimiento.value / (a * a);
 
@@ -559,6 +608,8 @@ async function editarSeguimiento() {
 			}
 		} catch (error) {
 			console.error("Error al editar seguimiento:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -949,6 +1000,11 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading
+				:showing="loading"
+				label="Please wait..."
+				label-class="text-teal"
+				label-style="font-size: 1.1em" />
 		<div class="q-pa-md">
 			<div>
 				<q-btn
@@ -1067,11 +1123,6 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading
-				:showing="loading"
-				label="Please wait..."
-				label-class="text-teal"
-				label-style="font-size: 1.1em" />
 		</div>
 		<div id="seguimientoCliente" v-if="mostrarSeguimientoCliente == true">
 			<section>

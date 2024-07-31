@@ -159,12 +159,15 @@ async function listarDatos() {
 
 async function listarMantenimientos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
         botonBuscar.value = false;
 		const res = await useMantenimiento.getMantenimientos();
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
 		console.error("Error al listar mantenimientos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -180,38 +183,48 @@ async function listarMaquinas() {
 
 async function listarMantenimientosFecha() {
 	try {
+		loading.value = true;
 		console.log(fecha1Abuscar.value, fecha2Abuscar.value);
 		const res = await useMantenimiento.getMantenimientosFecha(fecha1Abuscar.value, fecha2Abuscar.value);
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
 		console.error("Error al listar mantenimientos entre fechas:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarMantenimientosActivos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
 		botonBuscar.value = false;
 		const res = await useMantenimiento.getMantenimientosActivos();
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
 		console.error("Error al listar maquinas activas:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarMantenimientosInactivos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
 		botonBuscar.value = false;
 		const res = await useMantenimiento.getMantenimientosInactivos();
 		rows.value = res.data.mantenimientos;
 	} catch (error) {
 		console.error("Error al listar maquinas activas:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function editarEstado(elemento) {
 	try {
+		loading.value = true;
 		if (elemento.estado === 1) {
 			const res = await useMantenimiento.putMantenimientosInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
@@ -220,6 +233,8 @@ async function editarEstado(elemento) {
 		listarMantenimientos();
 	} catch (error) {
 		console.error("Error al editar el estado del cliente:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -227,6 +242,7 @@ async function editarEstado(elemento) {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				idMaquina: idMaquinaMantenimiento.value.valor,
 				fecha: fechaMantenimiento.value,
@@ -252,6 +268,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar el mantenimiento:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -259,6 +277,7 @@ async function registrar() {
 async function editar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				idMaquina: idMaquinaMantenimiento.value.valor,
 				fecha: fechaMantenimiento.value,
@@ -287,6 +306,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al editar el mantenimiento:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -402,6 +423,11 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading
+		:showing="loading"
+		label="Please wait..."
+		label-class="text-teal"
+		label-style="font-size: 1.1em" />
 		<div class="q-pa-md">
 			<div>
 				<q-btn
@@ -488,11 +514,6 @@ onMounted(() => {
                     </q-td>
                 </template>
 			</q-table>
-			<q-inner-loading
-				:showing="loading"
-				label="Please wait..."
-				label-class="text-teal"
-				label-style="font-size: 1.1em" />
 		</div>
 		<div
 			id="formularioMantenimiento"

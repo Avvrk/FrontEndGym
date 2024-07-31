@@ -210,6 +210,7 @@ async function listarDatos() {
 // Funcion que se encarga de traer todas las sedes
 async function listarPagos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
         botonBuscar.value = false;
         botonEstado.value = "ninguno";
@@ -217,6 +218,8 @@ async function listarPagos() {
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.log("Error al listar pagos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -242,6 +245,7 @@ async function listarClientes() {
 
 async function listarPagosActivos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
         botonBuscar.value = false;
         botonEstado.value = "ninguno";
@@ -249,11 +253,14 @@ async function listarPagosActivos() {
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.log("Error al listar pagos activos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarPagosInactivos() {
 	try {
+		loading.value = true;
 		estadoBuscar.value = "ninguno";
         botonBuscar.value = false;
         botonEstado.value = "ninguno";
@@ -261,31 +268,40 @@ async function listarPagosInactivos() {
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.log("Error al listar pagos inactivos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarPagosPlan() {
 	try {
+		loading.value = true;
 		const res = await usePago.getPagosPlan(planAbuscar.value.valor);
 		console.log(res.data.pagos);
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.error("Error al listar los pagos por plan:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarPagosFecha() {
 	try {
+		loading.value = true;
 		const res = await usePago.getPagosFechas(fecha1Abuscar.value, fecha2Abuscar.value);
 		rows.value = res.data.pagos;
 	} catch (error) {
 		console.error("Error al listar los pagos por fecha:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 // Funcion que se encarga de cambiar el estado de una sede
 async function editarEstado(elemento) {
 	try {
+		loading.value = true;
 		if (elemento.estado === 1) {
 			const res = await usePago.putPagosInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
@@ -294,6 +310,8 @@ async function editarEstado(elemento) {
 		listarPagos();
 	} catch (error) {
 		console.log("Error al editar estado del pago:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -301,6 +319,7 @@ async function editarEstado(elemento) {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				_idCliente: clientePago.value.valor,
 				_idPlan: planPago.value.valor,
@@ -325,6 +344,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar el pago:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -333,6 +354,7 @@ async function registrar() {
 async function editar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				_idCliente: clientePago.value.valor,
 				_idPlan: planPago.value.valor,
@@ -357,6 +379,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al editar el pago:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -456,6 +480,11 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading
+				:showing="loading"
+				label="Please wait..."
+				label-class="text-teal"
+				label-style="font-size: 1.1em" />
 		<div class="q-pa-md">
 			<div>
 				<q-btn
@@ -560,11 +589,6 @@ onMounted(() => {
                     </q-td>
                 </template>
 			</q-table>
-			<q-inner-loading
-				:showing="loading"
-				label="Please wait..."
-				label-class="text-teal"
-				label-style="font-size: 1.1em" />
 		</div>
 		<div id="formularioPago" v-if="mostrarFormularioPago">
 			<q-form

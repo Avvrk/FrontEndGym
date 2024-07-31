@@ -109,34 +109,44 @@ async function listarDatos() {
 // Funcion que se encarga de traer todos los planes
 async function listarPlanes() {
 	try {
+		loading.value = true;
 		const res = await usePlanes.getPlanes();
 		rows.value = res.data.planes;
 	} catch (error) {
 		console.error("Error al listar planes:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarPlanesActivos() {
 	try {
+		loading.value = true;
 		const res = await usePlanes.getPlanesActivos()
 		rows.value = res.data.planes;
 	} catch (error) {
 		console.error("Error al listar planes activos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarPlanesInactivos() {
 	try {
+		loading.value = true;
 		const res = await usePlanes.getPlanesInactivos()
 		rows.value = res.data.planes;
 	} catch (error) {
 		console.error("Error al listar planes inactivos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 // Funcion que se encarga de cambiar el estado de un plan
 async function editarEstado(elemento) {
 	try {
+		loading.value = true;
 		if (elemento.estado === 1) {
 			const res = await usePlanes.putPlanesInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
@@ -145,6 +155,8 @@ async function editarEstado(elemento) {
 		listarPlanes();
 	} catch (error) {
 		console.error("Error al editar estado del plan:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -152,6 +164,7 @@ async function editarEstado(elemento) {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				codigo: codigoPlanes.value,
 				descripcion: descripcionPlanes.value,
@@ -176,6 +189,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 } // falta terminar
@@ -183,6 +198,7 @@ async function registrar() {
 async function editar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				codigo: codigoPlanes.value,
 				descripcion: descripcionPlanes.value,
@@ -208,6 +224,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -312,6 +330,7 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		<div class="q-pa-md">
 			<div>
 				<q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
@@ -367,7 +386,6 @@ onMounted(() => {
                     </q-td>
                 </template>
 			</q-table>
-			<q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em"/>
 		</div>
 
 		<div id="formularioPlan" v-if="mostrarFormularioPlan == true">

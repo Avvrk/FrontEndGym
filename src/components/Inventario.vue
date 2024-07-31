@@ -107,29 +107,38 @@ async function listarDatos() {
 
 async function listarInventario() {
     try {
+        loading.value = true; 
         const res = await useInventario.getInventario();
         rows.value = res.data.inventarios;
     } catch (error) {
         console.log("Error al listar el inventario:", error);
+    } finally {
+        loading.value = false; 
     }
 }
 
 async function listarInventarioActivos() {
 	try {
+        loading.value = true;
 		const res = await useInventario.getInventariosActivos();
 		rows.value = res.data.inventarios;
 	} catch (error) {
 		console.log("Error al listar el inventario activos:", error);
-	}
+	} finally {
+        loading.value = false;
+    }
 }
 
 async function listarInventarioInactivos() {
 	try {
+        loading.value = true;
 		const res = await useInventario.getInventariosInactivos();
 		rows.value = res.data.inventarios;
 	} catch (error) {
 		console.log("Error al listar el inventario inactivos:", error);
-	}
+	} finally {
+        loading.value = false;
+    }
 }
 
 // async function listarTotal() {
@@ -143,6 +152,7 @@ async function listarInventarioInactivos() {
 
 async function editarEstado(elemento) {
     try {
+        loading.value = true;
         if (elemento.estado === 1) {
             const res = await useCliente.putInventariosInactivar(elemento._id);
         } else if (elemento.estado === 0) {
@@ -151,6 +161,8 @@ async function editarEstado(elemento) {
         listarInventario();
     } catch (error) {
         console.error("Error al editar el estado del cliente:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
@@ -158,6 +170,7 @@ async function editarEstado(elemento) {
 async function registrar() {
     if (await validarDatos()) {
         try {
+            loading.value = true;
             const info = {
                 codigo: codigoProducto.value,
                 descripcion: descripcionProducto.value,
@@ -182,6 +195,8 @@ async function registrar() {
             }
         } catch (error) {
             console.error("Error al registrar el inventario:", error);
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -189,6 +204,7 @@ async function registrar() {
 async function editar() {
     if (await validarDatos()) {
         try {
+            loading.value = true;
             const info = {
                 codigo: codigoProducto.value,
                 descripcion: descripcionProducto.value,
@@ -213,6 +229,8 @@ async function editar() {
             }
         } catch (error) {
             console.error("Error al actualizar el inventario:", error);
+        } finally {
+            loading.value = false;
         }
     }
 }
@@ -310,6 +328,7 @@ onMounted(() => {
 
 <template>
     <div>
+        <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         <div class="q-pa-md">
             <div>
                 <q-btn v-if="!loading" @click="editarVistaFondo(true, null, true)"> agregar </q-btn>
@@ -357,7 +376,6 @@ onMounted(() => {
 					<q-card-section v-html="iTotal" />
 				</q-card>
 			</div> -->
-            <q-inner-loading :showing="loading" label="Please wait..." label-class="text-teal" label-style="font-size: 1.1em" />
         </div>
         <div id="formularioInventario" v-if="mostrarFormularioInventario == true">
             <q-form @submit="mostrarBotonEnviar ? registrar() : editar()" @reset="editarVistaFondo(false, null, true)" class="q-gutter-md">

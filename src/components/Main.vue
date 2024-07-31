@@ -29,7 +29,7 @@
                 </script>
 <template>
     <q-layout view="hHh lpR fFf">
-      <q-header class="bg-primary text-white">
+      <q-header class="bg-dark text-white">
         <q-toolbar>
           <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
           <q-toolbar-title>
@@ -49,7 +49,7 @@
         </q-toolbar>
       </q-header>
   
-      <q-drawer v-model="leftDrawerOpen" side="left" overlay>
+      <q-drawer v-model="leftDrawerOpen" side="left" overlay class="bg-dark text-white">
         <q-list>
           <q-item clickable tag="router-link" to="/main/hogar">
             <q-item-section>

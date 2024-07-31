@@ -110,10 +110,13 @@ async function listarDatos() {
 // Función que se encarga de traer todos los usuarios
 async function listarUsuarios() {
 	try {
+		loading.value = true;
 		const res = await useUsuario.getUsuarios();
 		rows.value = res.data.usuarios;
 	} catch (error) {
 		console.error("Error al listar usuarios:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -130,25 +133,32 @@ async function sedes() {
 
 async function listarUsuariosActivos() {
 	try {
+		loading.value = true;
 		const res = await useUsuario.getUsuariosActivos();
 		rows.value = res.data.usuarios;
 	} catch (error) {
 		console.error("Error al listar usuarios activos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 async function listarUsuariosInactivos() {
 	try {
+		loading.value = true;
 		const res = await useUsuario.getUsuariosInactivos();
 		rows.value = res.data.usuarios;
 	} catch (error) {
 		console.error("Error al listar usuarios inactivos:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
 // Función que se encarga de cambiar el estado de un usuario
 async function editarEstado(elemento) {
 	try {
+		loading.value = true;
 		if (elemento.estado === 1) {
 			const res = await useUsuario.putUsuariosInactivar(elemento._id);
 		} else if (elemento.estado === 0) {
@@ -157,6 +167,8 @@ async function editarEstado(elemento) {
 		listarUsuarios();
 	} catch (error) {
 		console.error("Error al editar estado del usuario:", error);
+	} finally {
+		loading.value = false;
 	}
 }
 
@@ -164,6 +176,7 @@ async function editarEstado(elemento) {
 async function registrar() {
 	if (await validarDatos()) {
 		try {
+			loading.value = true;
 			const info = {
 				nombre: nombreUsuario.value,
 				email: correoUsuario.value,
@@ -191,6 +204,8 @@ async function registrar() {
 			}
 		} catch (error) {
 			console.error("Error al registrar usuario:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -199,6 +214,7 @@ async function registrar() {
 async function editar() {
 	if (await validarDatos("noIndefinido")) {
 		try {
+			loading.value = true;
 			const info = {
 				nombre: nombreUsuario.value,
 				email: correoUsuario.value,
@@ -226,6 +242,8 @@ async function editar() {
 			}
 		} catch (error) {
 			console.error("Error al editar usuario:", error);
+		} finally {
+			loading.value = false;
 		}
 	}
 }
@@ -388,6 +406,11 @@ onMounted(() => {
 
 <template>
 	<div>
+		<q-inner-loading
+		:showing="loading"
+		label="Please wait..."
+		label-class="text-teal"
+		label-style="font-size: 1.1em" />
 		<div class="q-pa-md">
 			<div>
 				<q-btn
@@ -443,11 +466,6 @@ onMounted(() => {
 					</q-td>
 				</template>
 			</q-table>
-			<q-inner-loading
-				:showing="loading"
-				label="Please wait..."
-				label-class="text-teal"
-				label-style="font-size: 1.1em" />
 		</div>
 		<div id="formularioUsuario" v-if="mostrarFormularioUsuario">
 			<q-form
