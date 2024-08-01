@@ -21,7 +21,7 @@
 						return;
 					}
 
-					const res = await useUsuario.putUsuariosPassword(email.value);
+					const res = await useUsuario.putUsuariosRecuperar(email.value);
 
 					if (res.status == 200) {
 						$q.notify({
@@ -71,11 +71,8 @@
 				</q-btn>
 				<br>
 				<br>
-				<q-btn class="submit bg-primary" :loading="useUsuario.loading" @click="regresar()">
+				<q-btn class="submit bg-primary" @click="regresar()">
 					Regresar
-					<template v-slot:loading>
-						<q-spinner color="secondary" size="1em" />
-					</template>
 				</q-btn>
 			</form>
 		</div>
