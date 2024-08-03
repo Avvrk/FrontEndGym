@@ -192,7 +192,7 @@ export const useStoreUsuarios = defineStore(
 			async putAviso(tokenA) {
 				try {
 					const res = await axios.put(
-						`http://localhost:3000/usuarios/aviso/token`,
+						`${this.url}/usuarios/aviso/token`,
 						{},
 						{
 							headers: {
@@ -211,13 +211,9 @@ export const useStoreUsuarios = defineStore(
 				this.loading = true;
 				try {
 					const res = await axios.put(
-						`http://localhost:3000/usuarios/update/password/${token}`,
+						`${this.url}/usuarios/update/password/${token}`,
 						password,
 					);
-					// const res = await axios.put(
-					// 	`${this.url}/usuarios/reset/password`,
-					// 	{email},
-					// );
 					console.log(res);
 					return res;
 				} catch (error) {
