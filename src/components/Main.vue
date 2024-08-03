@@ -128,7 +128,7 @@
               <q-item-label>Proveedores</q-item-label>
             </q-item-section>
             <q-item-section avatar>
-              <q-icon name="assignment" />
+              <q-icon name="local_shipping" />
             </q-item-section>
           </q-item>
   
