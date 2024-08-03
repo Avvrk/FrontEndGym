@@ -122,6 +122,15 @@
               <q-icon name="assignment" />
             </q-item-section>
           </q-item>
+
+          <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/proveedores">
+            <q-item-section>
+              <q-item-label>Proveedores</q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon name="assignment" />
+            </q-item-section>
+          </q-item>
   
           <q-item v-if="hasAccess(ROLES.ADMINISTRADOR, ROLES.RECEPCIONISTA)" clickable tag="router-link" to="/main/sedes">
             <q-item-section>

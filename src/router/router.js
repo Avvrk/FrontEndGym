@@ -12,6 +12,7 @@ import Maquina from "../components/Maquinas.vue";
 import Pago from "../components/Pagos.vue";
 import ForgotPassword from "../components/forgot-password.vue";
 import Plan from "../components/Planes.vue";
+import Proveedor from "../components/Proveedores.vue";
 import ResetPassword from "../components/Reset-password.vue";
 import Venta from "../components/Ventas.vue";
 import { useStoreUsuarios } from "../stores/usuarios.js";
@@ -54,6 +55,7 @@ const routes = [
             { path: "maquinas", component: Maquina, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
             { path: "pagos", component: Pago, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
             { path: "planes", component: Plan, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista", "instructor"] } },
+            { path: "proveedores", component: Proveedor, beforeEnter:auth, meta: { rol: ["administrador", "recepcionista"] } },
             { path: "ventas", component: Venta, beforeEnter: auth, meta: { rol: ["administrador", "recepcionista"] } },
         ],
     },
