@@ -20,6 +20,13 @@ let columns = ref([
         align: "center",
     },
     {
+        name: "cantidad",
+        sortable: true,
+        label: "Cantidad",
+        field: "cantidad",
+        align: "center",
+    },
+    {
         name: "valorUnitario",
         sortable: true,
         label: "Valor Unitario",
@@ -74,6 +81,16 @@ const botonEstado = ref("ninguno");
 const fecha1Abuscar = ref("");
 const fecha2Abuscar = ref("");
 
+const valorCa = () => {
+    if (isNaN(Number(cantidadVentas.value))) {
+        return
+    }
+    let sum = valorUVentas.value * cantidadVentas.value
+    return valorTVentas.value = String(sum)
+}
+
+watch(cantidadVentas, valorCa);
+
 const valorP = () => {
 	const buscarValor = inventarioTodo.value.find(item => item._id === inventarioVentas.value.valor)
     if (buscarValor) {
@@ -124,6 +141,8 @@ const orgranizarInvetario = () => {
 
 const buscarInvetario = (id) => {
     const codigoI = inventarioTodo.value.find((element) => element._id == id);
+    console.log(id, inventarioTodo.value);
+    
     return codigoI.codigo;
 };
 
@@ -156,7 +175,7 @@ function formatoNumerico(numero) {
 }
 
 async function listarDatos() {
-    await Promise.all([listarVentas(), listarInventario()]);
+    await Promise.all([listarInventario(), listarVentas()]);
     loading.value = false; // Datos cargados
 }
 
@@ -202,6 +221,8 @@ async function registrar() {
     if (await validarDatos()) {
         try {
             loading.value = true;
+            console.log(inventarioVentas.value.valor);
+            
             const info = {
                 idInventario: inventarioVentas.value.valor,
                 valorUnitario: valorUVentas.value,
@@ -209,7 +230,6 @@ async function registrar() {
                 valorTotal: valorTVentas.value,
                 cantidad: cantidadVentas.value,
             };
-            console.log(inventarioVentas.value, inventarioVentas.value.valor);
             const res = await useVentas.postVentas(info);
             if (res.status !== 200) {
                 $q.notify({
@@ -239,11 +259,15 @@ async function editar() {
         try {
             loading.value = true;
             const info = {
-                valorUnitario: valorUnitario.value,
-                fecha: fecha.value,
-                valorTotal: valorTotal.value,
-                cantidad: cantidadVentas,
+                idInventario: inventarioVentas.value.valor,
+                valorUnitario: valorUVentas.value,
+                fecha: fechaVentas.value,
+                valorTotal: valorTVentas.value,
+                cantidad: cantidadVentas.value,
+                cantidadAnterior: datos.value.cantidad,
             };
+            console.log(info);
+            
             const res = await useVentas.putVentas(datos.value._id, info);
             if (res.status !== 200) {
                 $q.notify({
@@ -447,7 +471,7 @@ onMounted(() => {
                 <q-select
 					standout="bg-green text-white"
 					v-model="inventarioVentas"
-					:options="orgranizarInvetario()"
+					:options="codigoValor"
 					option-value="valor"
 					option-label="label"
 					label="Codigo"

@@ -281,7 +281,7 @@ function formatoNumerico(numero) {
 }
 
 async function listarDatos() {
-	await Promise.all([listarClientes(), listarPlanes()]);
+	await Promise.all([listarPlanes(), listarClientes()]);
 	loading.value = false; // Datos cargados
 }
 

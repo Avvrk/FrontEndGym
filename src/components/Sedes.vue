@@ -130,11 +130,19 @@ async function registrar() {
 			};
 			const res = await useSede.postSedes(info);
 			if (res.status !== 200) {
-				$q.notify({
-					type: "negative",
-					message: "Parece que hubo un error en el registro",
-					position: "bottom-right",
-				});
+				if (res.response.data.errors[0].msg == "El código está repetido"){
+                    $q.notify({
+                        type: "negative",
+                        message: "El codigo de la sede no puede estar repetido",
+                        position: "bottom-right",
+                    });
+                } else {
+                    $q.notify({
+                        type: "negative",
+                        message: "Parece que hubo un error en el registro",
+                        position: "bottom-right",
+                    });
+                }
 			} else {
 				$q.notify({
 					type: "positive",
@@ -168,15 +176,23 @@ async function editar() {
 			};
 			const res = await useSede.putSedes(datos.value._id, info);
 			if (res.status !== 200) {
-				$q.notify({
-					type: "negative",
-					message: "Parece que hubo un error al editar el usuario",
-					position: "bottom-right",
-				});
+				if (res.response.data.errors[0].msg == "El código está repetido"){
+                    $q.notify({
+                        type: "negative",
+                        message: "El codigo de la sede no puede estar repetido",
+                        position: "bottom-right",
+                    });
+                } else {
+                    $q.notify({
+                        type: "negative",
+                        message: "Parece que hubo un error al editar La sede",
+                        position: "bottom-right",
+                    });
+                }
 			} else {
 				$q.notify({
 					type: "positive",
-					message: "El usuario se ha editado correctamente",
+					message: "La sede se ha editado correctamente",
 					position: "bottom-right",
 				});
 				listarSedes();

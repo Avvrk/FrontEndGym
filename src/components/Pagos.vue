@@ -203,7 +203,7 @@ function formatoNumerico(numero) {
 }
 
 async function listarDatos() {
-	await Promise.all([listarPagos(), listarPlanes(), listarClientes()]);
+	await Promise.all([listarPlanes(), listarClientes(), listarPagos()]);
 	loading.value = false; // Datos cargados
 }
 
