@@ -36,6 +36,13 @@ let columns = ref([
 		align: "center",
 	},
 	{
+		name: "correo",
+		sortable: true,
+		label: "Correo",
+		field: "correo",
+		align: "center",
+	},
+	{
 		name: "fechaIngreso",
 		sortable: true,
 		label: "Fecha de ingreso",
@@ -114,6 +121,7 @@ let telefonoCliente = ref("");
 let objetivoCliente = ref("");
 let planCliente = ref("");
 let observacionesCliente = ref("");
+let correoCliente = ref("");
 
 // Variables que contiene los datos ingresados en el formulario seguimiento
 let fechaSeguimiento = ref("");
@@ -446,6 +454,7 @@ async function registrar() {
 				plan: planCliente.value.nombre,
 				_idPlan: planCliente.value.valor,
 				observaciones: observacionesCliente.value,
+				correo: correoCliente.value,
 			};
 			const res = await useCliente.postClientes(info);
 			if (res.status !== 200) {
@@ -542,6 +551,7 @@ async function editar() {
 				plan: planCliente.value.nombre,
 				_idPlan: planCliente.value.valor,
 				observaciones: observacionesCliente.value,
+				correo: correoCliente.value,
 			};
 			const res = await useCliente.putClientes(datos.value._id, info);
 			if (res.status !== 200) {
@@ -651,7 +661,8 @@ async function validarDatos() {
 		!ingresoCliente.value &&
 		!objetivoCliente.value.trim() &&
 		!planCliente.value &&
-		!observacionesCliente.value.trim()
+		!observacionesCliente.value.trim() &&
+		!correoCliente.value.trim()
 	) {
 		$q.notify({
 			type: "negative",
@@ -664,6 +675,14 @@ async function validarDatos() {
 			$q.notify({
 				type: "negative",
 				message: "El nombre está vacío",
+				position: "bottom-right",
+			});
+			verificado = false;
+		}
+		if (!correoCliente.value.trim()) {
+			$q.notify({
+				type: "negative",
+				message: "El correo está vacío",
 				position: "bottom-right",
 			});
 			verificado = false;
@@ -920,6 +939,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		objetivoCliente.value = String(datos.value.objetivo);
 		planCliente.value = plan;
 		observacionesCliente.value = String(datos.value.observaciones);
+		correoCliente.value = String(datos.value.correo);
 	} else {
 		nombreCliente.value = "";
 		tipoDocumento.value = "";
@@ -931,6 +951,7 @@ function editarVistaFondo(boolean, extra, boton) {
 		objetivoCliente.value = "";
 		planCliente.value = "";
 		observacionesCliente.value = "";
+		correoCliente.value = "";
 	}
 
 	mostrarBotonEnviar.value = boton;
@@ -1226,6 +1247,11 @@ onMounted(() => {
 					type="text"
 					label="Nombre"
 					v-model="nombreCliente" />
+				<q-input
+					standout="bg-green text-white"
+					type="text"
+					label="Correo"
+					v-model="correoCliente" />
 				<q-select
 					standout="bg-green text-white"
 					:options="tipoD"
