@@ -130,14 +130,14 @@ export const useStoreUsuarios = defineStore(
 			async putUsuariosRecuperar(email) {
 				this.loading = true;
 				try {
-					const res = await axios.put(
-						`http://localhost:3000/usuarios/reset/password`,
-						{email},
-					);
 					// const res = await axios.put(
-					// 	`${this.url}/usuarios/reset/password`,
+					// 	`http://localhost:3000/usuarios/reset/password`,
 					// 	{email},
 					// );
+					const res = await axios.put(
+						`${this.url}/usuarios/reset/password`,
+						{email},
+					);
 					console.log(res);
 					return res;
 				} catch (error) {
