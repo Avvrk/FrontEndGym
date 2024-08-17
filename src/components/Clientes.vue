@@ -1061,6 +1061,39 @@ function generarGrafico(metrica) {
   myChart = new Chart(document.getElementById("myChart"), config);
 }
 
+let myChart = new Chart()
+
+function generarGrafico(metrica) {
+	myChart.destroy();
+	mostrarGrafico.value = true;
+	const etiquetas = segui.value.map(i => i.fecha.split("T")[0]);
+	const etiqueta = segui.value.map(i => i[metrica]);
+
+	console.log(etiquetas, etiqueta);
+	const data = {
+		labels: etiquetas,
+		datasets: [{
+			label: metrica,
+			backgroundColor: "#fffa023f",
+			borderColor: "black",
+			data: etiqueta,
+			fill: false,
+		}]
+	}
+
+	const config = {
+		type: 'line',
+		data: data,
+		options: {}
+	}
+
+	myChart = new Chart(
+		document.getElementById("myChart"),
+		config
+	)
+
+}
+
 watch(opcionBusqueda, estadoTabla);
 
 onMounted(() => {
