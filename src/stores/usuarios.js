@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 
-export const useStoreUsuarios = defineStore(
-	"Usuario",
-	{
+export const useStoreUsuarios = defineStore( "Usuario", {
 		state: () => ({
 			token: "",
 			user: {},
@@ -224,10 +222,8 @@ export const useStoreUsuarios = defineStore(
 				}
 			},
 		},
-	},
-	{
 		persist: true,
-	}
+	},
 );
 
 //Todas las peticiones

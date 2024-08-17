@@ -1009,7 +1009,7 @@ function generarGrafico(metrica) {
 	if (myChart) {
 		myChart.destroy();
 	}
-
+	mostrarSeguimientoCliente.value = false;
 	mostrarGrafico.value = true;
 
 	setTimeout(() => {
@@ -1148,6 +1148,7 @@ function crearConfiguracionGrafico(metrica, data) {
 function cerrarGrafica() {
 	myChart.destroy();
 	mostrarGrafico.value = false;
+	mostrarSeguimientoCliente.value = true;
 }
 
 watch(opcionBusqueda, estadoTabla);
@@ -1569,16 +1570,14 @@ onMounted(() => {
 				"></button>
 		</div>
 		<div v-if="mostrarGrafico == true" id="grafica">
-			<div>
-				<canvas id="myChart"></canvas>
-				<q-btn
-					id="cerrarG"
-					@click="cerrarGrafica()"
-					label="Cerrar"
-					color="primary"
-					flat
-					class="q-ml-sm" />
-			</div>
+			<canvas id="myChart"></canvas>
+			<q-btn
+				id="cerrarG"
+				@click="cerrarGrafica()"
+				label="Cerrar"
+				color="primary"
+				flat
+				class="q-ml-sm" />
 		</div>
 	</div>
 </template>
@@ -1589,22 +1588,12 @@ onMounted(() => {
 	margin-top: 10px;
 	top: 50%;
 	left: 50%;
+	width: 700px;
+	height: 500px;
 	transform: translate(-50%, -50%);
-	width: 90%;
-	height: 80%;
-	background-color: #252525;
 	border: 1px solid #e0e0e0;
 	border-radius: 12px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-#grafica div {
-	width: 90rem;
-	height: 35rem;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 }
 
 #cerrarG {
