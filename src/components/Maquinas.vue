@@ -131,7 +131,7 @@ const estadoTabla = () => {
 };
 
 async function listarDatos() {
-    await Promise.all([listarMaquinas(), sedes()]);
+    await Promise.all([sedes(), listarMaquinas()]);
     loading.value = false; // Datos cargados
 }
 

@@ -173,11 +173,19 @@ async function registrar() {
 			};
 			const res = await usePlanes.postPlanes(info);
 			if (res.status !== 200) {
-				$q.notify({
-					type: "negative",
-					message: "Parece que hubo un error en el registro",
-					position: "bottom-right",
-				});
+				if (res.response.data.errors[0].msg == "El código está repetido"){
+                    $q.notify({
+                        type: "negative",
+                        message: "El codigo del plna no puede estar repetido",
+                        position: "bottom-right",
+                    });
+                } else {
+                    $q.notify({
+                        type: "negative",
+                        message: "Parece que hubo un error al registrar el plan",
+                        position: "bottom-right",
+                    });
+                }
 			} else {
 				$q.notify({
 					type: "positive",
@@ -188,7 +196,7 @@ async function registrar() {
 				mostrarFormularioPlan.value = false;
 			}
 		} catch (error) {
-			console.error("Error al registrar usuario:", error);
+			console.error("Error al registrar planes:", error);
 		} finally {
 			loading.value = false;
 		}
@@ -208,22 +216,30 @@ async function editar() {
 			console.log(datos.value._id);
 			const res = await usePlanes.putPlanes(datos.value._id, info);
 			if (res.status !== 200) {
-				$q.notify({
-					type: "negative",
-					message: "Parece que hubo un error en el registro",
-					position: "bottom-right",
-				});
+				if (res.response.data.errors[0].msg == "El código está repetido"){
+                    $q.notify({
+                        type: "negative",
+                        message: "El codigo del plan no puede estar repetido",
+                        position: "bottom-right",
+                    });
+                } else {
+                    $q.notify({
+                        type: "negative",
+                        message: "Parece que hubo un error al editar el plan",
+                        position: "bottom-right",
+                    });
+                }
 			} else {
 				$q.notify({
 					type: "positive",
-					message: "El registro se ha realizado correctamente",
+					message: "El plan se ah actualizado correctamente",
 					position: "bottom-right",
 				});
 				listarPlanes();
 				mostrarFormularioPlan.value = false;
 			}
 		} catch (error) {
-			console.error("Error al registrar usuario:", error);
+			console.error("Error al editar el plan:", error);
 		} finally {
 			loading.value = false;
 		}

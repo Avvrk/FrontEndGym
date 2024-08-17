@@ -153,7 +153,7 @@ function formatoNumerico(numero) {
 }
 
 async function listarDatos() {
-	await Promise.all([listarMantenimientos(), listarMaquinas()]);
+	await Promise.all([listarMaquinas(), listarMantenimientos()]);
 	loading.value = false; // Datos cargados
 }
 

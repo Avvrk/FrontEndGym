@@ -142,7 +142,7 @@ async function listarClientes() {
 }
 
 async function listarDatos() {
-	await Promise.all([listarIngresos(), listarSedes(), listarClientes()]);
+	await Promise.all([listarSedes(), listarClientes(), listarIngresos()]);
 	loading.value = false; // Datos cargados
 }
 

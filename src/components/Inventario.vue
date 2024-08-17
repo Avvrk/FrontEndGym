@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useStoreInventario } from "../stores/inventario.js";
+import { useStoreProveedores } from "../stores/proveedores.js"
 import { useQuasar } from "quasar";
 
 const $q = useQuasar();
 
 const useInventario = useStoreInventario();
+const useProveedor = useStoreProveedores();
 
 let rows = ref([]);
 let columns = ref([
@@ -37,6 +39,12 @@ let columns = ref([
         align: "center",
     },
     {
+        name: "_idProveedor",
+        label: "Proveedor",
+        field: "_idProveedor",
+        align: "center",
+    },
+    {
         name: "estado",
         sortable: true,
         label: "Estado",
@@ -51,11 +59,14 @@ let columns = ref([
     },
 ]);
 
+const proveedoresTodo = ref([]);
+
 // Variables que contienen los datos ingresados en el formulario
 let codigoProducto = ref("");
 let descripcionProducto = ref("");
 let valorProducto = ref("");
 let cantidadProducto = ref("");
+let proveedorProducto = ref("");
 
 const datos = ref("");
 
@@ -67,6 +78,26 @@ const mostrarBotonEnviar = ref(true);
 const loading = ref(true); // Agregar estado de carga
 
 const opcionBusqueda = ref("todos");
+
+const nombreTelefono = ref([]);
+
+const organizarProveedores = () => {
+	nombreTelefono.value = proveedoresTodo.value.map((element) => ({
+		label: `${element.nombre} / ${element.telefono}`,
+		valor: `${element._id}`,
+		nombre: `${element.nombre}`,
+	}));
+	return nombreTelefono.value;
+};
+
+const buscarProveedor = (id) => {
+	const proveedor = proveedoresTodo.value.find((m) => m._id == id);
+	console.log(proveedor, id, proveedoresTodo.value);
+    if (proveedor == undefined) {
+        return 'N/A';
+    }
+	return proveedor.nombre;
+};
 
 const estadoTabla = () => {
     switch (opcionBusqueda.value) {
@@ -101,7 +132,7 @@ function formatoNumerico(numero) {
 }
 
 async function listarDatos() {
-    await Promise.all([listarInventario()]);
+    await Promise.all([listarProveedores(), listarInventario()]);
     loading.value = false; // Datos cargados
 }
 
@@ -114,6 +145,19 @@ async function listarInventario() {
         console.log("Error al listar el inventario:", error);
     } finally {
         loading.value = false; 
+    }
+}
+
+async function listarProveedores() {
+    try {
+        loading.value = true;
+        const res = await useProveedor.getProveedores();
+        proveedoresTodo.value = res.data.proveedores;
+        organizarProveedores()
+    } catch (error) {
+        console.error("Error al listar proveedores:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
@@ -176,14 +220,23 @@ async function registrar() {
                 descripcion: descripcionProducto.value,
                 valor: valorProducto.value,
                 cantidad: cantidadProducto.value,
+                _idProveedor: proveedorProducto.value.valor,
             };
             const res = await useInventario.postInventario(info);
             if (res.status !== 200) {
-                $q.notify({
-                    type: "negative",
-                    message: "Parece que hubo un error en el registro",
-                    position: "bottom-right",
-                });
+                if (res.response.data.errors[0].msg == "El código está repetido"){
+                    $q.notify({
+                        type: "negative",
+                        message: "El codigo del producto no puede estar repetido",
+                        position: "bottom-right",
+                    });
+                } else {
+                    $q.notify({
+                        type: "negative",
+                        message: "Parece que hubo un error en el registro",
+                        position: "bottom-right",
+                    });
+                }
             } else {
                 $q.notify({
                     type: "positive",
@@ -210,14 +263,23 @@ async function editar() {
                 descripcion: descripcionProducto.value,
                 valor: valorProducto.value,
                 cantidad: cantidadProducto.value,
+                _idProveedor: proveedorProducto.value.valor,
             };
             const res = await useInventario.putInventarios(datos.value._id, info);
             if (res.status !== 200) {
-                $q.notify({
-                    type: "negative",
-                    message: "Parece que hubo un error al editar el inventario ",
-                    position: "bottom-right",
-                });
+                if (res.response.data.errors[0].msg == "El código está repetido"){
+                    $q.notify({
+                        type: "negative",
+                        message: "El codigo del producto no puede estar repetido",
+                        position: "bottom-right",
+                    });
+                } else {
+                    $q.notify({
+                        type: "negative",
+                        message: "Parece que hubo un error al editar el inventario ",
+                        position: "bottom-right",
+                    });
+                }
             } else {
                 $q.notify({
                     type: "positive",
@@ -245,7 +307,7 @@ function resetear() {
 async function validarDatos() {
     let verificado = true;
 
-    if (!codigoProducto.value.trim() && !descripcionProducto.value.trim() && !valorProducto.value.trim() && !cantidadProducto.value.trim()) {
+    if (!codigoProducto.value.trim() && !descripcionProducto.value.trim() && !valorProducto.value.trim() && !cantidadProducto.value.trim() && !proveedorProducto.value) {
         $q.notify({
             type: "negative",
             message: "Llenar todos los campos",
@@ -299,6 +361,14 @@ async function validarDatos() {
             });
             verificado = false;
         }
+        if (!proveedorProducto.value) {
+            $q.notify({
+                type: "negative",
+                message: "El proveedor no puede estar vacio",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
     }
     return verificado;
 }
@@ -306,15 +376,20 @@ async function validarDatos() {
 function editarVistaFondo(boolean, extra, boton) {
     datos.value = extra;
     if (boton == false && extra != null) {
+        const proveedor = nombreTelefono.value.find(
+            (element) => element.valor == datos.value._idProveedor
+        )
         codigoProducto.value = String(datos.value.codigo);
         descripcionProducto.value = String(datos.value.descripcion);
         valorProducto.value = String(datos.value.valor);
         cantidadProducto.value = String(datos.value.cantidad);
+        proveedorProducto.value = proveedor;
     } else {
         codigoProducto.value = "";
         descripcionProducto.value = "";
         valorProducto.value = "";
         cantidadProducto.value = "";
+        proveedorProducto.value = "";
     }
 
     mostrarBotonEnviar.value = boton;
@@ -364,6 +439,11 @@ onMounted(() => {
                         <p>$ {{ formatoNumerico(props.row.valor) }}</p>
                     </q-td>
                 </template>
+                <template v-slot:body-cell-_idProveedor="props">
+                    <q-td :props="props">
+                        <p>{{ buscarProveedor(props.row._idProveedor) }}</p>
+                    </q-td>
+                </template>
                 <template v-slot:body-cell-estado="props">
                     <q-td :props="props">
                         <p v-if="props.row.estado == 1" style="color: green">Activo</p>
@@ -383,6 +463,12 @@ onMounted(() => {
                 <q-input standout="bg-green text-white" v-model="descripcionProducto" label="Descripción" color="black" />
                 <q-input standout="bg-green text-white" v-model="valorProducto" label="Valor" color="black" />
                 <q-input standout="bg-green text-white" v-model="cantidadProducto" label="Cantidad" color="black" />
+				<q-select
+					standout="bg-green text-white"
+					v-model="proveedorProducto"
+					:options="organizarProveedores()"
+					label="Proveedor"
+					color="black" />
                 <div>
                     <q-btn label="Enviar" type="submit" color="primary" />
                     <q-btn label="Cerrar" type="reset" color="primary" flat class="q-ml-sm" />

@@ -103,7 +103,7 @@ const estadoTabla = () => {
 watch(opcionBusqueda, estadoTabla);
 
 async function listarDatos() {
-	await Promise.all([listarUsuarios(), sedes()]);
+	await Promise.all([sedes(),listarUsuarios()]);
 	loading.value = false; // Datos cargados
 }
 
