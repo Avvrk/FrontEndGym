@@ -4,6 +4,7 @@ import { useStoreClientes } from "../stores/clientes.js";
 import { useStorePlanes } from "../stores/planes.js";
 import { useQuasar } from "quasar";
 import { format } from "date-fns";
+import Chart from 'chart.js/auto';
 
 const $q = useQuasar();
 
@@ -136,6 +137,7 @@ let clienteSeguimiento = ref("");
 const opcionBusqueda = ref("todos");
 
 //Variables para administrar lo que se ve en la pantalla
+const mostrarGrafico = ref(true);
 const mostrarFormularioCliente = ref(false);
 const mostrarFormularioSeguimiento = ref(false);
 const mostrarBotonEnviar = ref(false);
@@ -1014,10 +1016,44 @@ function calcularEstadoIMC(imc) {
 	}
 }
 
+let myChart = new Chart()
+
+function generarGrafico(metrica) {
+	myChart.destroy();
+	mostrarGrafico.value = true;
+	const etiquetas = segui.value.map(i => i.fecha.split("T")[0]);
+	const etiqueta = segui.value.map(i => i[metrica]);
+
+	console.log(etiquetas, etiqueta);
+	const data = {
+		labels: etiquetas,
+		datasets: [{
+			label: metrica,
+			backgroundColor: "#fffa023f",
+			borderColor: "black",
+			data: etiqueta,
+			fill: false,
+		}]
+	}
+
+	const config = {
+		type: 'line',
+		data: data,
+		options: {}
+	}
+
+	myChart = new Chart(
+		document.getElementById("myChart"),
+		config
+	)
+
+}
+
 watch(opcionBusqueda, estadoTabla);
 
 onMounted(() => {
 	listarDatos();
+	
 });
 </script>
 
@@ -1173,30 +1209,32 @@ onMounted(() => {
 							</tr>
 							<tr>
 								<td class="text-center">Brazo:</td>
-								<td class="text-center">{{ item.brazo }} cm</td>
+								<td class="text-center">
+									<button @click="generarGrafico('brazo')">{{ item.brazo }} cm</button>
+								</td>
 							</tr>
 							<tr>
 								<td class="text-center">Cintura:</td>
 								<td class="text-center">
-									{{ item.cintura }} cm
+									<button @click="generarGrafico('cintura')">{{ item.cintura }} cm</button>
 								</td>
 							</tr>
 							<tr>
 								<td class="text-center">Pierna:</td>
 								<td class="text-center">
-									{{ item.pierna }} cm
+									<button @click="generarGrafico('pierna')">{{ item.pierna }} cm</button>
 								</td>
 							</tr>
 							<tr>
 								<td class="text-center">Estatura:</td>
 								<td class="text-center">
-									{{ item.estatura }} cm
+									<button @click="generarGrafico('estatura')">{{ item.estatura }} cm</button>
 								</td>
 							</tr>
 							<tr>
 								<td class="text-center">IMC:</td>
 								<td class="text-center">
-									{{ item.imc.toFixed(2) }}
+									<button @click="generarGrafico('imc')">{{ item.imc.toFixed(2) }}</button>
 								</td>
 							</tr>
 							<tr
@@ -1229,7 +1267,9 @@ onMounted(() => {
 							</tr>
 							<tr>
 								<td class="text-center">Peso:</td>
-								<td class="text-center">{{ item.peso }} kg</td>
+								<td class="text-center">
+									<button @click="generarGrafico('peso')">{{ item.peso }} kg</button>
+								</td>
 							</tr>
 						</tbody>
 						<button class="botonSeguimiento" @click="editarVistaFondoSeguimiento(true, item, false)">Editar</button>
@@ -1404,10 +1444,23 @@ onMounted(() => {
 					editarVistaFondoSeguimiento(false, null, true)
 				"></button>
 		</div>
+		<div v-if="mostrarGrafico == true" id="grafica">
+			<canvas id="myChart">holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</canvas>
+		</div>
 	</div>
 </template>
 
 <style scoped>
+#grafica {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+}
+
+
+
 #botonCerrarS {
 	position: absolute;
 	top: 0;
