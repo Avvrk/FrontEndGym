@@ -112,8 +112,9 @@ const organizarSedes = () => {
 };
 
 const buscarSede = (id) => {
+    const sede = sedesTodo.value.find((element) => element._id === id)
     console.log(id, sedesTodo.value);
-    return sedesTodo.value.find((element) => element._id === id).nombre;
+    return sede ? sede.nombre : 'Desconocido';
 };
 
 const estadoTabla = () => {

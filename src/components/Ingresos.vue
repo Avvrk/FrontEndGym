@@ -86,7 +86,7 @@ const organizarClientes = () => {
 
 const buscarNombre = (id) => {
 	const cliente = clientesTodo.value.find((c) => c._id === id);
-	return cliente.nombre;
+	return cliente ? cliente.nombre : 'Desconocido';
 };
 
 const clienteBuscar = (id) => {

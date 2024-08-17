@@ -121,7 +121,7 @@ const estadoTabla = async () => {
 const buscarMaquina = (id) => {
 	const maquina = maquinasTodo.value.find((m) => m._id == id);
 	console.log(maquina, id, maquinasTodo.value);
-	return maquina.codigo;
+	return maquina ? maquina.codigo : 'Desconocido';
 };
 
 const fechaBonita = (info) => {
