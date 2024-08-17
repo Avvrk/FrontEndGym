@@ -122,7 +122,7 @@ let clienteSeguimiento = ref("");
 const opcionBusqueda = ref("todos");
 
 //Variables para administrar lo que se ve en la pantalla
-const mostrarGrafico = ref(true);
+const mostrarGrafico = ref(false);
 const mostrarFormularioCliente = ref(false);
 const mostrarFormularioSeguimiento = ref(false);
 const mostrarBotonEnviar = ref(false);
@@ -940,6 +940,7 @@ function editarVistaFondo(boolean, extra, boton) {
 function editarVistaFondoSeguimiento(boolean, extra, boton) {
   datosSeguimiento.value = extra;
   console.log(datosSeguimiento.value);
+  mostrarGrafico.value = false;
   if (boton == false && extra != null) {
     const formatoISOf = datosSeguimiento.value.fecha;
     const formatoDatef = formatoISOf.substring(0, 10);
@@ -975,6 +976,7 @@ function verSeguimiento(seguimiento) {
 
 function cerrarSeguimiento() {
   mostrarSeguimientoCliente.value = false;
+  mostrarGrafico.value = false;
 }
 
 function calcularEstadoIMC(imc) {
@@ -993,6 +995,8 @@ function calcularEstadoIMC(imc) {
   }
 }
 
+
+
 let myChart;
 
 function generarGrafico(metrica) {
@@ -1002,25 +1006,44 @@ function generarGrafico(metrica) {
 
   mostrarGrafico.value = true;
 
-  const etiquetas = segui.value.map((i) => i.fecha.split("T")[0]);
-  const etiqueta = segui.value.map((i) => i[metrica]);
+  const etiquetas = obtenerEtiquetas(segui.value);
+  const datos = obtenerDatos(segui.value, metrica);
 
-  console.log(etiquetas, etiqueta);
+  const data = crearDatosGrafico(metrica, etiquetas, datos);
+  const config = crearConfiguracionGrafico(metrica, data);
 
-  const data = {
+  myChart = new Chart(document.getElementById("myChart"), config);
+}
+
+function obtenerEtiquetas(datos) {
+  return datos.map((i) => i.fecha.split("T")[0]);
+}
+
+function obtenerDatos(datos, metrica) {
+  return datos.map((i) => i[metrica]);
+}
+
+function crearDatosGrafico(metrica, etiquetas, datos) {
+  return {
     labels: etiquetas,
     datasets: [
       {
         label: metrica,
-        backgroundColor: "#fffa023f",
-        borderColor: "black",
-        data: etiqueta,
+        backgroundColor: "rgba(255, 250, 2, 0.25)",
+        borderColor: "#333",
+        data: datos,
         fill: false,
+        tension: 0.4,
+        pointBackgroundColor: "#fffa02",
+        pointBorderColor: "#333",
+        pointHoverRadius: 5,
       },
     ],
   };
+}
 
-  const config = {
+function crearConfiguracionGrafico(metrica, data) {
+  return {
     type: "line",
     data: data,
     options: {
@@ -1031,68 +1054,81 @@ function generarGrafico(metrica) {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Fecha'
-          }
+            text: 'Fecha',
+            color: '#666',
+            font: {
+              family: 'Arial',
+              size: 14,
+              weight: 'bold',
+            },
+          },
         },
         y: {
           beginAtZero: true,
           title: {
             display: true,
-            text: metrica
-          }
-        }
+            text: metrica,
+            color: '#666',
+            font: {
+              family: 'Arial',
+              size: 14,
+              weight: 'bold',
+            },
+          },
+        },
       },
       plugins: {
         legend: {
           display: true,
-          position: 'top'
+          position: 'top',
+          labels: {
+            color: '#666',
+            font: {
+              family: 'Arial',
+              size: 12,
+              weight: 'bold',
+            },
+          },
         },
         tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          cornerRadius: 4,
           callbacks: {
             label: function(context) {
-              return context.dataset.label + ': ' + context.raw;
+              return `${context.dataset.label}: ${context.raw}`;
             }
           }
+        },
+        title: {
+          display: true,
+          text: 'Seguimiento',
+          color: '#333',
+          font: {
+            family: 'Arial',
+            size: 18,
+            weight: 'bold',
+          },
+          padding: {
+            top: 10,
+            bottom: 30
+          }
         }
-      }
+      },
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      animation: {
+        duration: 1000,
+        easing: 'easeInOutQuad',
+      },
     },
   };
-
-  myChart = new Chart(document.getElementById("myChart"), config);
 }
 
-let myChart = new Chart()
 
-function generarGrafico(metrica) {
-	myChart.destroy();
-	mostrarGrafico.value = true;
-	const etiquetas = segui.value.map(i => i.fecha.split("T")[0]);
-	const etiqueta = segui.value.map(i => i[metrica]);
-
-	console.log(etiquetas, etiqueta);
-	const data = {
-		labels: etiquetas,
-		datasets: [{
-			label: metrica,
-			backgroundColor: "#fffa023f",
-			borderColor: "black",
-			data: etiqueta,
-			fill: false,
-		}]
-	}
-
-	const config = {
-		type: 'line',
-		data: data,
-		options: {}
-	}
-
-	myChart = new Chart(
-		document.getElementById("myChart"),
-		config
-	)
-
-}
 
 watch(opcionBusqueda, estadoTabla);
 
@@ -1248,7 +1284,7 @@ onMounted(() => {
               <tr>
                 <td class="text-center">Brazo:</td>
                 <td class="text-center">
-                  <button @click="generarGrafico('brazo')">
+                  <button @click="generarGrafico('brazo')" style="cursor: pointer;">
                     {{ item.brazo }} cm
                   </button>
                 </td>
@@ -1256,7 +1292,7 @@ onMounted(() => {
               <tr>
                 <td class="text-center">Cintura:</td>
                 <td class="text-center">
-                  <button @click="generarGrafico('cintura')">
+                  <button @click="generarGrafico('cintura')" style="cursor: pointer;">
                     {{ item.cintura }} cm
                   </button>
                 </td>
@@ -1264,7 +1300,7 @@ onMounted(() => {
               <tr>
                 <td class="text-center">Pierna:</td>
                 <td class="text-center">
-                  <button @click="generarGrafico('pierna')">
+                  <button @click="generarGrafico('pierna')" style="cursor: pointer;">
                     {{ item.pierna }} cm
                   </button>
                 </td>
@@ -1272,7 +1308,7 @@ onMounted(() => {
               <tr>
                 <td class="text-center">Estatura:</td>
                 <td class="text-center">
-                  <button @click="generarGrafico('estatura')">
+                  <button @click="generarGrafico('estatura')" style="cursor: pointer;">
                     {{ item.estatura }} cm
                   </button>
                 </td>
@@ -1280,9 +1316,9 @@ onMounted(() => {
               <tr>
                 <td class="text-center">IMC:</td>
                 <td class="text-center">
-                  <button @click="generarGrafico('imc')">
+                  
                     {{ item.imc.toFixed(2) }}
-                  </button>
+                  
                 </td>
               </tr>
               <tr
@@ -1311,7 +1347,7 @@ onMounted(() => {
               <tr>
                 <td class="text-center">Peso:</td>
                 <td class="text-center">
-                  <button @click="generarGrafico('peso')">
+                  <button @click="generarGrafico('peso')" style="cursor: pointer;">
                     {{ item.peso }} kg
                   </button>
                 </td>
@@ -1507,31 +1543,34 @@ onMounted(() => {
     </div>
     <div v-if="mostrarGrafico == true" id="grafica">
       <canvas id="myChart"
-        >holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</canvas
+        >holaaa</canvas
       >
     </div>
+    <br>
+    <br>
   </div>
 </template>
 
 <style scoped>
 #grafica {
-  width: 80%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 
 #myChart {
   width: 100% !important;
-  height: 400px;
-  border-radius: 4px;
-  background-color: #fff;
+  height: 450px;
+  border-radius: 8px;
+  background-color: #fafafa;
 }
+
 
 #botonCerrarS {
   position: absolute;
